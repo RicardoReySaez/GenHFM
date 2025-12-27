@@ -1,0 +1,1174 @@
+---
+title: | 
+  | \fontsize{16}{16}\selectfont \textit{Bayesian and path model diagrams} \vspace{0.05cm}
+  | _____________________________ \vspace{3cm}
+  | \fontsize{16}{16}\selectfont\textbf{Generalized Hierarchical Factor Models}\vspace{0.5cm}
+  | \fontsize{14}{14}\selectfont\textbf{Gaussian, ex-Gaussian and Shifted-lognormal} \vspace{0.2cm}
+  | \fontsize{14}{14}\selectfont\textbf{Confirmatory and Exploratory model diagrams} \vspace{5cm}
+  | \fontsize{14}{14}\selectfont Ricardo Rey-Sáez, Alicia Franco-Martínez, 
+  | 
+  | Javier Revuelta, Miguel A. Vadillo. \vspace{0.4cm}
+  | \vspace{-0.1cm} _____________________ \vspace{1cm}
+header-includes:
+   - \usepackage{tikz}
+   - \usepackage{array}
+   - \usepackage{adjustbox}       
+   - \usepackage{bm}
+   - \usetikzlibrary{shadows,fit,positioning,arrows,intersections,calc,shapes.geometric}
+   - \usepackage{pdflscape}
+   - \usepackage{etoolbox}
+   - \BeforeBeginEnvironment{tikzpicture}{\begin{center}}
+   - \AfterEndEnvironment{tikzpicture}{\end{center}}
+format:
+  pdf:
+    documentclass: article
+    classoption: fontsize=12pt
+    mathspec: true
+editor: source
+---
+
+\newpage
+
+```{=latex}
+% --------------------------------------------------------------------------------------------
+% User-defined functions and arguments to generate model diagram
+% --------------------------------------------------------------------------------------------
+
+% An example graphical model, based on a general(ish) set of definitions
+% Michael Lee (mdlee@uci.edu)
+% Jan 2018
+
+% Custom shape definition
+\makeatletter
+\pgfkeys{/pgf/.cd,
+  rectangle corner radius/.initial=3pt
+}
+\newif\ifpgf@rectanglewrc@donecorner@
+\def\pgf@rectanglewithroundedcorners@docorner#1#2#3#4{%
+  \edef\pgf@marshal{%
+    \noexpand\pgfintersectionofpaths
+      {%
+        \noexpand\pgfpathmoveto{\noexpand\pgfpoint{\the\pgf@xa}{\the\pgf@ya}}%
+        \noexpand\pgfpathlineto{\noexpand\pgfpoint{\the\pgf@x}{\the\pgf@y}}%
+      }%
+      {%
+        \noexpand\pgfpathmoveto{\noexpand\pgfpointadd
+          {\noexpand\pgfpoint{\the\pgf@xc}{\the\pgf@yc}}%
+          {\noexpand\pgfpoint{#1}{#2}}}%
+        \noexpand\pgfpatharc{#3}{#4}{\cornerradius}%
+      }%
+    }%
+  \pgf@process{\pgf@marshal\pgfpointintersectionsolution{1}}%
+  \pgf@process{\pgftransforminvert\pgfpointtransformed{}}%
+  \pgf@rectanglewrc@donecorner@true
+}
+\pgfdeclareshape{rectangle with rounded corners}
+{
+  \inheritsavedanchors[from=rectangle] % this is nearly a rectangle
+  \inheritanchor[from=rectangle]{north}
+  \inheritanchor[from=rectangle]{north west}
+  \inheritanchor[from=rectangle]{north east}
+  \inheritanchor[from=rectangle]{center}
+  \inheritanchor[from=rectangle]{west}
+  \inheritanchor[from=rectangle]{east}
+  \inheritanchor[from=rectangle]{mid}
+  \inheritanchor[from=rectangle]{mid west}
+  \inheritanchor[from=rectangle]{mid east}
+  \inheritanchor[from=rectangle]{base}
+  \inheritanchor[from=rectangle]{base west}
+  \inheritanchor[from=rectangle]{base east}
+  \inheritanchor[from=rectangle]{south}
+  \inheritanchor[from=rectangle]{south west}
+  \inheritanchor[from=rectangle]{south east}
+
+  \savedmacro\cornerradius{%
+    \edef\cornerradius{\pgfkeysvalueof{/pgf/rectangle corner radius}}%
+  }
+
+  \backgroundpath{%
+    \northeast\advance\pgf@y-\cornerradius\relax
+    \pgfpathmoveto{}%
+    \pgfpatharc{0}{90}{\cornerradius}%
+    \northeast\pgf@ya=\pgf@y\southwest\advance\pgf@x\cornerradius\relax\pgf@y=\pgf@ya
+    \pgfpathlineto{}%
+    \pgfpatharc{90}{180}{\cornerradius}%
+    \southwest\advance\pgf@y\cornerradius\relax
+    \pgfpathlineto{}%
+    \pgfpatharc{180}{270}{\cornerradius}%
+    \northeast\pgf@xa=\pgf@x\advance\pgf@xa-\cornerradius\southwest\pgf@x=\pgf@xa
+    \pgfpathlineto{}%
+    \pgfpatharc{270}{360}{\cornerradius}%
+    \northeast\advance\pgf@y-\cornerradius\relax
+    \pgfpathlineto{}%
+  }
+
+  \anchor{before north east}{\northeast\advance\pgf@y-\cornerradius}
+  \anchor{after north east}{\northeast\advance\pgf@x-\cornerradius}
+  \anchor{before north west}{\southwest\pgf@xa=\pgf@x\advance\pgf@xa\cornerradius
+    \northeast\pgf@x=\pgf@xa}
+  \anchor{after north west}{\northeast\pgf@ya=\pgf@y\advance\pgf@ya-\cornerradius
+    \southwest\pgf@y=\pgf@ya}
+  \anchor{before south west}{\southwest\advance\pgf@y\cornerradius}
+  \anchor{after south west}{\southwest\advance\pgf@x\cornerradius}
+  \anchor{before south east}{\northeast\pgf@xa=\pgf@x\advance\pgf@xa-\cornerradius
+    \southwest\pgf@x=\pgf@xa}
+  \anchor{after south east}{\southwest\pgf@ya=\pgf@y\advance\pgf@ya\cornerradius
+    \northeast\pgf@y=\pgf@ya}
+
+  \anchorborder{%
+    \pgf@xb=\pgf@x% xb/yb is target
+    \pgf@yb=\pgf@y%
+    \southwest%
+    \pgf@xa=\pgf@x% xa/ya is se
+    \pgf@ya=\pgf@y%
+    \northeast%
+    \advance\pgf@x by-\pgf@xa%
+    \advance\pgf@y by-\pgf@ya%
+    \pgf@xc=.5\pgf@x% x/y is half width/height
+    \pgf@yc=.5\pgf@y%
+    \advance\pgf@xa by\pgf@xc% xa/ya becomes center
+    \advance\pgf@ya by\pgf@yc%
+    \edef\pgf@marshal{%
+      \noexpand\pgfpointborderrectangle
+      {\noexpand\pgfqpoint{\the\pgf@xb}{\the\pgf@yb}}
+      {\noexpand\pgfqpoint{\the\pgf@xc}{\the\pgf@yc}}%
+    }%
+    \pgf@process{\pgf@marshal}%
+    \advance\pgf@x by\pgf@xa% 
+    \advance\pgf@y by\pgf@ya%
+    \pgfextract@process\borderpoint{}%
+    %
+    \pgf@rectanglewrc@donecorner@false
+    %
+    % do southwest corner
+    \southwest\pgf@xc=\pgf@x\pgf@yc=\pgf@y
+    \advance\pgf@xc\cornerradius\relax\advance\pgf@yc\cornerradius\relax 
+    \borderpoint
+    \ifdim\pgf@x<\pgf@xc\relax\ifdim\pgf@y<\pgf@yc\relax
+      \pgf@rectanglewithroundedcorners@docorner{-\cornerradius}{0pt}{180}{270}%
+    \fi\fi
+    %
+    % do southeast corner
+    \ifpgf@rectanglewrc@donecorner@\else
+      \southwest\pgf@yc=\pgf@y\relax\northeast\pgf@xc=\pgf@x\relax
+      \advance\pgf@xc-\cornerradius\relax\advance\pgf@yc\cornerradius\relax
+      \borderpoint
+      \ifdim\pgf@x>\pgf@xc\relax\ifdim\pgf@y<\pgf@yc\relax
+       \pgf@rectanglewithroundedcorners@docorner{0pt}{-\cornerradius}{270}{360}%
+      \fi\fi
+    \fi
+    %
+    % do northeast corner
+    \ifpgf@rectanglewrc@donecorner@\else
+      \northeast\pgf@xc=\pgf@x\relax\pgf@yc=\pgf@y\relax
+      \advance\pgf@xc-\cornerradius\relax\advance\pgf@yc-\cornerradius\relax
+      \borderpoint
+      \ifdim\pgf@x>\pgf@xc\relax\ifdim\pgf@y>\pgf@yc\relax
+       \pgf@rectanglewithroundedcorners@docorner{\cornerradius}{0pt}{0}{90}%
+      \fi\fi
+    \fi
+    %
+    % do northwest corner
+    \ifpgf@rectanglewrc@donecorner@\else
+      \northeast\pgf@yc=\pgf@y\relax\southwest\pgf@xc=\pgf@x\relax
+      \advance\pgf@xc\cornerradius\relax\advance\pgf@yc-\cornerradius\relax
+      \borderpoint
+      \ifdim\pgf@x<\pgf@xc\relax\ifdim\pgf@y>\pgf@yc\relax
+       \pgf@rectanglewithroundedcorners@docorner{0pt}{\cornerradius}{90}{180}%
+      \fi\fi
+    \fi
+  }
+}
+
+% Document starts here
+% Use the whole page (especially for this example model, which needs it)
+\setlength{\parindent}{-4cm}
+
+% Colors for observed and partially observed nodes
+\definecolor{lightgray}{RGB}{180,180,180}
+\definecolor{verylightgray}{RGB}{220,220,220}
+
+% Definitions of node types
+\tikzstyle{discreteDeterministic} = [draw,  minimum size = 12mm, thick, draw = black, node distance = 10mm, fill  = white, line width = 1pt]
+\tikzstyle{discreteObserved} = [draw,  minimum size = 10mm, thick, draw = black, node distance = 10mm, fill  = lightgray, line width = 1pt]
+\tikzstyle{discreteLatent} = [draw,  minimum size = 10mm, thick, draw = black, node distance = 10mm, fill  = white, line width = 1pt]
+\tikzstyle{discreteLatent} = [draw,  minimum size = 10mm, thick, draw = black, node distance = 10mm, fill  = white, line width = 1pt]
+\tikzstyle{continuousDeterministic} = [circle,  minimum size = 12mm, thick, draw = black, node distance = 10mm, fill  = white, line width = 1pt]
+\tikzstyle{continuousDeterministicM} = [circle,  minimum size = 12.5mm, thick, draw = black, node distance = 10mm, fill  = white, line width = 1pt]
+\tikzstyle{continuousDeterministicH} = [circle,  minimum size = 13mm, thick, draw = black, node distance = 10mm, fill  = white, line width = 1pt]
+\tikzstyle{continuousDeterministicHM} = [circle,  minimum size = 13.2mm, thick, draw = black, node distance = 10mm, fill  = white, line width = 1pt]
+\tikzstyle{continuousObserved} = [circle, minimum size = 10mm, thick, draw = black, node distance = 10mm, fill = lightgray, line width = 1pt]
+\tikzstyle{continuousLatent} = [circle, minimum size = 10mm, thick, draw = black, node distance = 10mm, line width = 1pt]
+\tikzstyle{latentModel} = [diamond, minimum size = 10mm, thick, draw = black, node distance = 10mm, fill = white, line width = 2.5pt]
+
+\tikzstyle{continuousLatentM} = [circle, minimum size = 10mm, thick, draw = black, node distance = 10mm, line width = 1pt]
+\tikzstyle{LatentFactor} = [circle, minimum size = 14mm, thick, draw = black, node distance = 14mm, line width = 1pt, font = \Large]
+\tikzstyle{GreatLatentFactor} = [circle, minimum size = 14mm, thick, draw = black, node distance = 14mm, line width = 1pt, font = \huge]
+\tikzstyle{plate} = [rectangle with rounded corners, draw = black, rectangle corner radius = 6pt, align = center, line width = 1pt, yshift = -4]
+\tikzstyle{spacer} = [opacity = 0, minimum size = 1mm] {}
+\tikzstyle{connect} = [-stealth, thick, line width = 1pt]
+```
+
+
+\section*{\centering \fontsize{16pt}{20pt}\selectfont Correlation between aggregated effects}
+
+\ 
+
+```{=latex}
+\begin{tikzpicture}[node distance = 2.5cm, auto , >=latex']
+ 
+% Nodes
+  % Tercera fila
+  \node [discreteLatent] (rt1) {$\overline{\mathbf{RT}}_{1\textcolor[HTML]{CD2626}{I}} - \overline{\mathbf{RT}}_{1\textcolor[HTML]{436EEE}{C}}$};
+  \node [discreteLatent] [right = 15mm of rt1] (rt2) {$\overline{\mathbf{RT}}_{2\textcolor[HTML]{CD2626}{I}} - \overline{\mathbf{RT}}_{2\textcolor[HTML]{436EEE}{C}}$};
+  \node [discreteLatent] [right = 15mm of rt2] (rt3) {$\overline{\mathbf{RT}}_{3\textcolor[HTML]{CD2626}{I}} - \overline{\mathbf{RT}}_{3\textcolor[HTML]{436EEE}{C}}$};
+  % Graph structure
+   \path (rt1.north) edge [connect,<->,out=45, in=135] node[midway, below] {$\sigma_{12}$} (rt2.north)
+         (rt1.north) edge [connect,<->,out=45, in=135] node[midway, above] {$\sigma_{13}$} (rt3.north)
+         (rt2.north) edge [connect,<->,out=45, in=135] node[midway, below] {$\sigma_{23}$} (rt3.north);
+  
+  \end{tikzpicture}
+```
+
+\newpage
+
+\section*{\centering \fontsize{16pt}{20pt}\selectfont Hierarchical models}
+
+\ 
+
+```{=latex}
+\begin{tikzpicture}[node distance = 2.5cm, auto , >=latex']
+ 
+% Nodes
+  % Tercera fila
+  \node [discreteLatent] (Y1c) {$\mathbf{y}_{1\textcolor[HTML]{436EEE}{C}}$};
+  \node [discreteLatent] [right = 12mm of Y1c] (Y1i) {$\mathbf{y}_{1\textcolor[HTML]{CD2626}{I}}$};
+  \node [discreteLatent] [right = 15mm of Y1i] (Y2c) {$\mathbf{y}_{2\textcolor[HTML]{436EEE}{C}}$};
+  \node [discreteLatent] [right = 12mm of Y2c] (Y2i) {$\mathbf{y}_{2\textcolor[HTML]{CD2626}{I}}$};
+  \node [discreteLatent] [right = 15mm of Y2i] (Y3c) {$\mathbf{y}_{3\textcolor[HTML]{436EEE}{C}}$};
+  \node [discreteLatent] [right = 12mm of Y3c] (Y3i) {$\mathbf{y}_{3\textcolor[HTML]{CD2626}{I}}$};
+  
+  % Segunda fila
+  \node [LatentFactor] [above = 25mm of Y1c] (alpha1) {$\boldsymbol{\alpha}_{1}$};
+  \node [LatentFactor] [above = 25mm of Y1i] (beta1) {$\boldsymbol{\beta}_{1}$};
+  \node [LatentFactor] [above = 25mm of Y2c] (alpha2) {$\boldsymbol{\alpha}_{2}$};
+  \node [LatentFactor] [above = 25mm of Y2i] (beta2) {$\boldsymbol{\beta}_{2}$};
+  \node [LatentFactor] [above = 25mm of Y3c] (alpha3) {$\boldsymbol{\alpha}_{3}$};
+  \node [LatentFactor] [above = 25mm of Y3i] (beta3) {$\boldsymbol{\beta}_{3}$};
+  
+  % Cuarta fila
+  \node [continuousLatent] [below = 8.5mm of Y1c] (e1) {$\varepsilon_{1\textcolor[HTML]{436EEE}{C}}$};
+  \node [continuousLatent] [below = 8.5mm of Y1i] (e2) {$\varepsilon_{1\textcolor[HTML]{CD2626}{I}}$};
+  \node [continuousLatent] [below = 8.5mm of Y2c] (e3) {$\varepsilon_{2\textcolor[HTML]{436EEE}{C}}$};
+  \node [continuousLatent] [below = 8.5mm of Y2i] (e4) {$\varepsilon_{2\textcolor[HTML]{CD2626}{I}}$};
+  \node [continuousLatent] [below = 8.5mm of Y3c] (e5) {$\varepsilon_{3\textcolor[HTML]{436EEE}{C}}$};
+  \node [continuousLatent] [below = 8.5mm of Y3i] (e6) {$\varepsilon_{3\textcolor[HTML]{CD2626}{I}}$};
+  
+  % Graph structure
+   \path (alpha1) edge [connect] node[near start, left=1pt] {1} (Y1c)
+         (alpha1) edge [connect] node[near start, left=1pt, yshift=-2pt] {1} (Y1i)
+         (beta1) edge [connect] node[near start, right=-1pt, yshift=-2pt] {$-\frac{1}{2}$} (Y1c)
+         (beta1) edge [connect] node[near start, right=1pt]  {$\frac{1}{2}$} (Y1i)
+         
+         (alpha2) edge [connect] node[near start, left=1pt] {1} (Y2c)
+         (alpha2) edge [connect] node[near start, left=1pt, yshift=-2pt] {1} (Y2i)
+         (beta2) edge [connect] node[near start, right=-1pt, yshift=-2pt] {$-\frac{1}{2}$} (Y2c)
+         (beta2) edge [connect] node[near start, right=1pt]  {$\frac{1}{2}$} (Y2i)
+         
+         (alpha3) edge [connect] node[near start, left=1pt] {1} (Y3c)
+         (alpha3) edge [connect] node[near start, left=1pt, yshift=-2pt] {1} (Y3i)
+         (beta3) edge [connect] node[near start, right=-1pt, yshift=-2pt] {$-\frac{1}{2}$} (Y3c)
+         (beta3) edge [connect] node[near start, right=1pt]  {$\frac{1}{2}$} (Y3i)
+         (alpha1.north) edge [connect,<->,out=45, in=135, draw=gray!60, text=gray!60] node[near start, below=2pt] {$\sigma_{\alpha_{12}}$} (alpha2.north)
+         (alpha1.north) edge [connect,<->,out=45, in=135, draw=gray!60, text=gray!60] node[midway, above] {$\sigma_{\alpha_{13}}$} (alpha3.north)
+         (alpha2.north) edge [connect,<->,out=45, in=135, draw=gray!60, text=gray!60] node[near end, below] {$\sigma_{\alpha_{23}}$} (alpha3.north)
+         (beta1.north) edge [connect,<->,out=45, in=135] node[midway, above] {$\sigma_{\beta_{12}}$} (beta2.north)
+         (beta1.north) edge [connect,<->,out=45, in=135] node[midway, above] {$\sigma_{\beta_{13}}$} (beta3.north)
+         (beta2.north) edge [connect,<->,out=45, in=135] node[midway, above] {$\sigma_{\beta_{23}}$} (beta3.north)
+         (e1) edge [connect] (Y1c)
+         (e2) edge [connect] (Y1i)
+         (e3) edge [connect] (Y2c)
+         (e4) edge [connect] (Y2i)
+         (e5) edge [connect] (Y3c)
+         (e6) edge [connect] (Y3i);
+  
+  \end{tikzpicture}
+```
+
+\newpage
+
+\section*{\centering \fontsize{16pt}{20pt}\selectfont Hierarchical factor models}
+
+\ 
+
+```{=latex}
+\begin{tikzpicture}[node distance = 2.5cm, auto , >=latex']
+ 
+% Nodes
+  % Tercera fila
+  \node [discreteLatent] (Y1c) {$\mathbf{y}_{1\textcolor[HTML]{436EEE}{C}}$};
+  \node [discreteLatent] [right = 12mm of Y1c] (Y1i) {$\mathbf{y}_{1\textcolor[HTML]{CD2626}{I}}$};
+  \node [discreteLatent] [right = 15mm of Y1i] (Y2c) {$\mathbf{y}_{2\textcolor[HTML]{436EEE}{C}}$};
+  \node [discreteLatent] [right = 12mm of Y2c] (Y2i) {$\mathbf{y}_{2\textcolor[HTML]{CD2626}{I}}$};
+  \node [discreteLatent] [right = 15mm of Y2i] (Y3c) {$\mathbf{y}_{3\textcolor[HTML]{436EEE}{C}}$};
+  \node [discreteLatent] [right = 12mm of Y3c] (Y3i) {$\mathbf{y}_{3\textcolor[HTML]{CD2626}{I}}$};
+  
+  % Segunda fila
+  \node [LatentFactor] [above = 25mm of Y1c] (alpha1) {$\boldsymbol{\alpha}_{1}$};
+  \node [LatentFactor] [above = 25mm of Y1i] (beta1) {$\boldsymbol{\beta}_{1}$};
+  \node [LatentFactor] [above = 25mm of Y2c] (alpha2) {$\boldsymbol{\alpha}_{2}$};
+  \node [LatentFactor] [above = 25mm of Y2i] (beta2) {$\boldsymbol{\beta}_{2}$};
+  \node [LatentFactor] [above = 25mm of Y3c] (alpha3) {$\boldsymbol{\alpha}_{3}$};
+  \node [LatentFactor] [above = 25mm of Y3i] (beta3) {$\boldsymbol{\beta}_{3}$};
+  
+  % Cuarta fila
+  \node [continuousLatent] [below = 8.5mm of Y1c] (e1) {$\varepsilon_{1\textcolor[HTML]{436EEE}{C}}$};
+  \node [continuousLatent] [below = 8.5mm of Y1i] (e2) {$\varepsilon_{1\textcolor[HTML]{CD2626}{I}}$};
+  \node [continuousLatent] [below = 8.5mm of Y2c] (e3) {$\varepsilon_{2\textcolor[HTML]{436EEE}{C}}$};
+  \node [continuousLatent] [below = 8.5mm of Y2i] (e4) {$\varepsilon_{2\textcolor[HTML]{CD2626}{I}}$};
+  \node [continuousLatent] [below = 8.5mm of Y3c] (e5) {$\varepsilon_{3\textcolor[HTML]{436EEE}{C}}$};
+  \node [continuousLatent] [below = 8.5mm of Y3i] (e6) {$\varepsilon_{3\textcolor[HTML]{CD2626}{I}}$};
+  
+  % Primera fila
+  \node [GreatLatentFactor] [above = 27mm of beta2] (eta) {$\boldsymbol{\eta}$};
+  
+  % Graph structure
+   \path (alpha1) edge [connect] node[near start, left=1pt] {1} (Y1c)
+         (alpha1) edge [connect] node[near start, left=1pt, yshift=-2pt] {1} (Y1i)
+         (beta1) edge [connect] node[near start, right=-1pt, yshift=-2pt] {$-\frac{1}{2}$} (Y1c)
+         (beta1) edge [connect] node[near start, right=1pt]  {$\frac{1}{2}$} (Y1i)
+         
+         (alpha2) edge [connect] node[near start, left=1pt] {1} (Y2c)
+         (alpha2) edge [connect] node[near start, left=1pt, yshift=-2pt] {1} (Y2i)
+         (beta2) edge [connect] node[near start, right=-1pt, yshift=-2pt] {$-\frac{1}{2}$} (Y2c)
+         (beta2) edge [connect] node[near start, right=1pt]  {$\frac{1}{2}$} (Y2i)
+         
+         (alpha3) edge [connect] node[near start, left=1pt] {1} (Y3c)
+         (alpha3) edge [connect] node[near start, left=1pt, yshift=-2pt] {1} (Y3i)
+         (beta3) edge [connect] node[near start, right=-1pt, yshift=-2pt] {$-\frac{1}{2}$} (Y3c)
+         (beta3) edge [connect] node[near start, right=1pt]  {$\frac{1}{2}$} (Y3i)
+         (alpha1.north) edge [connect,<->,out=45, in=135, draw=gray!60, text=gray!60] node[near start, below=2pt] {$\sigma_{\alpha_{12}}$} (alpha2.north)
+         (alpha1.north) edge [connect,<->,out=45, in=135, draw=gray!60, text=gray!60] node[midway, above] {$\sigma_{\alpha_{13}}$} (alpha3.north)
+         (alpha2.north) edge [connect,<->,out=45, in=135, draw=gray!60, text=gray!60] node[near end, below] {$\sigma_{\alpha_{23}}$} (alpha3.north)
+         (eta) edge [connect] node[midway, left=4pt] {$\lambda_{1}$} (beta1)
+         (eta) edge [connect] node[midway, left=4pt] {$\lambda_{2}$} (beta2)
+         (eta) edge [connect] node[midway, left=4pt] {$\lambda_{3}$} (beta3)
+         (e1) edge [connect] (Y1c)
+         (e2) edge [connect] (Y1i)
+         (e3) edge [connect] (Y2c)
+         (e4) edge [connect] (Y2i)
+         (e5) edge [connect] (Y3c)
+         (e6) edge [connect] (Y3i);
+  
+  \end{tikzpicture}
+```
+
+\newpage
+
+\section*{\centering \fontsize{16pt}{20pt}\selectfont Unidimensional model}
+
+\
+
+```{=latex}
+\begin{tikzpicture}[node distance = 2.5cm, auto , >=latex']
+ 
+% Nodes
+  % Segunda fila
+  \node [continuousLatent] (B1) {$\mathbf{\beta}_{1}$};
+  \node [continuousLatent] [right = 6mm of B1] (B2) {$\mathbf{\beta}_{2}$};
+  \node [continuousLatent] [right = 6mm of B2] (B3) {$\mathbf{\beta}_{3}$};
+  \node [continuousLatent] [right = 6mm of B3] (B4) {$\mathbf{\beta}_{4}$};
+  \node [continuousLatent] [right = 6mm of B4] (B5) {$\mathbf{\beta}_{5}$};
+  \node [continuousLatent] [right = 6mm of B5] (B6) {$\mathbf{\beta}_{6}$};
+   
+  % Primera fila
+  % Punto medio entre B3 y B4
+  \coordinate (midB34) at ($(B3)!0.5!(B4)$);
+
+  % eta1 entre B3 y B4 y a la altura de eta2
+  \node[LatentFactor] (eta1) at ($(B3)!0.5!(B4) + (0,52.35mm)$) {$\boldsymbol{\eta_{1}}$};
+
+   % Graph structure
+   \path (eta1) edge [connect] node[near end, left=4pt] {$\lambda_{11}$} (B1.north)
+         (eta1) edge [connect] node[near end, left=4pt] {$\lambda_{21}$} (B2.north)
+         (eta1) edge [connect] node[near end, left=4pt] {$\lambda_{31}$} (B3.north)
+         (eta1) edge [connect] node[near end, left=4pt] {$\lambda_{42}$} (B4.north)
+         (eta1) edge [connect] node[near end, left=4pt] {$\lambda_{52}$} (B5.north)
+         (eta1) edge [connect] node[near end, left=4pt] {$\lambda_{62}$} (B6.north);
+
+  \end{tikzpicture}
+```
+
+\newpage
+
+\section*{\centering \fontsize{16pt}{20pt}\selectfont Confirmatory factor model}
+
+\
+
+
+```{=latex}
+\begin{tikzpicture}[node distance = 2.5cm, auto , >=latex']
+ 
+% Nodes
+  % Segunda fila
+  \node [continuousLatent] (B1) {$\mathbf{\beta}_{1}$};
+  \node [continuousLatent] [right = 6mm of B1] (B2) {$\mathbf{\beta}_{2}$};
+  \node [continuousLatent] [right = 6mm of B2] (B3) {$\mathbf{\beta}_{3}$};
+  \node [continuousLatent] [right = 6mm of B3] (B4) {$\mathbf{\beta}_{4}$};
+  \node [continuousLatent] [right = 6mm of B4] (B5) {$\mathbf{\beta}_{5}$};
+  \node [continuousLatent] [right = 6mm of B5] (B6) {$\mathbf{\beta}_{6}$};
+   
+  % Primera fila
+  \node [LatentFactor] [above = 40mm of B2] (eta1) {$\boldsymbol{\eta_{1}}$};
+  \node [LatentFactor] [above = 40mm of B5] (eta2) {$\boldsymbol{\eta_{2}}$};
+  
+   % Graph structure
+   \path (eta1) edge [connect] node[near end, left=4pt] {$\lambda_{11}$} (B1.north)
+         (eta1) edge [connect] node[near end, left=4pt] {$\lambda_{21}$} (B2.north)
+         (eta1) edge [connect] node[near end, left=4pt] {$\lambda_{31}$} (B3.north)
+         (eta2) edge [connect] node[near end, left=4pt] {$\lambda_{42}$} (B4.north)
+         (eta2) edge [connect] node[near end, left=4pt] {$\lambda_{52}$} (B5.north)
+         (eta2) edge [connect] node[near end, left=4pt] {$\lambda_{62}$} (B6.north)
+         (eta1.north) edge [connect,<->,out=45, in=135] node[midway, below] {$\phi_{12}$} (eta2.north);
+  \end{tikzpicture}
+```
+
+\newpage
+
+
+\section*{\centering \fontsize{16pt}{20pt}\selectfont Exploratory factor model}
+
+\
+
+```{=latex}
+\begin{tikzpicture}[node distance = 2.5cm, auto , >=latex']
+ 
+% Nodes
+  % Segunda fila
+  \node [continuousLatent] (B1) {$\mathbf{\beta}_{1}$};
+  \node [continuousLatent] [right = 6mm of B1] (B2) {$\mathbf{\beta}_{2}$};
+  \node [continuousLatent] [right = 6mm of B2] (B3) {$\mathbf{\beta}_{3}$};
+  \node [continuousLatent] [right = 6mm of B3] (B4) {$\mathbf{\beta}_{4}$};
+  \node [continuousLatent] [right = 6mm of B4] (B5) {$\mathbf{\beta}_{5}$};
+  \node [continuousLatent] [right = 6mm of B5] (B6) {$\mathbf{\beta}_{6}$};
+   
+  % Primera fila
+  \node [LatentFactor] [above = 40mm of B2] (eta1) {$\boldsymbol{\eta_{1}}$};
+  \node [LatentFactor] [above = 40mm of B5] (eta2) {$\boldsymbol{\eta_{2}}$};
+  
+   % Graph structure
+   \path (eta1) edge [connect] node[at end, above=3pt, xshift = -10pt, yshift = -2pt] {$\lambda_{11}$}  (B1.north)
+         (eta1) edge [connect] node[at end, above=3pt, xshift = -10pt, yshift = -2pt] {$\lambda_{21}$}  (B2.north)
+         (eta1) edge [connect] node[at end, above=3pt, xshift = -13pt, yshift = -2pt] {$\lambda_{31}$}  (B3.north)
+         (eta1) edge [connect] node[at end, above=3pt, xshift = -15pt, yshift = -2pt] {$\lambda_{41}$}  (B4.north)
+         (eta1) edge [connect] node[at end, above=3pt, xshift = -18pt, yshift = -2pt] {$\lambda_{51}$}  (B5.north)
+         (eta1) edge [connect] node[at end, above=3pt, xshift = -21pt, yshift = -2pt] {$\lambda_{61}$}  (B6.north)
+         (eta2) edge [connect] node[at end, above=3pt, xshift = 25pt, yshift = 20pt] {$\lambda_{12}$}   (B1.north)
+         (eta2) edge [connect] node[at end, above=3pt, xshift = 18.5pt, yshift = 20pt] {$\lambda_{22}$} (B2.north)
+         (eta2) edge [connect] node[at end, above=3pt, xshift = 9pt, yshift = 20pt] {$\lambda_{32}$}    (B3.north)
+         (eta2) edge [connect] node[at end, above=3pt, xshift = 0pt, yshift = 20pt] {$\lambda_{42}$}    (B4.north)
+         (eta2) edge [connect] node[at end, above=3pt, xshift = -10pt, yshift = 20pt] {$\lambda_{52}$}  (B5.north)
+         (eta2) edge [connect] node[at end, above=3pt, xshift = -20pt, yshift = 20pt] {$\lambda_{62}$}  (B6.north);
+  \end{tikzpicture}
+```
+
+
+\newpage
+
+\section*{\centering \fontsize{16pt}{20pt}\selectfont Generalized HFM}
+
+\ 
+
+```{=latex}
+
+\begin{tikzpicture}[node distance = 2.5cm, auto , >=latex']
+
+% Nodes
+  % Primera fila
+  \node [continuousLatent] (sd_alpha) {$\bm{\sigma}_\alpha$};
+  \node [continuousDeterministic] (R_alpha_Outer) [right = 5.5mm of sd_alpha] {};
+  \node [continuousLatent] (R_alpha) [right = 6.5mm of sd_alpha] {$\mathbf{R}_\alpha$};
+  
+  \node [continuousDeterministic] (R_beta_Outer) [right = 32mm of R_alpha] {};
+  \node [continuousLatent] (R_beta) [right = 33mm of R_alpha] {$\mathbf{R}_\beta$};
+  \node [continuousLatent] (sd_beta) [right = 5.5mm of R_beta_Outer] {$\bm{\sigma}_\beta$};
+  
+  % Fila cero
+  \node [latentModel] (Model) [above = 6mm of R_beta_Outer] {$\mathcal{M}_\beta$};
+  \node [continuousLatent] (L_R_alpha) [above = 8mm of R_alpha_Outer] {$\bm{L}_\alpha$};
+
+  % Segunda fila
+  \node [continuousDeterministic] (Sigma_alpha_Outer) [below = 7mm of R_alpha_Outer] {};
+  \node [continuousLatent] (Sigma_alpha) [below = 8mm of R_alpha_Outer] {$\mathbf{\Sigma}_\alpha$};
+  \node [continuousLatent] (mu_alpha) [left = 5.5mm of Sigma_alpha] {$\bm{\mu}_\alpha$};
+  
+  \node [continuousDeterministic] (Sigma_beta_Outer) [below = 7mm of R_beta_Outer] {};
+  \node [continuousLatent] (Sigma_beta) [below = 8mm of R_beta_Outer] {$\mathbf{\Sigma}_\beta$};
+  \node [continuousLatent] (mu_beta) [right = 5.5mm of Sigma_beta] {$\bm{\mu}_\beta$};
+  
+  % Tercera fila
+  \node [continuousLatent] (Alpha_ij) [below = 8mm of Sigma_alpha] {$\bm{\alpha}_{ij}$};
+  \node [continuousLatent] (beta_ij) [below = 8mm of Sigma_beta] {$\bm{\beta}_{ij}$};
+  \node [continuousDeterministicHM] (mu_ijk_outer) at ($ (Alpha_ij)!0.5!(beta_ij) $) {};  
+  \node [continuousLatent] (mu_ijk) at (mu_ijk_outer) {$\bm{m}_{ijk}$};  
+
+  % Cuarta fila
+  \node [discreteObserved] (X_k) [below = 8mm of mu_ijk_outer] {$X_{ijk\ell}$};
+  
+  % Cuarta fila
+  \node [continuousObserved] (Y_ijkl) [below = 8mm of X_k] {$Y_{ijk\ell}$};
+  
+  % Quinta fila
+  \node [continuousLatent] (sigma_ij) [below = 50mm of mu_ijk] {$\bm{\sigma}_{ij}$};
+  \node [continuousLatent] (delta_ij) [below = 50mm of Alpha_ij] {$\bm{\delta}_{ij}$};
+  \node [continuousLatent] (tau_ij) [below = 50mm of beta_ij] {$\bm{\tau}_{ij}$};
+  
+  % Última fila
+  \node [continuousLatent] (sd_delta) [below = 8mm of delta_ij] {$\bm{\sigma}_{\delta}$};
+  \node [continuousLatent] (mu_tau)   [below = 8mm of tau_ij] {$\bm{\mu}_{\tau}$};
+  
+  \node[continuousLatent] (mu_delta)  at ($(sd_delta)!-1/3!(mu_tau)$) {$\bm{\mu}_{\delta}$};
+  \node[continuousLatent] (mu_sigma)  at ($(sd_delta)! 1/3!(mu_tau)$) {$\bm{\mu}_{\sigma}$};
+  \node[continuousLatent] (sd_sigma)  at ($(sd_delta)! 2/3!(mu_tau)$) {$\bm{\sigma}_{\sigma}$};
+  \node[continuousLatent] (sd_tau)    at ($(sd_delta)! 4/3!(mu_tau)$) {$\bm{\sigma}_{\tau}$};
+  
+  
+   % Graph structure
+   \path (L_R_alpha) edge [connect] (R_alpha_Outer)
+         (Model) edge [connect] (R_beta_Outer)
+         (sd_alpha) edge [connect] (Sigma_alpha_Outer)
+         (R_alpha_Outer) edge [connect] (Sigma_alpha_Outer)
+         (R_beta_Outer) edge [connect] (Sigma_beta_Outer)
+         (sd_beta) edge [connect] (Sigma_beta_Outer)
+         (mu_alpha) edge [connect] (Alpha_ij)
+         (Sigma_alpha_Outer) edge [connect] (Alpha_ij)
+         (mu_beta) edge [connect] (beta_ij)
+         (Sigma_beta_Outer) edge [connect] (beta_ij)
+         (Alpha_ij) edge [connect] (mu_ijk_outer)
+         (beta_ij) edge [connect] (mu_ijk_outer)
+         (X_k) edge [connect] (mu_ijk_outer)
+         (mu_ijk_outer) edge [connect, bend left = 35] (Y_ijkl)
+         (mu_ijk_outer) edge [connect, bend right = 35] (Y_ijkl)
+         (sigma_ij) edge [connect] (Y_ijkl)
+         (delta_ij) edge [connect] (Y_ijkl)
+         (tau_ij) edge [connect] (Y_ijkl)
+         (mu_delta) edge [connect] (delta_ij)
+         (sd_delta) edge [connect] (delta_ij)
+         (mu_sigma) edge [connect] (sigma_ij)
+         (sd_sigma) edge [connect] (sigma_ij)
+         (mu_tau) edge [connect] (tau_ij)
+         (sd_tau) edge [connect] (tau_ij);
+
+% --------------  PLAZA  i subjects  (esquina inferior‑derecha) -----------
+\node[plate,
+      inner sep = 4mm,
+      fit = (delta_ij) (Alpha_ij) (beta_ij) (tau_ij),
+      label={[anchor=east, rotate = -90, yshift=2.5mm, xshift=-5mm]south east:$i$ subjects and $j$ tasks}] {};
+
+% --------------  PLAZA  k conditions  (vertical, lado derecho) -----------
+\node[plate,
+      inner sep = 5mm,
+      fit = (Y_ijkl) (mu_ijk_outer) (X_k) (mu_ijk_outer),
+      label={[anchor=south west]north west:$k$ conditions}] {};
+      
+\node[plate,
+      inner sep = 8mm,
+      fit = (Y_ijkl) (X_k),
+      label={[anchor=east, rotate = -90, yshift=2.5mm, xshift=-5mm]south east:$\ell$\,trials}] {};
+  
+  \end{tikzpicture}
+
+```
+
+\newpage
+
+\section*{\centering \fontsize{16pt}{20pt}\selectfont GenHFM priors}
+
+\
+
+```{=latex}
+\begin{tabular}{lll}
+  \renewcommand{\arraystretch}{1.4}
+  $\begin{array}{rcl}
+    \boldsymbol{\mu}_\alpha  &\sim& \mathrm{Normal}(\mu_{\mu_\alpha}, \sigma_{\mu_\alpha})\\
+    \boldsymbol{\mu}_\beta  &\sim& \mathrm{Normal}(\mu_{\mu_\beta}, \sigma_{\mu_\beta})\\
+    \boldsymbol{\mu}_\sigma  &\sim& \mathrm{Normal}^+(\mu_{\mu_\sigma}, \sigma_{\mu_\sigma})\\
+    \boldsymbol{\mu}_\tau    &\sim& \mathrm{Normal}^+(\mu_{\mu_\tau}, \sigma_{\mu_\tau})\\
+    \boldsymbol{\mu}_\delta  &\sim& \mathrm{Normal}^+(\mu_{\mu_\delta}, \sigma_{\mu_\delta})_{\text{T}[0, u^{(1)}_j]}\\
+    \boldsymbol{\sigma}_\alpha &\sim& \mathrm{Student\text{-}t}^+(\nu_{\sigma_\alpha}, \mu_{\sigma_\alpha}, \sigma_{\sigma_\alpha})\\
+    \boldsymbol{\sigma}_\beta &\sim& \mathrm{Student\text{-}t}^+(\nu_{\sigma_\beta}, \mu_{\sigma_\beta}, \sigma_{\sigma_\beta})\\
+    \boldsymbol{\sigma}_\sigma &\sim& \mathrm{Student\text{-}t}^+(\nu_{\sigma_\sigma}, \mu_{\sigma_\sigma}, \sigma_{\sigma_\sigma})\\
+    \boldsymbol{\sigma}_\tau   &\sim& \mathrm{Student\text{-}t}^+(\nu_{\sigma_\tau}, \mu_{\sigma_\tau}, \sigma_{\sigma_\tau})\\
+    \boldsymbol{\sigma}_\delta &\sim& \mathrm{Student\text{-}t}^+(\nu_{\sigma_\delta}, \mu_{\sigma_\delta}, \sigma_{\sigma_\delta})
+  \end{array}$
+  &
+  
+  \renewcommand{\arraystretch}{1.4}
+  $\begin{array}{rcl}
+    \boldsymbol{L}_\alpha     &\sim& \mathrm{LKJ}(\eta_{L_\alpha})\\
+    \mathbf{R}_\alpha        &=& \boldsymbol{L}_\alpha\cdot\boldsymbol{L}_\alpha^\prime\\
+    \mathbf{R}_\beta        &=& \mathcal{M}_\beta\\
+    \mathbf{\Sigma}_\alpha   &=& \mbox{diag}(\boldsymbol{\sigma}_\alpha)\cdot\mathbf{R}_\alpha\cdot\mbox{diag}(\boldsymbol{\sigma}_\alpha)\\
+    \mathbf{\Sigma}_\beta   &=& \mbox{diag}(\boldsymbol{\sigma}_\beta)\cdot\mathbf{R}_\beta\cdot\mbox{diag}(\boldsymbol{\sigma}_\beta)\\
+    \boldsymbol{\alpha}_{ij}  &\sim& \mathrm{MVNormal}(\boldsymbol{\mu}_\alpha, \mathbf{\Sigma}_\alpha)\\
+    \boldsymbol{\beta}_{ij}  &\sim& \mathrm{MVNormal}(\boldsymbol{\mu}_\beta, \mathbf{\Sigma}_\beta)\\
+    \boldsymbol{\sigma}_{ij}  &\sim& \mathrm{Normal}^+(\boldsymbol{\mu}_{\sigma j}, \boldsymbol{\sigma}_{\sigma j})\\
+    \boldsymbol{\tau}_{ij}    &\sim& \mathrm{Normal}^+(\boldsymbol{\mu}_{\tau j},   \boldsymbol{\sigma}_{\tau j})\\
+    \boldsymbol{\delta}_{ij}  &\sim& \mathrm{Normal}^+(\boldsymbol{\mu}_{\delta j}, \boldsymbol{\sigma}_{\delta j})_{\text{T}[0, u^{(2)}_{ij}]}\\
+  \end{array}$
+  &
+  
+  \renewcommand{\arraystretch}{1.7}
+  $\begin{array}{rcl}
+    \bm{m}_{ijk} &=& 
+      \begin{cases}
+        \bm{\alpha}_{ij} - \bm{\beta}_{ij}\cdot\tfrac12 \quad\text{if} & X_{ijk\ell}=1,\\
+        \addlinespace
+        \bm{\alpha}_{ij} + \bm{\beta}_{ij}\cdot\tfrac12 \quad\text{if} & X_{ijk\ell}=2.
+      \end{cases}
+    \\[1cm]
+    Y_{ijk\ell} &\sim&
+      \begin{cases}
+        \mathrm{Normal}(\bm{m}_{ijk},             \bm{\sigma}_{ij}),\\
+        \addlinespace
+        \mathrm{ex\text{-}Gaussian}(\bm{m}_{ijk},  \bm{\sigma}_{ij}, \bm{\tau}_{ij}),\\
+        \addlinespace
+        \mathrm{Shifted\text{-}Lognormal}(\bm{m}_{ijk}, \bm{\sigma}_{ij}, \bm{\delta}_{ij}).
+      \end{cases}
+  \end{array}$
+\end{tabular}
+```
+
+
+\newpage
+
+\section*{\centering \fontsize{16pt}{20pt}\selectfont GenHFM: Exploratory Factor model}
+
+\hspace*{1.3cm}
+
+```{=latex}
+
+% table with graphical model in left cell, and statistical definition in right cell
+\hspace*{1.3cm}
+\begin{tabular}{ m{8.5cm} m{5.5cm}}
+
+\begin{tikzpicture}[node distance = 2.5cm, auto , >=latex']
+ 
+% Nodes
+  % Primera fila
+  \node [continuousLatent] (h2) {$\bm{h}^2$};
+  \node [continuousDeterministicH] [right = 8mm of h2] (z_Outer) {};
+  \node [continuousLatent] [right = 9.2mm of h2] (z_cons) {$\mathbf{Z}_\text{UV}$};
+  \node [continuousLatent] [right = 8mm of z_Outer] (z) {$\mathbf{Z}$};
+  
+  % Second raw
+  \node [continuousDeterministic] (Lambda_Outer) at ($ (h2)!0.5!(z_Outer) + (0,-20mm) $) {};
+  \node [continuousLatent] (Lambda) at ($ (h2)!0.5!(z_Outer) + (0,-20mm) $) {$\mathbf{\Lambda}$};
+  \node [continuousDeterministic] (Psi_Outer) at ($ (z_Outer)!0.5!(z) + (0,-20mm) $) {};
+  \node [continuousLatent] (Psi) at ($ (z_Outer)!0.5!(z) + (0,-20mm) $) {$\mathbf{\Psi}$};
+
+  % Third raw  
+  \node [continuousDeterministic] (R_beta_Outer) at ($ (Lambda_Outer)!0.5!(Psi_Outer) + (0,-20mm) $) {};
+  \node [continuousLatent] (R_beta) at ($ (Lambda_Outer)!0.5!(Psi_Outer) + (0,-20mm) $) {$\mathbf{R}_\beta$};
+  
+  
+   % Graph structure
+   \path (h2) edge [connect] (Lambda_Outer)
+         (z) edge [connect] (z_Outer)
+         (z_Outer) edge [connect] (Lambda_Outer)
+         (Lambda_Outer) edge [connect] (Psi_Outer)
+         (Lambda_Outer) edge [connect] (R_beta_Outer)
+         (Psi_Outer) edge [connect] (R_beta_Outer);
+  \end{tikzpicture}
+ 
+  % table break
+  &
+  
+   % Statistical definition
+   \renewcommand{\arraystretch}{1.7}
+   $\begin{array}{rcl}
+   \bm{h}^2 &\sim& \mathrm{Beta}\left(\alpha_{\bm{h}^2},\, \beta_{\bm{h}^2}\right)\\
+   \mathbf{Z} &\sim&  \mathrm{RPG}  \bigl(\xi\bigr)\\
+   \mathbf{Z}_\text{UV} &=&  \mbox{diag}\left(\mathbf{Z}\cdot \mathbf{Z}^\prime\right)^{-\frac{1}{2}} \cdot \mathbf{Z} \\
+   \mathbf{\Lambda} &=& \mbox{diag}\left(\bm{h}^2\right)^{\frac{1}{2}}\cdot \mathbf{Z}_\text{UV}\\
+   \mathbf{\Psi} &=&  \mathbf{I} - \mathbf{\Lambda} \cdot \mathbf{\Lambda}^\prime\\
+   \mathbf{R}_\beta &=&  \mathbf{\Lambda} \cdot \mathbf{\Lambda}^\prime + \mathbf{\Psi}\\
+   \end{array}$
+  
+\end{tabular}
+
+```
+
+\newpage
+
+\section*{\centering \fontsize{16pt}{20pt}\selectfont GenHFM: Confirmatory Factor model}
+
+\hspace*{1.3cm}
+
+\ 
+
+```{=latex}
+
+% table with graphical model in left cell, and statistical definition in right cell
+\hspace*{1.3cm}
+\begin{tabular}{ m{8.5cm} m{5.5cm}}
+
+\begin{tikzpicture}[node distance = 2.5cm, auto , >=latex']
+ 
+% Nodes
+  % Primera fila
+  \node [continuousLatent] (Lambda) {$\mathbf{\Lambda}$};
+  \node [continuousDeterministic] (Psi_Outer) [right = 8mm of Lambda] {};
+  \node [continuousLatent] (Psi) [right = 9mm of Lambda] {$\mathbf{\Psi}$};
+  \node [continuousDeterministic] (Phi_Outer) [right = 8mm of Psi] {};
+  \node [continuousLatent] (Phi) [right = 9mm of Psi] {$\mathbf{\Phi}$};
+  
+  % Fila cero
+  \node [continuousLatent] (L_phi) [above = 9mm of Phi_Outer] {$\bm{L_\Phi}$};
+  
+  % Second raw
+  \node [continuousDeterministic] (R_beta_Outer) [below = 9mm of Psi_Outer] {};
+  \node [continuousLatent] (R_beta) [below = 10mm of Psi_Outer] {$\mathbf{R}_\beta$};
+  
+  
+   % Graph structure
+   \path (Lambda) edge [connect] (Psi_Outer)
+         (L_phi) edge [connect] (Phi_Outer)
+         (Phi_Outer) edge [connect] (Psi_Outer)
+         (Lambda) edge [connect] (R_beta_Outer)
+         (Psi_Outer) edge [connect] (R_beta_Outer)
+         (Phi_Outer) edge [connect] (R_beta_Outer);
+  \end{tikzpicture}
+ 
+  % table break
+  &
+  
+   % Statistical definition
+   \renewcommand{\arraystretch}{1.7}
+   $\begin{array}{rcl}
+   \mathbf{\Lambda} &\sim&  \mbox{Beta}_{[-1,1]}\left(\alpha_\Lambda,\,  \beta_\Lambda\right)\\
+   \bm{L}_\Phi &\sim&  \mathrm{LKJ}\left(\eta_{\bm{L}_\Phi} \right)\\
+   \mathbf{\Phi} &=&  \bm{L}_\Phi \cdot \bm{L}^\prime_\Phi\\
+   \mathbf{\Psi} &=&  \mathbf{I} - \mathbf{\Lambda} \cdot \mathbf{\Phi} \cdot \mathbf{\Lambda}^\prime\\
+   \mathbf{R}_\beta &=&  \mathbf{\Lambda} \cdot \mathbf{\Phi} \cdot \mathbf{\Lambda}^\prime + \mathbf{\Psi}\\
+   \end{array}$
+  
+\end{tabular}
+
+```
+
+\newpage
+
+\section*{\centering \fontsize{16pt}{20pt}\selectfont Gaussian Hierarchical Model}
+
+\
+
+```{=latex}
+
+% table with graphical model in left cell, and statistical definition in right cell
+\hspace*{1.3cm}
+\begin{tabular}{ m{8.5cm} m{5.5cm}}
+
+\begin{tikzpicture}[node distance = 2.5cm, auto , >=latex']
+ 
+% Nodes
+
+  % Primera fila
+  \node [continuousLatent] (mu_alpha) {$\bm{\mu}_\alpha$};
+  \node [continuousLatent] (sigma_alpha) [right = 5mm of mu_alpha] {$\bm{\sigma}_\alpha$};
+  \node [continuousLatent] (sigma_beta) [right = 30mm of sigma_alpha] {$\bm{\sigma}_\beta$};
+  \node [continuousLatent] (mu_beta) [right = 5mm of sigma_beta] {$\bm{\mu}_\beta$};
+  
+  % Segunda fila
+  \node [continuousLatent] (alpha_i) [below = 10mm of sigma_alpha] {$\bm{\alpha}_{i}$};
+  \node [continuousLatent] (beta_i) [below = 10mm of sigma_beta] {$\bm{\beta}_{i}$};
+  \node [continuousDeterministic] (mu_ik_outer) at ($ (alpha_i)!0.5!(beta_i) $) {};  
+  \node [continuousLatent] (mu_ik) at (mu_ik_outer) {$\bm{m}_{ik}$};  
+
+  % Tercera fila
+  \node [discreteObserved] (X_k) [below = 10mm of mu_ik_outer] {$X_{ik\ell}$};
+  \node [continuousObserved] (Y_ikl) [below = 10mm of X_k] {$Y_{ik\ell}$};
+  
+  % Cuarta fila
+  \node [continuousLatent] (sigma_i) [below = 10mm of Y_ikl] {$\bm{\sigma}_{i}$};
+  \node [continuousLatent] (mu_sigma) [below = 10mm of sigma_i, xshift=-10mm] {$\bm{\mu}_{\sigma}$};
+  \node [continuousLatent] (sd_sigma) [below = 10mm of sigma_i, xshift=10mm] {$\bm{\sigma}_{\sigma}$};
+  
+   % Graph structure
+   \path (mu_alpha) edge [connect] (alpha_i)
+         (sigma_alpha) edge [connect] (alpha_i)
+         (mu_beta) edge [connect] (beta_i)
+         (sigma_beta) edge [connect] (beta_i)
+         (alpha_i) edge [connect] (mu_ik_outer)
+         (beta_i) edge [connect] (mu_ik_outer)
+         (X_k) edge [connect] (mu_ik_outer)
+         (mu_ik_outer) edge [connect, bend left = 35] (Y_ikl)
+         (mu_ik_outer) edge [connect, bend right = 35] (Y_ikl)
+         (sigma_i) edge [connect] (Y_ikl)
+         (mu_sigma) edge [connect] (sigma_i)
+         (sd_sigma) edge [connect] (sigma_i);
+
+\node[plate,
+      inner sep = 4mm,
+      fit = (sigma_i) (alpha_i) (beta_i) (sigma_i),
+      label={[anchor=south west]south west:$i$ subjects}] {};
+
+\node[plate,
+      inner sep = 5mm,
+      fit = (Y_ikl) (mu_ik_outer) (X_k) (mu_ik_outer),
+      label={[anchor=south west]north west:$k$ conditions}] {};
+      
+\node[plate,
+      inner sep = 8mm,
+      fit = (Y_ikl) (X_k),
+      label={[anchor=east, rotate = -90, yshift=2.5mm, xshift=-5mm]south east:$\ell$\,trials}] {};
+  
+  \end{tikzpicture}
+ 
+ 
+ 
+  % table break
+  &
+  
+   % Statistical definition
+   \renewcommand{\arraystretch}{1.8}
+   $\begin{array}{rcl}
+   \mu_\alpha &\sim&  \mbox{Normal}^+\left(\mu = 0,\, \sigma = 10\right)\\
+   \mu_\beta &\sim&  \mbox{Normal}\left(\mu = 0,\, \sigma = 10\right)\\
+   \mu_\sigma &\sim&  \mbox{Normal}^+\left(\mu = 0,\, \sigma = 10\right)\\
+   \sigma_\alpha &\sim&  \mbox{Inverse-Gamma}\left(\alpha = 0.5,\,  \beta = 0.5 \right)\\
+   \sigma_\beta &\sim&  \mbox{Inverse-Gamma}\left(\alpha = 0.5,\,  \beta = 0.5 \right)\\
+   \sigma_\sigma &\sim&  \mbox{Inverse-Gamma}\left(\alpha = 0.5,\,  \beta = 0.5 \right)\\
+   \bm{\alpha}_{i} &\sim& \mbox{Normal}\left(\mu = \mu_\alpha,\,\sigma = \sigma_\alpha\right)\\
+   \bm{\beta}_{i} &\sim& \mbox{Normal}\left(\mu = \mu_\beta,\,\sigma = \sigma_\beta\right)\\
+   \bm{\sigma}_{i} &\sim& \mbox{Normal}^+\left(\mu = \mu_\sigma,\,\sigma = \sigma_\sigma\right)\\
+   \bm{m}_{ik} & = & \left\{\begin{array}{ll}
+   \bm{\alpha}_{i} - \frac{1}{2} \cdot \bm{\beta}_{i} & \mathrm{if}\  X_{ik\ell} = 1\\
+   \bm{\alpha}_{i} + \frac{1}{2} \cdot \bm{\beta}_{i} & \mathrm{if}\  X_{ik\ell} = 2\\
+   \end{array}\right.\\ 
+   Y_{ik\ell} & \sim & \mbox{Normal}\left(\mu = \bm{m}_{ik},\, \sigma = \bm{\sigma}_{i}\right)\\
+   \end{array}$
+  
+\end{tabular}
+
+```
+
+\newpage
+
+\section*{\centering \fontsize{16pt}{20pt}\selectfont Ex-Gaussian Hierarchical Model ($\tau$)}
+
+\
+
+```{=latex}
+
+% table with graphical model in left cell, and statistical definition in right cell
+\hspace*{1.3cm}
+\begin{tabular}{ m{8.5cm} m{5.5cm}}
+
+\begin{tikzpicture}[node distance = 2.5cm, auto , >=latex']
+ 
+% Nodes
+
+  % Primera fila
+  \node [continuousLatent] (mu_alpha) {$\bm{\mu}_\alpha$};
+  \node [continuousLatent] (sigma_alpha) [right = 5mm of mu_alpha] {$\bm{\sigma}_\alpha$};
+  \node [continuousLatent] (sigma_beta) [right = 30mm of sigma_alpha] {$\bm{\sigma}_\beta$};
+  \node [continuousLatent] (mu_beta) [right = 5mm of sigma_beta] {$\bm{\mu}_\beta$};
+  
+  % Segunda fila
+  \node [continuousLatent] (alpha_i) [below = 10mm of sigma_alpha] {$\bm{\alpha}_{i}$};
+  \node [continuousLatent] (beta_i) [below = 10mm of sigma_beta] {$\bm{\beta}_{i}$};
+  \node [continuousDeterministic] (mu_ik_outer) at ($ (alpha_i)!0.5!(beta_i) $) {};  
+  \node [continuousLatent] (mu_ik) at (mu_ik_outer) {$\bm{m}_{ik}$};  
+
+  % Tercera fila
+  \node [discreteObserved] (X_k) [below = 10mm of mu_ik_outer] {$X_{ik\ell}$};
+  \node [continuousObserved] (Y_ikl) [below = 10mm of X_k] {$Y_{ik\ell}$};
+  
+  % Cuarta fila
+  \node [continuousLatent] (sigma_i) [below = 53mm of alpha_i] {$\bm{\sigma}_{i}$};
+  \node [continuousLatent] (sd_sigma) [below = 10mm of sigma_i] {$\bm{\sigma}_{\sigma}$};
+  \node [continuousLatent] (mu_sigma) [left = 5mm of sd_sigma] {$\bm{\mu}_{\sigma}$};
+  
+  \node [continuousLatent] (tau_i)  [below = 53mm of beta_i] {$\bm{\tau}_{i}$};
+  \node [continuousLatent] (sd_tau) [below = 10mm of tau_i] {$\bm{\sigma}_{\tau}$};
+  \node [continuousLatent] (mu_tau) [right = 5mm of sd_tau] {$\bm{\sigma}_{\tau}$};
+  
+   % Graph structure
+   \path (mu_alpha) edge [connect] (alpha_i)
+         (sigma_alpha) edge [connect] (alpha_i)
+         (mu_beta) edge [connect] (beta_i)
+         (sigma_beta) edge [connect] (beta_i)
+         (alpha_i) edge [connect] (mu_ik_outer)
+         (beta_i) edge [connect] (mu_ik_outer)
+         (X_k) edge [connect] (mu_ik_outer)
+         (mu_ik_outer) edge [connect, bend left = 35] (Y_ikl)
+         (mu_ik_outer) edge [connect, bend right = 35] (Y_ikl)
+         (sigma_i) edge [connect] (Y_ikl)
+         (mu_sigma) edge [connect] (sigma_i)
+         (sd_sigma) edge [connect] (sigma_i)
+         (tau_i) edge [connect] (Y_ikl)
+         (mu_tau) edge [connect] (tau_i)
+         (sd_tau) edge [connect] (tau_i);
+
+\node[plate,
+      inner sep = 4mm,
+      fit = (sigma_i) (alpha_i) (beta_i) (sigma_i),
+      label={[anchor=south]south:$i$ subjects}] {};
+
+\node[plate,
+      inner sep = 5mm,
+      fit = (Y_ikl) (mu_ik_outer) (X_k) (mu_ik_outer),
+      label={[anchor=north, yshift = 5mm]north:$k$ conditions}] {};
+      
+\node[plate,
+      inner sep = 8mm,
+      fit = (Y_ikl) (X_k),
+      label={[anchor=east, rotate = -90, yshift=2.5mm, xshift=-5mm]south east:$\ell$\,trials}] {};
+  
+  \end{tikzpicture}
+ 
+ 
+ 
+  % table break
+  &
+  
+   % Statistical definition
+   \renewcommand{\arraystretch}{1.8}
+   $\begin{array}{rcl}
+   \mu_\alpha &\sim&  \mbox{Normal}^+\left(\mu = 0,\, \sigma = 10\right)\\
+   \mu_\beta &\sim&  \mbox{Normal}\left(\mu = 0,\, \sigma = 10\right)\\
+   \mu_\sigma &\sim&  \mbox{Normal}^+\left(\mu = 0,\, \sigma = 10\right)\\
+   \mu_\tau &\sim&  \mbox{Normal}^+\left(\mu = 0,\, \sigma = 10\right)\\
+   \sigma_\alpha &\sim&  \mbox{Inverse-Gamma}\left(\alpha = 0.5,\,  \beta = 0.5 \right)\\
+   \sigma_\beta &\sim&  \mbox{Inverse-Gamma}\left(\alpha = 0.5,\,  \beta = 0.5 \right)\\
+   \sigma_\sigma &\sim&  \mbox{Inverse-Gamma}\left(\alpha = 0.5,\,  \beta = 0.5 \right)\\
+   \sigma_\tau &\sim&  \mbox{Inverse-Gamma}\left(\alpha = 0.5,\,  \beta = 0.5 \right)\\
+   \bm{\alpha}_{i} &\sim& \mbox{Normal}\left(\mu = \mu_\alpha,\,\sigma = \sigma_\alpha\right)\\
+   \bm{\beta}_{i} &\sim& \mbox{Normal}\left(\mu = \mu_\beta,\,\sigma = \sigma_\beta\right)\\
+   \bm{\sigma}_{i} &\sim& \mbox{Normal}^+\left(\mu = \mu_\sigma,\,\sigma = \sigma_\sigma\right)\\
+   \bm{\tau}_{i} &\sim& \mbox{Normal}^+\left(\mu = \mu_\tau,\,\sigma = \sigma_\tau\right)\\
+   \bm{m}_{ik} & = & \left\{\begin{array}{ll}
+   \bm{\alpha}_{i} - \frac{1}{2} \cdot \bm{\beta}_{i} & \mathrm{if}\  X_{ik\ell} = 1\\
+   \bm{\alpha}_{i} + \frac{1}{2} \cdot \bm{\beta}_{i} & \mathrm{if}\  X_{ik\ell} = 2\\
+   \end{array}\right.\\ 
+   Y_{ik\ell} & \sim & \mbox{ex-Gaussian}\left(\mu = \bm{m}_{ik},\, \sigma = \bm{\sigma}_{i},\,\lambda = \frac{1}{\bm{\tau}_{i}}\right)\\
+   \end{array}$
+  
+\end{tabular}
+
+```
+
+\newpage
+
+\section*{\centering \fontsize{16pt}{20pt}\selectfont Ex-Gaussian Hierarchical Model ($\lambda$)}
+
+\
+
+```{=latex}
+
+% table with graphical model in left cell, and statistical definition in right cell
+\hspace*{1.3cm}
+\begin{tabular}{ m{8.5cm} m{5.5cm}}
+
+\begin{tikzpicture}[node distance = 2.5cm, auto , >=latex']
+ 
+% Nodes
+
+  % Primera fila
+  \node [continuousLatent] (mu_alpha) {$\bm{\mu}_\alpha$};
+  \node [continuousLatent] (sigma_alpha) [right = 5mm of mu_alpha] {$\bm{\sigma}_\alpha$};
+  \node [continuousLatent] (sigma_beta) [right = 30mm of sigma_alpha] {$\bm{\sigma}_\beta$};
+  \node [continuousLatent] (mu_beta) [right = 5mm of sigma_beta] {$\bm{\mu}_\beta$};
+  
+  % Segunda fila
+  \node [continuousLatent] (alpha_i) [below = 10mm of sigma_alpha] {$\bm{\alpha}_{i}$};
+  \node [continuousLatent] (beta_i) [below = 10mm of sigma_beta] {$\bm{\beta}_{i}$};
+  \node [continuousDeterministic] (mu_ik_outer) at ($ (alpha_i)!0.5!(beta_i) $) {};  
+  \node [continuousLatent] (mu_ik) at (mu_ik_outer) {$\bm{m}_{ik}$};  
+
+  % Tercera fila
+  \node [discreteObserved] (X_k) [below = 10mm of mu_ik_outer] {$X_{ik\ell}$};
+  \node [continuousObserved] (Y_ikl) [below = 10mm of X_k] {$Y_{ik\ell}$};
+  
+  % Cuarta fila
+  \node [continuousLatent] (sigma_i) [below = 53mm of alpha_i] {$\bm{\sigma}_{i}$};
+  \node [continuousLatent] (sd_sigma) [below = 10mm of sigma_i] {$\bm{\sigma}_{\sigma}$};
+  \node [continuousLatent] (mu_sigma) [left = 5mm of sd_sigma] {$\bm{\mu}_{\sigma}$};
+  
+  \node [continuousLatent] (lambda_i)  [below = 53mm of beta_i] {$\bm{\lambda}_{i}$};
+  \node [continuousLatent] (sd_lambda) [below = 10mm of lambda_i] {$\bm{\sigma}_{\lambda}$};
+  \node [continuousLatent] (mu_lambda) [right = 5mm of sd_lambda] {$\bm{\sigma}_{\lambda}$};
+  
+   % Graph structure
+   \path (mu_alpha) edge [connect] (alpha_i)
+         (sigma_alpha) edge [connect] (alpha_i)
+         (mu_beta) edge [connect] (beta_i)
+         (sigma_beta) edge [connect] (beta_i)
+         (alpha_i) edge [connect] (mu_ik_outer)
+         (beta_i) edge [connect] (mu_ik_outer)
+         (X_k) edge [connect] (mu_ik_outer)
+         (mu_ik_outer) edge [connect, bend left = 35] (Y_ikl)
+         (mu_ik_outer) edge [connect, bend right = 35] (Y_ikl)
+         (sigma_i) edge [connect] (Y_ikl)
+         (mu_sigma) edge [connect] (sigma_i)
+         (sd_sigma) edge [connect] (sigma_i)
+         (lambda_i) edge [connect] (Y_ikl)
+         (mu_lambda) edge [connect] (lambda_i)
+         (sd_lambda) edge [connect] (lambda_i);
+
+\node[plate,
+      inner sep = 4mm,
+      fit = (sigma_i) (alpha_i) (beta_i) (sigma_i),
+      label={[anchor=south]south:$i$ subjects}] {};
+
+\node[plate,
+      inner sep = 5mm,
+      fit = (Y_ikl) (mu_ik_outer) (X_k) (mu_ik_outer),
+      label={[anchor=north, yshift = 5mm]north:$k$ conditions}] {};
+      
+\node[plate,
+      inner sep = 8mm,
+      fit = (Y_ikl) (X_k),
+      label={[anchor=east, rotate = -90, yshift=2.5mm, xshift=-5mm]south east:$\ell$\,trials}] {};
+  
+  \end{tikzpicture}
+ 
+ 
+ 
+  % table break
+  &
+  
+   % Statistical definition
+   \renewcommand{\arraystretch}{1.8}
+   $\begin{array}{rcl}
+   \mu_\alpha &\sim&  \mbox{Normal}^+\left(\mu = 0,\, \sigma = 10\right)\\
+   \mu_\beta &\sim&  \mbox{Normal}\left(\mu = 0,\, \sigma = 10\right)\\
+   \mu_\sigma &\sim&  \mbox{Normal}^+\left(\mu = 0,\, \sigma = 10\right)\\
+   \mu_\lambda &\sim&  \mbox{Normal}^+\left(\mu = 0,\, \sigma = 10\right)\\
+   \sigma_\alpha &\sim&  \mbox{Inverse-Gamma}\left(\alpha = 0.5,\,  \beta = 0.5 \right)\\
+   \sigma_\beta &\sim&  \mbox{Inverse-Gamma}\left(\alpha = 0.5,\,  \beta = 0.5 \right)\\
+   \sigma_\sigma &\sim&  \mbox{Inverse-Gamma}\left(\alpha = 0.5,\,  \beta = 0.5 \right)\\
+   \sigma_\lambda &\sim&  \mbox{Inverse-Gamma}\left(\alpha = 0.5,\,  \beta = 0.5 \right)\\
+   \bm{\alpha}_{i} &\sim& \mbox{Normal}\left(\mu = \mu_\alpha,\,\sigma = \sigma_\alpha\right)\\
+   \bm{\beta}_{i} &\sim& \mbox{Normal}\left(\mu = \mu_\beta,\,\sigma = \sigma_\beta\right)\\
+   \bm{\sigma}_{i} &\sim& \mbox{Normal}^+\left(\mu = \mu_\sigma,\,\sigma = \sigma_\sigma\right)\\
+   \bm{\lambda}_{i} &\sim& \mbox{Normal}^+\left(\mu = \mu_\lambda,\,\sigma = \sigma_\lambda\right)\\
+   \bm{m}_{ik} & = & \left\{\begin{array}{ll}
+   \bm{\alpha}_{i} - \frac{1}{2} \cdot \bm{\beta}_{i} & \mathrm{if}\  X_{ik\ell} = 1\\
+   \bm{\alpha}_{i} + \frac{1}{2} \cdot \bm{\beta}_{i} & \mathrm{if}\  X_{ik\ell} = 2\\
+   \end{array}\right.\\ 
+    Y_{ik\ell} & \sim & \mbox{ex-Gaussian}\left(\mu = \bm{m}_{ik},\, \sigma = \bm{\sigma}_{i},\,\lambda = \bm{\lambda}_{i}\right)\\
+   \end{array}$
+  
+\end{tabular}
+
+```
+
+\newpage
+
+\section*{\centering \fontsize{16pt}{20pt}\selectfont Shifted-lognormal model}
+
+\
+
+
+```{=latex}
+
+% table with graphical model in left cell, and statistical definition in right cell
+\hspace*{1.3cm}
+\begin{tabular}{ m{8.5cm} m{5.5cm}}
+
+\begin{tikzpicture}[node distance = 2.5cm, auto , >=latex']
+ 
+% Nodes
+
+  % Primera fila
+  \node [continuousLatent] (mu_alpha) {$\bm{\mu}_\alpha$};
+  \node [continuousLatent] (sigma_alpha) [right = 5mm of mu_alpha] {$\bm{\sigma}_\alpha$};
+  \node [continuousLatent] (sigma_beta) [right = 30mm of sigma_alpha] {$\bm{\sigma}_\beta$};
+  \node [continuousLatent] (mu_beta) [right = 5mm of sigma_beta] {$\bm{\mu}_\beta$};
+  
+  % Segunda fila
+  \node [continuousLatent] (alpha_i) [below = 10mm of sigma_alpha] {$\bm{\alpha}_{i}$};
+  \node [continuousLatent] (beta_i) [below = 10mm of sigma_beta] {$\bm{\beta}_{i}$};
+  \node [continuousDeterministic] (mu_ik_outer) at ($ (alpha_i)!0.5!(beta_i) $) {};  
+  \node [continuousLatent] (mu_ik) at (mu_ik_outer) {$\bm{m}_{ik}$};  
+
+  % Tercera fila
+  \node [discreteObserved] (X_k) [below = 10mm of mu_ik_outer] {$X_{ik\ell}$};
+  \node [continuousObserved] (Y_ikl) [below = 10mm of X_k] {$Y_{ik\ell}$};
+  
+  % Cuarta fila
+  \node [continuousLatent] (sigma_i) [below = 53mm of alpha_i] {$\bm{\sigma}_{i}$};
+  \node [continuousLatent] (sd_sigma) [below = 10mm of sigma_i] {$\bm{\sigma}_{\sigma}$};
+  \node [continuousLatent] (mu_sigma) [left = 5mm of sd_sigma] {$\bm{\mu}_{\sigma}$};
+  
+  \node [continuousLatent] (delta_i)  [below = 53mm of beta_i] {$\bm{\delta}_{i}$};
+  \node [continuousLatent] (sd_delta) [below = 10mm of delta_i] {$\bm{\sigma}_{\delta}$};
+  \node [continuousLatent] (mu_delta) [right = 5mm of sd_delta] {$\bm{\sigma}_{\delta}$};
+  
+   % Graph structure
+   \path (mu_alpha) edge [connect] (alpha_i)
+         (sigma_alpha) edge [connect] (alpha_i)
+         (mu_beta) edge [connect] (beta_i)
+         (sigma_beta) edge [connect] (beta_i)
+         (alpha_i) edge [connect] (mu_ik_outer)
+         (beta_i) edge [connect] (mu_ik_outer)
+         (X_k) edge [connect] (mu_ik_outer)
+         (mu_ik_outer) edge [connect, bend left = 35] (Y_ikl)
+         (mu_ik_outer) edge [connect, bend right = 35] (Y_ikl)
+         (sigma_i) edge [connect] (Y_ikl)
+         (mu_sigma) edge [connect] (sigma_i)
+         (sd_sigma) edge [connect] (sigma_i)
+         (delta_i) edge [connect] (Y_ikl)
+         (mu_delta) edge [connect] (delta_i)
+         (sd_delta) edge [connect] (delta_i);
+
+\node[plate,
+      inner sep = 4mm,
+      fit = (sigma_i) (alpha_i) (beta_i) (sigma_i),
+      label={[anchor=south]south:$i$ subjects}] {};
+
+\node[plate,
+      inner sep = 5mm,
+      fit = (Y_ikl) (mu_ik_outer) (X_k) (mu_ik_outer),
+      label={[anchor=north, yshift = 5mm]north:$k$ conditions}] {};
+      
+\node[plate,
+      inner sep = 8mm,
+      fit = (Y_ikl) (X_k),
+      label={[anchor=east, rotate = -90, yshift=2.5mm, xshift=-5mm]south east:$\ell$\,trials}] {};
+  
+  \end{tikzpicture}
+ 
+ 
+ 
+  % table break
+  &
+  
+   % Statistical definition
+   \renewcommand{\arraystretch}{1.8}
+   $\begin{array}{rcl}
+   \mu_\alpha &\sim&  \mbox{Normal}^+\left(\mu = 0,\, \sigma = 10\right)\\
+   \mu_\beta &\sim&  \mbox{Normal}\left(\mu = 0,\, \sigma = 10\right)\\
+   \mu_\sigma &\sim&  \mbox{Normal}^+\left(\mu = 0,\, \sigma = 10\right)\\
+   \mu_\delta &\sim&  \mbox{Normal}^+\left(\mu = 0,\, \sigma = 10\right)\\
+   \sigma_\alpha &\sim&  \mbox{Inverse-Gamma}\left(\alpha = 0.5,\,  \beta = 0.5 \right)\\
+   \sigma_\beta &\sim&  \mbox{Inverse-Gamma}\left(\alpha = 0.5,\,  \beta = 0.5 \right)\\
+   \sigma_\sigma &\sim&  \mbox{Inverse-Gamma}\left(\alpha = 0.5,\,  \beta = 0.5 \right)\\
+   \sigma_\delta &\sim&  \mbox{Inverse-Gamma}\left(\alpha = 0.5,\,  \beta = 0.5 \right)\\
+   \bm{\alpha}_{i} &\sim& \mbox{Normal}\left(\mu = \mu_\alpha,\,\sigma = \sigma_\alpha\right)\\
+   \bm{\beta}_{i} &\sim& \mbox{Normal}\left(\mu = \mu_\beta,\,\sigma = \sigma_\beta\right)\\
+   \bm{\sigma}_{i} &\sim& \mbox{Normal}^+\left(\mu = \mu_\sigma,\,\sigma = \sigma_\sigma\right)\\
+   \bm{\delta}_{i} &\sim& \mbox{Normal}^+\left(\mu = \mu_\delta,\,\sigma = \sigma_\delta\right)\\
+   \bm{m}_{ik} & = & \left\{\begin{array}{ll}
+   \bm{\alpha}_{i} - \frac{1}{2} \cdot \bm{\beta}_{i} & \mathrm{if}\  X_{ik\ell} = 1\\
+   \bm{\alpha}_{i} + \frac{1}{2} \cdot \bm{\beta}_{i} & \mathrm{if}\  X_{ik\ell} = 2\\
+   \end{array}\right.\\ 
+    Y_{ik\ell} & \sim & \mbox{Shifted-lognormal}\left(\mu = \bm{m}_{ik},\, \sigma = \bm{\sigma}_{i},\,\delta = \bm{\delta}_{i}\right)\\
+   \end{array}$
+  
+\end{tabular}
+
+```
+
