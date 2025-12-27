@@ -152,7 +152,7 @@ marginal_means <- function(anova_fit, highlight_crit = "min", format = "latex") 
 # ─────────────────────────────────────────────────────────────────────────────
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SECTION 3: Prepare final data frame
+# SECTION 4: Prepare final data frame
 # ─────────────────────────────────────────────────────────────────────────────
 
 # Load aggregated simulation results
@@ -255,7 +255,54 @@ saveRDS(object = df_long, file = "Results/Rdata/Simulation study/simulation_resu
 # ─────────────────────────────────────────────────────────────────────────────
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SECTION 4: ANOVA meta-models for correlations and factor loadings
+# SECTION 5: Convergence, efficiency and elpd model comparison
+# ─────────────────────────────────────────────────────────────────────────────
+
+# In all cases, Rhats are below 1.05, and these estimates are consistent
+hist(df_long$value[which(df_long$measure == "rhat" & df_long$statistic == "avg")],
+     breaks = 100)
+hist(df_long$value[which(df_long$measure == "rhat" & df_long$statistic == "disp")],
+     breaks = 100)
+
+# Mean of each measure
+df_long |> 
+  filter(measure == "rhat") |> 
+  summarise(rhat_avg = mean(value, na.rm = TRUE), 
+            .by = statistic) |> 
+  as.data.frame()
+
+# Treedepth warnings for the gaussian  adn the skewed model
+hist(df_long$value[which(df_long$measure == "treedepth" & 
+                           df_long$statistic == "avg" & 
+                           df_long$model_pars == "gaussian")],
+     breaks = 100)
+hist(df_long$value[which(df_long$measure == "treedepth" & 
+                           df_long$statistic == "avg" & 
+                           df_long$model_pars == "skewed")],
+     breaks = 100)
+
+# Mean of each measure and model
+df_long |> 
+  filter(measure == "treedepth") |> 
+  summarise(threedepth_avg = mean(value, na.rm = TRUE), 
+            .by = c(statistic, model_pars)) |> 
+  as.data.frame() |> na.omit()
+
+
+# And, fortunately, close-to-zero divergences too!
+df_long |> 
+  filter(measure == "divergence") |> 
+  summarise(threedepth_avg = mean(value, na.rm = TRUE), 
+            .by = c(statistic, model_pars)) |> 
+  as.data.frame() |> na.omit()
+
+# PSIS-LOO always select the true data generation model against the gaussian model
+df_long$value[which(df_long$measure == "prob_skew")]
+
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SECTION 6: ANOVA meta-models for correlations and factor loadings
 # ─────────────────────────────────────────────────────────────────────────────
 
 # Correlations meta-models: Average SRMR
@@ -365,7 +412,7 @@ save(ANOVA_tbl, file = "Results/Rdata/Tables/ANOVA_table.rdata")
 # ─────────────────────────────────────────────────────────────────────────────
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SECTION 5: Estimated marginal means per model: true correlations
+# SECTION 7: Estimated marginal means per model: true correlations
 # ─────────────────────────────────────────────────────────────────────────────
 
 # Correlations
@@ -422,7 +469,7 @@ save(marginal_means_rho_latex, file = "Results/Rdata/Tables/emmeans_rho.rdata")
 # ─────────────────────────────────────────────────────────────────────────────
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SECTION 5: Estimated marginal means per model: factor loadings
+# SECTION 8: Estimated marginal means per model: factor loadings
 # ─────────────────────────────────────────────────────────────────────────────
 
 # Correlations
