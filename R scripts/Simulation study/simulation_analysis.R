@@ -12,13 +12,7 @@
 # ─────────────────────────────────────────────────────────────────────────────
 # SECTION 1: Description
 # ─────────────────────────────────────────────────────────────────────────────
-# ANOVA meta-models. Notice that the variables are:
-#   1. I: Sample size (100 or 200)
-#   2. LF: Latent factors (unidimensional or 2-factors, both CFA or EFA)
-#   3. DGM: Data-generation model (ex-gaussian or shifted-lognormal)
-#   4. R: Reliability (0.3, 0.5 or 0.7)
-#   5. L: Standardized factor loadings (0.3, 0.5 or 0.7)
-#   6. M: Estimation method (aggregated effects, spearman, HFM or GenHFM)
+# ANOVA meta-models for simulation results
 # ─────────────────────────────────────────────────────────────────────────────
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -36,7 +30,7 @@ library(kableExtra)
 # ─────────────────────────────────────────────────────────────────────────────
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SECTION 3: user defined functions
+# SECTION 3: User-Defined Functions
 # ─────────────────────────────────────────────────────────────────────────────
 
 # Fast function to generate data frame per measute
@@ -422,17 +416,14 @@ marginal_means_rho <- cbind(
   marginal_means(anova_fit = APSD_Rho, highlight_crit = "min", format = "html")[-c(1:2)],
   marginal_means(anova_fit = AECR_Rho, highlight_crit = "0.95", format = "html")[-c(1:2)])
 
-# 1. Definimos los nombres de las columnas para la tabla final
-# Son 17 columnas en total (Level + 16 de datos)
+# Define final column names (Level + 16 data columns)
 colnames_final_rho <- c("", rep(c("A", "S", "G", "T"), times = 4))
 
-# 2. Calculamos la agrupación de filas
-# unique() asegura que mantenemos el orden de aparición de los factores
+# Compute row grouping (unique preserves factor appearance order)
 row_info_rho <- table(marginal_means_rho$Factor_Name)[unique(marginal_means_rho$Factor_Name)]
 
-# 3. Generamos la tabla HTML
-# Usamos el dataframe base pero seleccionamos por posición para evitar el error de nombres
-marginal_means_rho[, 2:18] %>%  # Seleccionamos desde 'Level' hasta el final por posición
+# Generate HTML table (select by position to avoid duplicate column name errors)
+marginal_means_rho[, 2:18] %>%
   kable(
     format = "html", 
     escape = FALSE,          
@@ -480,17 +471,14 @@ marginal_means_lam <- cbind(
   marginal_means(anova_fit = Tucker_lam, highlight_crit = "max", format = "html")[-c(1:2)],
   marginal_means(anova_fit = AECR_lam, highlight_crit = "0.95", format = "html")[-c(1:2)])
 
-# 1. Definimos los nombres de las columnas para la tabla final
-# Son 17 columnas en total (Level + 16 de datos)
+# Define final column names
 colnames_final_lam <- c("", rep(c("Gaussian", "True"), times = 5))
 
-# 2. Calculamos la agrupación de filas
-# unique() asegura que mantenemos el orden de aparición de los factores
+# Compute row grouping (unique preserves factor appearance order)
 row_info_lam <- table(marginal_means_lam$Factor_Name)[unique(marginal_means_lam$Factor_Name)]
 
-# 3. Generamos la tabla HTML
-# Usamos el dataframe base pero seleccionamos por posición para evitar el error de nombres
-marginal_means_lam[, -1] %>%  # Seleccionamos desde 'Level' hasta el final por posición
+# Generate HTML table (select by position to avoid duplicate column name errors)
+marginal_means_lam[, -1] %>%
   kable(
     format = "html", 
     escape = FALSE,          

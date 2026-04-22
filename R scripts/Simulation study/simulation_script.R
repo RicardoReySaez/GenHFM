@@ -12,27 +12,7 @@
 # ─────────────────────────────────────────────────────────────────────────────
 # SECTION 1: Description
 # ─────────────────────────────────────────────────────────────────────────────
-
-# Simulation study: Bayesian Generalized Hierarchical Factor Models (BGHFM)
-#  1. Simulate hierarchical data with different:
-#     a. Latent structure: unidimensional, 2 factos CFA and 2 factors EFA.
-#     b. Response-time distribution: ex-gaussian or shifted-lognormal
-#     c. Reliability based on signal-to-noise ratio.
-#  2. Estimate correlation matrix experimental effects (method of moments).
-#  3. Estimate adjusted Spearman correlation matrix 
-#  4. Estimate gaussian Hierarchical Factor Model (misspecified)
-#  5. Estimate ex-gaussian or shifted-lognormal BGHFM (data-generation model)
-#  6. Estimate PSIS-LOO in each model and make LOO model comparison
-#  7. Compute bias indices for all parameters
-#     a. SRMR, RMSE, Absolute bias, etc...
-#     b. Empirical coverage rates, type-II error rates.
-#     c. For correlation matrices: SRMR and averaged-RMSE
-#     d. Average and dispersion of posterior standard deviations
-#  8.Summary statistics for coverage and efficiency in all models
-#     a. R-hat, ess_tail and ess_bulk average and dispersion for all parameters
-#     b. Number and percentage of divergent transitions
-#     c. Number and percentage of divergent maximum treedepth
-#     d. EBFMI average and standard deviation
+# Main workflow for the BGHFM simulation study
 # ─────────────────────────────────────────────────────────────────────────────
 
 # ─────────────────────────────────────────────────────────────────────────────

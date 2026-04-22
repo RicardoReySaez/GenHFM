@@ -12,9 +12,7 @@
 # ─────────────────────────────────────────────────────────────────────────────
 # SECTION 1: Description
 # ─────────────────────────────────────────────────────────────────────────────
-# This script allow to do prior predictive check using unit-vectors for
-# factor loadings. The main figure in the paper has been generated with
-# this script.
+# Prior predictive checks for unit-vector factor loadings
 # ─────────────────────────────────────────────────────────────────────────────
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -87,7 +85,7 @@ dens_plots <- mapply(function(pars, nm) {
     )
 }, beta_pars_list, names(beta_pars_list), SIMPLIFY = FALSE)
 
-# Remove redundant Y axis (and ommit the density values)
+# Remove redundant Y axis (and omit the density values)
 dens_plots2 <- list(
   dens_plots[[1]] + theme(
     axis.text.y  = element_blank(),
@@ -163,7 +161,7 @@ indep_lambdas <- data.frame(
   y = runif(n = 8e3, min = -1, max = 1)
 )
 
-# Plaussible values assuming that h2 has a maximum value of 1
+# Plausible values assuming that h2 has a maximum value of 1
 indep_lambdas$plausible <- rowSums(indep_lambdas^2) <= 1
 
 # Prepare circle data
@@ -198,7 +196,7 @@ p1 <- ggplot(indep_lambdas, aes(x = x, y = y, color = plausible)) +
         legend.text  = element_text(size = 30)) + 
   guides(
     color = guide_legend(
-      override.aes = list(size = 5)  # cambia el 5 por el tamaño que necesites
+      override.aes = list(size = 5)  # Adjust point size for legend
     ))
 p1
 
@@ -241,15 +239,15 @@ p2 <- ggplot() +
   geom_hline(yintercept = 0, linetype = "dashed", colour = "grey60") +
   geom_vline(xintercept = 0, linetype = "dashed", colour = "grey60") +
   
-  # Flechas (sin aparecer en la leyenda)
+  # Arrows (hidden from legend)
   geom_segment(data = arrow_df,
                aes(x = 0, y = 0, xend = xend, yend = yend,
                    colour = "grey70"),
                arrow = arrow(length = unit(0.30, "cm")),
                linewidth = 1,
-               show.legend = FALSE) +          # ← importante
+               show.legend = FALSE) +
   
-  # Puntos (sí aparecen en la leyenda)
+  # Points (shown in legend)
   geom_point(data = mag_df,
              aes(x, y, colour = nivel),
              size = 3) +

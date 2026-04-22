@@ -12,7 +12,7 @@
 # ─────────────────────────────────────────────────────────────────────────────
 # SECTION 1: Description
 # ─────────────────────────────────────────────────────────────────────────────
-# Script to generate the figures used in the manuscript
+# Generate manuscript figures from simulation results
 # ─────────────────────────────────────────────────────────────────────────────
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -47,7 +47,7 @@ fixed_objects <- list(meta_parameters = meta_parameters)
 # ─────────────────────────────────────────────────────────────────────────────
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SECTION 4: compute results data frame
+# SECTION 4: Compute Results Data Frame
 # ─────────────────────────────────────────────────────────────────────────────
 
 # Simulation design
@@ -533,7 +533,7 @@ exg_hier_plot <- ggplot(hier_exg_dat, aes(x = est)) +
 # ─────────────────────────────────────────────────────────────────────────────
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SECTION 7: Plots – shifted-lognormal hierarchical component parameters
+# SECTION 8: Plots – shifted-lognormal hierarchical component parameters
 # ─────────────────────────────────────────────────────────────────────────────
 
 shl_pars <- c("mu_alpha", "mu_theta", "mu_sigma", "mu_delta", 
@@ -547,7 +547,7 @@ hier_shl_dat <- full_simres_adj |>
     paste0("sd_theta_r", sprintf("%.0f", reliab * 100)),
     parameter_set
   ),
-  # Etiquetas bonitas para los facets (plotmath en formato texto)
+  # Readable labels for facet strips (plotmath text format)
   par_lab = dplyr::recode(
     parameter_set,
     "mu_alpha"     = "mu[alpha]",
@@ -595,7 +595,7 @@ shl_hier_plot <- ggplot(hier_shl_dat, aes(x = est)) +
 # ─────────────────────────────────────────────────────────────────────────────
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SECTION 8: Plots – hierarchical component parameters plot
+# SECTION 9: Plots – hierarchical component parameters plot
 # ─────────────────────────────────────────────────────────────────────────────
 
 # Bind both plots

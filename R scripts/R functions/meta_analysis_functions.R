@@ -12,12 +12,7 @@
 # ─────────────────────────────────────────────────────────────────────────────
 # SECTION 1: Description
 # ─────────────────────────────────────────────────────────────────────────────
-
-# Script with user-defined functions to run meta-analysis:
-#   1. Clean empirical datasets
-#   2. Fit experiment-level bayesian linear mixed model
-#   3. Run meta-analysis with parameter estimates
-
+# Functions to clean data, fit Bayesian LMMs, and run meta-analyses
 # ─────────────────────────────────────────────────────────────────────────────
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -545,7 +540,7 @@ fit_LMM_models <- function(data, model, method, cores = NULL){
         }
   })
   
-  # Clean caché memory
+  # Clean cache memory
   gc()
   
   # Return parameter estimates

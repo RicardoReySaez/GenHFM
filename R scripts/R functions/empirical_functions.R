@@ -12,7 +12,7 @@
 # ─────────────────────────────────────────────────────────────────────────────
 # SECTION 1: Description
 # ─────────────────────────────────────────────────────────────────────────────
-# Script with user-defined functions to use BHGFM in empirical settings
+# Functions for empirical BGHFM analyses
 # ─────────────────────────────────────────────────────────────────────────────
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -204,27 +204,27 @@ sdata_to_longdf <- function(stan_dat,
                             trial_col = "trial", 
                             rt_col = "rt") {
   
-  # Extraemos los componentes del stan_dat
+  # Extract stan_dat components
   RT_array <- stan_dat$RT
   n_subj   <- stan_dat$I
   n_cond   <- stan_dat$K
   n_task   <- stan_dat$J
   T_subj   <- stan_dat$T_subj
   
-  # Predefinir la lista para almacenar data frames
+  # Preallocate list to store data frames
   temp_list <- vector("list", n_subj * n_cond * n_task)
   counter <- 1
   
-  # Recorremos cada combinación de sujeto, condición y tarea para reconstruir el data frame
+  # Loop over each subject-condition-task combination to reconstruct data frame
   for (i in 1:n_subj) {
     for (c in 1:n_cond) {
       for (t in 1:n_task) {
-        n_trials <- T_subj[i, c, t]  # Número de pruebas para esta combinación
+        n_trials <- T_subj[i, c, t]  # Number of trials for this combination
         if (n_trials > 0) {
-          # Extraemos los tiempos de reacción para estas pruebas
+          # Extract reaction times for these trials
           rt_values <- RT_array[i, c, t, 1:n_trials]
           
-          # Creamos un data frame temporal con nombres provisionales
+          # Create temporary data frame with provisional names
           temp_df <- data.frame(
             subject   = i,
             condition = c,
@@ -233,10 +233,10 @@ sdata_to_longdf <- function(stan_dat,
             rt        = rt_values
           )
           
-          # Renombramos las columnas usando los argumentos pasados a la función
+          # Rename columns using user-specified arguments
           names(temp_df) <- c(subject_col, condition_col, task_col, trial_col, rt_col)
           
-          # Almacenamos el data frame temporal en la lista
+          # Store temporary data frame in the list
           temp_list[[counter]] <- temp_df
           counter <- counter + 1
         }
@@ -244,7 +244,7 @@ sdata_to_longdf <- function(stan_dat,
     }
   }
   
-  # Combina todos los data frames almacenados en la lista en un solo data frame
+  # Combine all stored data frames into one
   reconstructed_data <- do.call(rbind, temp_list[1:(counter - 1)])
   
   return(reconstructed_data)
@@ -263,7 +263,7 @@ make_inits <- function(data,
                        incongruent_id = 2,
                        # Number of latent factors
                        M, 
-                       # Desired model: gaussian, exgaussian or shifted.lognormal
+                       # Desired model: gaussian, exgaussian, shifted.lognormal, lognormal, or shifted.lognormal.mix
                        model = NULL){
   
   # Ensure dplyr
@@ -447,12 +447,12 @@ make_inits <- function(data,
     )
     # Compute individual-level parameters
     alpha <- beta <- sigma <- matrix(NA, ncol = length(unique(df$task)), 
-                                      nrow = length(unique(df$subject)))
+                                     nrow = length(unique(df$subject)))
     for(i in 1:length(unique(df$subject))){
       for(j in 1:length(unique(df$task))){
         alpha[i,j] <- mean(log(df$RT[which(df$subject==i & df$task==j)] - delta[i,j]))
         beta[i,j] <- mean(log(df$RT[which(df$subject==i & df$task==j & df$condition == incongruent_id)] - delta[i,j])) - 
-                      mean(log(df$RT[which(df$subject==i & df$task==j & df$condition == congruent_id)] - delta[i,j]))
+          mean(log(df$RT[which(df$subject==i & df$task==j & df$condition == congruent_id)] - delta[i,j]))
         sigma[i,j] <- sd(log(df$RT[which(df$subject==i & df$task==j)] - delta[i,j]))
       }
     }
@@ -501,6 +501,135 @@ make_inits <- function(data,
       beta_tilde = t(apply(beta, 2, FUN = function(x) (x - mean(x)) / sd(x))),
       sigma_tilde = t(apply(sigma, 2, scale_half_std_normal)),
       Delta       = delta,
+      # Communalities, unit vector and factor loadings
+      h2 = rep(0.5, J),
+      L_raw = matrix(c(oblFA$loadings), ncol = M),
+      Z = z_normed
+    )
+  }
+  if(model == "lognormal"){
+    # Compute individual-level parameters on log scale (no shift)
+    alpha <- tapply(log(df$RT), list(df$subject, df$task), mean)
+    pre_beta <- tapply(log(df$RT), list(df$subject, df$condition, df$task), mean)
+    beta <- pre_beta[,2,] - pre_beta[,1,]
+    sigma <- tapply(log(df$RT), list(df$subject, df$task), sd)
+    
+    # Exploratory factor analysis: varimax
+    h2 <- psych::fa(beta, M, fm = "minrank", rotate = "varimax")$communality
+    # Exploratory factor analysis: oblimin
+    oblFA <- psych::fa(beta, M, fm = "minrank", rotate = "oblimin")
+    if(M > 1){ 
+      L_Phi <- t(chol(oblFA$Phi))
+    } else {
+      L_Phi <- diag(1)
+    }
+    
+    # Mean and sd of level-1 residual variance
+    mu_sigma = colMeans(sigma)
+    sd_sigma = apply(sigma, 2, sd)
+    
+    # Compute shifts and scale values
+    scale_sigma = sd_sigma / sqrt(1 - 2/pi)
+    shift_sigma = mu_sigma - scale_sigma * sqrt(2/pi)
+    
+    # Ensure positive shifts
+    if(any(shift_sigma<0)){ shift_sigma[shift_sigma<0] <- 1e-3 }
+    
+    # ---------------------------------- # 
+    #    Lognormal initial values list    #
+    # ---------------------------------- # 
+    
+    inital_values <- list(
+      # Population means
+      mu_alpha = colMeans(alpha),
+      mu_beta = colMeans(beta),
+      shift_sigma = shift_sigma,
+      # Population standard deviations
+      sd_alpha = apply(alpha, 2, sd),
+      sd_beta = apply(beta, 2, sd),
+      scale_sigma = scale_sigma,
+      # Cholesky factor decomposition
+      L_R_alpha = t(chol(cor(alpha))),
+      L_Phi     = L_Phi,
+      # Individual-level latent scores
+      alpha_tilde = t(apply(alpha, 2, FUN = function(x) (x - mean(x)) / sd(x))),
+      beta_tilde = t(apply(beta, 2, FUN = function(x) (x - mean(x)) / sd(x))),
+      sigma_tilde = t(apply(sigma, 2, scale_half_std_normal)),
+      # Communalities, unit vector and factor loadings
+      h2 = rep(0.5, J),
+      L_raw = matrix(c(oblFA$loadings), ncol = M),
+      Z = z_normed
+    )
+  }
+  if(model == "shifted.lognormal.mix"){
+    # Number of subjects
+    I <- length(unique(df$subject))
+    
+    # Compute individual-level parameters
+    min_RT <- tapply(df$RT, list(df$subject, df$task), min)
+    delta <- matrix(
+      truncnorm::rtruncnorm(I * J, 
+                            a = 0, b = c(min_RT), mean = c(min_RT/1.5), sd = .02), 
+      nrow = I, ncol = J
+    )
+    # Compute individual-level parameters
+    alpha <- beta <- sigma <- matrix(NA, ncol = J, nrow = I)
+    for(i in 1:I){
+      for(j in 1:J){
+        alpha[i,j] <- mean(log(df$RT[which(df$subject==i & df$task==j)] - delta[i,j]))
+        beta[i,j] <- mean(log(df$RT[which(df$subject==i & df$task==j & df$condition == incongruent_id)] - delta[i,j])) - 
+          mean(log(df$RT[which(df$subject==i & df$task==j & df$condition == congruent_id)] - delta[i,j]))
+        sigma[i,j] <- sd(log(df$RT[which(df$subject==i & df$task==j)] - delta[i,j]))
+      }
+    }
+    
+    # Exploratory factor analysis: varimax
+    h2 <- psych::fa(beta, M, fm = "minrank", rotate = "varimax")$communality
+    # Exploratory factor analysis: oblimin
+    oblFA <- psych::fa(beta, M, fm = "minrank", rotate = "oblimin")
+    if(M > 1){ 
+      L_Phi <- t(chol(oblFA$Phi))
+    } else {
+      L_Phi <- diag(1)
+    }
+    
+    # Mean and sd of level-1 residual variance
+    mu_sigma = colMeans(sigma)
+    sd_sigma = apply(sigma, 2, sd)
+    
+    # Compute shifts and scale values
+    scale_sigma = sd_sigma / sqrt(1 - 2/pi)
+    shift_sigma = mu_sigma - scale_sigma * sqrt(2/pi)
+    
+    # Ensure positive shifts
+    if(any(shift_sigma<0)){ shift_sigma[shift_sigma<0] <- 1e-3 }
+    
+    # -------------------------------------------- # 
+    #    Shifted-lognormal MIX initial values list  #
+    # -------------------------------------------- # 
+    
+    inital_values <- list(
+      # Population means
+      mu_alpha = colMeans(alpha),
+      mu_beta = colMeans(beta),
+      shift_sigma = shift_sigma,
+      mu_delta = colMeans(delta),
+      mu_pi = rnorm(J, mean = -1.65, sd = 0.1),
+      # Population standard deviations
+      sd_alpha = apply(alpha, 2, sd),
+      sd_beta = apply(beta, 2, sd),
+      scale_sigma = scale_sigma,
+      sd_delta = apply(delta, 2, sd),
+      sd_pi = abs(rt(J, df = 3)) * 0.5,
+      # Cholesky factor decomposition
+      L_R_alpha = t(chol(cor(alpha))),
+      L_Phi     = L_Phi,
+      # Individual-level latent scores
+      alpha_tilde = t(apply(alpha, 2, FUN = function(x) (x - mean(x)) / sd(x))),
+      beta_tilde = t(apply(beta, 2, FUN = function(x) (x - mean(x)) / sd(x))),
+      sigma_tilde = t(apply(sigma, 2, scale_half_std_normal)),
+      Delta       = delta,
+      pi_tilde    = matrix(rnorm(J * I), nrow = J, ncol = I),
       # Communalities, unit vector and factor loadings
       h2 = rep(0.5, J),
       L_raw = matrix(c(oblFA$loadings), ncol = M),
@@ -564,7 +693,7 @@ PPC_simdata <- function(fit,        # cmdstanr fitted model
                         sdata,      # Input data in the fitted model
                         n_draws,    # Number of desired level-1 simulated responses
                         model       # gaussian, exgaussian and shifted.lognormal
-                        ) {
+) {
   # 1) Extract necessary values from the Stan data
   I      <- sdata$I
   J      <- sdata$J
@@ -1210,8 +1339,9 @@ loo_mm_BGHFM <- function(fit,
 # note: it needs a model fitted with mixture-IS approach!
 loo_mixis_BGHFM <- function(
     fit,
-    model = c("gaussian", "exgaussian", "shifted.lognormal"),
+    model = c("gaussian", "exgaussian", "shifted.lognormal", "lognormal", "inverse.RTs", "shifted.lognormal.mix"),
     data,
+    sdata            = NULL,
     subject_var      = "subject",
     task_var         = "task",
     condition_var    = "condition",
@@ -1289,15 +1419,15 @@ loo_mixis_BGHFM <- function(
     if (any(sigma <= 0))  stop("sigma must be > 0")
     if (any(lambda <= 0)) stop("lambda (rate) must be > 0")
     lp <- log(lambda / 2) +
-          0.5 * lambda * (2 * mu + lambda * sigma^2 - 2 * x) +
-          log(.erfc((mu + lambda * sigma^2 - x) / (sqrt(2) * sigma)))
+      0.5 * lambda * (2 * mu + lambda * sigma^2 - 2 * x) +
+      log(.erfc((mu + lambda * sigma^2 - x) / (sqrt(2) * sigma)))
     if (log) lp else exp(lp)
   }
   dshifted_lognorm <- function(x, mu, sigma, delta, log = TRUE) {
     if (any(sigma <= 0)) stop("sigma must be > 0")
     if (any(x < delta))  stop("All x must be >= delta")
     lp <- -log(x - delta) - log(sigma * sqrt(2 * pi)) -
-          ((log(x - delta) - mu)^2 / (2 * sigma^2))
+      ((log(x - delta) - mu)^2 / (2 * sigma^2))
     if (log) lp else exp(lp)
   }
   
@@ -1314,9 +1444,62 @@ loo_mixis_BGHFM <- function(
     shifted.lognormal = list(
       params = c("alpha","beta","sigma","Delta"),
       ll_fun = function(x, pars, mu) dshifted_lognorm(x, mu = mu, sigma = pars$sigma, delta = pars$Delta, log = TRUE)
+    ),
+    lognormal = list(
+      params = c("alpha","beta","sigma"),
+      ll_fun = function(x, pars, mu) dlnorm(x, meanlog = mu, sdlog = pars$sigma, log = TRUE)
+    ),
+    inverse.RTs = list(
+      params = c("alpha","beta","sigma"),
+      ll_fun = function(x, pars, mu) dnorm(-1/x, mean = mu, sd = pars$sigma, log = TRUE) - 2 * log(x)
+    ),
+    shifted.lognormal.mix = list(
+      params = c("alpha","beta","sigma","Delta","pi_cont"),
+      ll_fun = function(x, pars, mu) {
+        
+        # Empty vector of -Inf values
+        ll_shlnorm <- rep(-Inf, length(x))
+        
+        # Compute z-score (x - delta) and identify valid values
+        z <- x - pars$Delta
+        valid <- z > 0
+        
+        # Log-likelihood for valid values
+        if (any(valid)) {
+          z_val <- z[valid]
+          
+          ll_shlnorm[valid] <- -log(z_val) - log(pars$sigma * sqrt(2 * pi)) -
+            ((log(z_val) - mu)^2 / (2 * pars$sigma^2))
+        }
+        
+        # Uniform component
+        ll_uniform <- -log(pars$max_RT)
+        
+        # Matriz for rowLogSumExps
+        mat_mix <- cbind(
+          log(pars$pi_cont) + ll_uniform,
+          log1p(-pars$pi_cont) + ll_shlnorm
+        )
+        
+        # Mixture log-density values
+        result <- ifelse(
+          x <= pars$Delta,
+          # x <= delta: solo contribuye la contaminación
+          log(pars$pi_cont) + ll_uniform,
+          # x > delta: log_mix(pi_cont, uniform, shifted-lognormal)
+          matrixStats::rowLogSumExps(mat_mix)
+        )
+        
+        return(result)
+      }
     )
   )
   spec <- model_specs[[model]]
+  
+  # For mixture models, validate that sdata (Stan data list) is provided
+  if (model == "shifted.lognormal.mix" && is.null(sdata)) {
+    stop("For 'shifted.lognormal.mix', you must provide 'sdata' (the Stan data list) to access RT_max.")
+  }
   
   data <- dplyr::rename(
     data,
@@ -1341,8 +1524,21 @@ loo_mixis_BGHFM <- function(
   beta_idx  <- get_idx("beta")
   sigma_idx <- get_idx("sigma")
   extra_idx <- list()
-  if ("rate"  %in% spec$params)  extra_idx$rate  <- get_idx("rate")
-  if ("Delta" %in% spec$params) extra_idx$Delta <- get_idx("Delta")
+  if ("rate"    %in% spec$params) extra_idx$rate    <- get_idx("rate")
+  if ("Delta"   %in% spec$params) extra_idx$Delta   <- get_idx("Delta")
+  if ("pi_cont" %in% spec$params) extra_idx$pi_cont <- get_idx("pi_cont")
+  
+  # For mixture models: precompute max_RT per observation (max RT per subject and task across conditions)
+  max_RT_vec <- NULL
+  if (model == "shifted.lognormal.mix") {
+    max_RT_vec <- numeric(N)
+    for (n in seq_len(N)) {
+      i_n <- data$subject[n]
+      j_n <- data$task[n]
+      # UL_d[i,j] = max(RT_max[i,,j]) — max across conditions for subject i, task j
+      max_RT_vec[n] <- max(sdata$RT_max[i_n, , j_n])
+    }
+  }
   
   log_sum_invZtilde <- -Inf
   log_sum_pi_i      <- rep(-Inf, N)
@@ -1358,9 +1554,12 @@ loo_mixis_BGHFM <- function(
       
       pars_s <- list(sigma = sigma_s)
       if (length(extra_idx)) {
-        if (!is.null(extra_idx$rate))  pars_s$rate  <- posterior_draws[s, extra_idx$rate,  drop = TRUE]
-        if (!is.null(extra_idx$Delta)) pars_s$Delta <- posterior_draws[s, extra_idx$Delta, drop = TRUE]
+        if (!is.null(extra_idx$rate))    pars_s$rate    <- posterior_draws[s, extra_idx$rate,    drop = TRUE]
+        if (!is.null(extra_idx$Delta))   pars_s$Delta   <- posterior_draws[s, extra_idx$Delta,   drop = TRUE]
+        if (!is.null(extra_idx$pi_cont)) pars_s$pi_cont <- posterior_draws[s, extra_idx$pi_cont, drop = TRUE]
       }
+      # Add max_RT for mixture models
+      if (!is.null(max_RT_vec)) pars_s$max_RT <- max_RT_vec
       
       ll_s <- spec$ll_fun(x = data$RT, pars = pars_s, mu = mu_s)
       
@@ -1404,7 +1603,7 @@ loo_mixis_BGHFM <- function(
 # ─────────────────────────────────────────────────────────────────────────────
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SECTION 7: analytical effect and spearman adjustment formula
+# SECTION 7: Analytical Effect and Spearman Adjustment Formula
 # ─────────────────────────────────────────────────────────────────────────────
 
 # Experimental effects estimation via method of moments
@@ -1463,10 +1662,10 @@ spearman.adj <- function(data,
 
 # Spearman correction with SEs via lavaan
 spearman.lavaan <- function(data, 
-                         subject_var = "subject", 
-                         task_var = "task", 
-                         condition_var = "condition", 
-                         rt_var = "RT"){
+                            subject_var = "subject", 
+                            task_var = "task", 
+                            condition_var = "condition", 
+                            rt_var = "RT"){
   
   # Ensure lavaan package
   ensure_packages("lavaan")
@@ -1478,31 +1677,31 @@ spearman.lavaan <- function(data,
   # Compute experimental effect via method of moments
   effects.mm <- as.data.frame(mean.rt.IJK[,,2] - mean.rt.IJK[,,1])
   colnames(effects.mm) <- paste0("V", 1:ncol(effects.mm))
-    
-    # Prepare lavaan syntax
-    sint <- paste(
-      # 1. Fix factor loadings as sqrt(reliability) * observed standard deviation
-      paste0("F", 1:ncol(effects.mm), "=~(", sqrt(reliab), "*",apply(effects.mm, 2, sd),  ")*", 
-             colnames(effects.mm), "\n", collapse = "\n"),
-      # 2. Fix residual variances as (1 - reliability) * observed variance
-      paste0("V", 1:ncol(effects.mm), "~~(", apply(effects.mm, 2, var), "*", 1 - reliab, ")*", 
-             "V", 1:ncol(effects.mm), "\n", collapse = "\n"), 
-      collapse = "\n")
-    
-    # Fit lavaan model 
-    cfa(sint, effects.mm, estimator = "WLS", std.lv = FALSE)
-    
-    # De-attenuated correlation matrix
-    rho_spearman <- matrix(c(lavInspect(lavaan.fit, what = "std")$psi), ncol = ncol(effects.mm))
-    
-    # WLS standard errors
-    rho_SEs <- diag(ncol(effects.mm))
-    rho_SEs[lower.tri(rho_SEs)] <- standardizedsolution(lavaan.fit)[19:33,5]
-    rho_SEs[upper.tri(rho_SEs)] <- t(rho_SEs)[upper.tri(rho_SEs)]
-    
-    # Return values
-    return(list(rho_est = rho_spearman,
-                rho_SE = rho_SEs)) 
+  
+  # Prepare lavaan syntax
+  sint <- paste(
+    # 1. Fix factor loadings as sqrt(reliability) * observed standard deviation
+    paste0("F", 1:ncol(effects.mm), "=~(", sqrt(reliab), "*",apply(effects.mm, 2, sd),  ")*", 
+           colnames(effects.mm), "\n", collapse = "\n"),
+    # 2. Fix residual variances as (1 - reliability) * observed variance
+    paste0("V", 1:ncol(effects.mm), "~~(", apply(effects.mm, 2, var), "*", 1 - reliab, ")*", 
+           "V", 1:ncol(effects.mm), "\n", collapse = "\n"), 
+    collapse = "\n")
+  
+  # Fit lavaan model 
+  cfa(sint, effects.mm, estimator = "WLS", std.lv = FALSE)
+  
+  # De-attenuated correlation matrix
+  rho_spearman <- matrix(c(lavInspect(lavaan.fit, what = "std")$psi), ncol = ncol(effects.mm))
+  
+  # WLS standard errors
+  rho_SEs <- diag(ncol(effects.mm))
+  rho_SEs[lower.tri(rho_SEs)] <- standardizedsolution(lavaan.fit)[19:33,5]
+  rho_SEs[upper.tri(rho_SEs)] <- t(rho_SEs)[upper.tri(rho_SEs)]
+  
+  # Return values
+  return(list(rho_est = rho_spearman,
+              rho_SE = rho_SEs)) 
 }
 
 # ─────────────────────────────────────────────────────────────────────────────

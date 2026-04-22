@@ -1,7 +1,7 @@
 # ╔════════════════════════════════════════════════════════════════════════════╗
 # ║                             SCRIPT OVERVIEW                                ║
 # ╠════════════════════════════════════════════════════════════════════════════╣
-# ║ Script Name   : paramete_meta_analysis.R                                   ║
+# ║ Script Name   : parameter_meta_analysis.R                                  ║
 # ║ Author        : Ricardo Rey-Sáez                                           ║
 # ║ Role          : PhD Student in Psychology                                  ║
 # ║ Institution   : Autonomous University of Madrid, Spain                     ║
@@ -418,7 +418,7 @@ names(shlognormal_meta_results) <- c("mu_alpha", "mu_theta", "logmu_sigma", "log
 # ─────────────────────────────────────────────────────────────────────────────
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SECTION 8: summaries and save meta-analytic results
+# SECTION 8: Summaries and Meta-Analytic Results
 # ─────────────────────────────────────────────────────────────────────────────
 
 # Final data frame results per model: gaussian model

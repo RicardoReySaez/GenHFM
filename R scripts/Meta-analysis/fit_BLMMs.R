@@ -1,7 +1,7 @@
 # ╔════════════════════════════════════════════════════════════════════════════╗
 # ║                             SCRIPT OVERVIEW                                ║
 # ╠════════════════════════════════════════════════════════════════════════════╣
-# ║ Script Name   : fit_BLMM_models.R                                          ║
+# ║ Script Name   : fit_BLMMs.R                                                ║
 # ║ Author        : Ricardo Rey-Sáez                                           ║
 # ║ Role          : PhD Student in Psychology                                  ║
 # ║ Institution   : Autonomous University of Madrid, Spain                     ║
@@ -12,9 +12,7 @@
 # ─────────────────────────────────────────────────────────────────────────────
 # SECTION 1: Description
 # ─────────────────────────────────────────────────────────────────────────────
-# 1. Clean acdcquery dataset
-# 2. Fit bayesian linear mixed model for each experiment
-# 3. Save parameter estimates for all models
+# Fit Bayesian Linear Mixed Models for each experimental study
 # ─────────────────────────────────────────────────────────────────────────────
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -44,7 +42,7 @@ source("R scripts/R functions/meta_analysis_functions.R")
 # https://github.com/jstbcs/acdc-paper/blob/main/paper/p.Rmd
 # ─────────────────────────────────────────────────────────────────────────────
 
-# Donwload full SQL data base
+# Download full SQL database
 # download.file(url = "https://github.com/jstbcs/acdc-database/raw/main/acdc.db",
 #               destfile = "Data/Raw/acdc.db", mode = "wb")
 
@@ -140,7 +138,7 @@ shlognormal.laplace <- fit_LMM_models(data = all.df, model = "shifted.lognormal"
 # ─────────────────────────────────────────────────────────────────────────────
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SECTION 6: Save parameter estimates results
+# SECTION 7: Save Parameter Estimates Results
 # ─────────────────────────────────────────────────────────────────────────────
 
 # Save author, task and other informative variables for each experiment
@@ -193,7 +191,7 @@ parameter_estimates <- readRDS(file = "Results/Rdata/LMM_laplace_parestimates.rd
 # ─────────────────────────────────────────────────────────────────────────────
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SECTION 7: Minimal checks on model estimates
+# SECTION 8: Minimal Checks on Model Estimates
 # ─────────────────────────────────────────────────────────────────────────────
 
 # Results by task: parameters posterior means

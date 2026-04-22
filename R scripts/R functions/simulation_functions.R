@@ -12,9 +12,7 @@
 # ─────────────────────────────────────────────────────────────────────────────
 # SECTION 1: Description
 # ─────────────────────────────────────────────────────────────────────────────
-
-# R functions necessary in the simulation study
-
+# Functions for the simulation study
 # ─────────────────────────────────────────────────────────────────────────────
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -35,15 +33,15 @@ library(fungible) # Align rotated matrix with population matrix
 
 # Ensure packages inside each function; if not, install it.
 ensure_packages <- function(packages) {
-  # Iterar sobre la lista de paquetes
+  # Iterate over the package list
   for (pkg in packages) {
-    # Verificar si el paquete está instalado
+    # Check if package is installed
     if (!requireNamespace(pkg, quietly = TRUE)) {
-      # Si no está instalado, instalarlo
-      message(sprintf("Instalando el paquete: %s", pkg))
+      # If not installed, install it
+      message(sprintf("Installing package: %s", pkg))
       install.packages(pkg, dependencies = TRUE)
     }
-    # Cargar el paquete
+    # Load the package
     library(pkg, character.only = TRUE)
   }
 }

@@ -12,10 +12,7 @@
 # ─────────────────────────────────────────────────────────────────────────────
 # SECTION 1: Description
 # ─────────────────────────────────────────────────────────────────────────────
-# Script destinated to:
-#   1. Fit gaussian, ex-Gaussian and shifted-lognormal GHFMs
-#   2. Estimate Mixture-IS models
-#   3. Compute ELPDs per model
+# Fit cognitive models to the Viviani dataset
 # ─────────────────────────────────────────────────────────────────────────────
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -42,6 +39,7 @@ source("R scripts/R functions/empirical_functions.R")
 BGHFM_models <- list(
   gaussian          = cmdstan_model("Stan models/BGHFM/E_BGHFM_gaussian.stan"),
   exgaussian_rate   = cmdstan_model("Stan models/BGHFM/E_BGHFM_exgaussian_rate.stan"),
+  lognormal         = cmdstan_model("Stan models/BGHFM/E_BGHFM_lognormal.stan"),
   shifted_lognormal = cmdstan_model("Stan models/BGHFM/E_BGHFM_shlognormal.stan")
 )
 
@@ -166,7 +164,7 @@ priors_all <- setNames(
 # ─────────────────────────────────────────────────────────────────────────────
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SECTION 5: prepare Viviani et al. datasets
+# SECTION 5: Prepare Viviani et al. Datasets
 # ─────────────────────────────────────────────────────────────────────────────
 
 # Load long data frame with level 1 observed response times
@@ -250,7 +248,35 @@ exgaussian_GHFM_fit$save_object(file = "Results/Stan/Viviani/Fitted models/vivia
 # ─────────────────────────────────────────────────────────────────────────────
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SECTION 8: Shifted-lognormal Hierarchical Factor Model
+# SECTION 8: Lognormal Hierarchical Factor Model
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Prepare initial values
+set.seed(2026)
+lognormal_inits <- replicate(n = 4, expr = make_inits(
+  data           = sdata_to_longdf(sdata), 
+  subject_var    = "subject", 
+  task_var       = "task", 
+  condition_var  = "condition",
+  rt_var         = "rt", 
+  congruent_id   = 1, 
+  incongruent_id = 2, 
+  M              = 2, 
+  model          = "lognormal"), 
+  simplify = FALSE)
+
+# Fit lognormal Hierarchical Factor model
+stan_arguments$init <- lognormal_inits
+stan_arguments$data <- c(sdata, priors_all$shlognormal)
+lognormal_GHFM_fit <- do.call(BGHFM_models$lognormal$sample, stan_arguments)
+
+# Save model results
+lognormal_GHFM_fit$save_object(file = "Results/Stan/Viviani/Fitted models/viviani_lognormal_GHFM.rds")
+
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SECTION 9: Shifted-lognormal Hierarchical Factor Model
 # ─────────────────────────────────────────────────────────────────────────────
 
 # Prepare initial values
@@ -278,7 +304,82 @@ shlognormal_GHFM_fit$save_object(file = "Results/Stan/Viviani/Fitted models/vivi
 # ─────────────────────────────────────────────────────────────────────────────
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SECTION 9: Mixture Importance Sampling in all models
+# SECTION 10: Gaussian Hierarchical Factor Model using Inverse-RTs
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Transform RTs to Inverse-RTs
+dat_iRTs <- vivianni_2024_df
+dat_iRTs$RT <- -1/dat_iRTs$RT
+
+# Prepare Stan data with iRTs
+sdata_iRTs <- Stan.list.data(
+  data = dat_iRTs, 
+  subject_var = "subject", 
+  task_var = "task", 
+  condition_var = "condition",
+  congruent_val = 1, 
+  incongruent_val = 0,
+  rt_var = "RT")
+
+# Add latent factos and repulsion parameter
+sdata_iRTs$M <- 2
+sdata_iRTs$xi <- 100
+
+# We're not interested in in LOO-CV right now.
+sdata_iRTs$loo_mix_IS <- 0
+sdata_iRTs$save_log_lik <- 0
+
+# Prepare priors: a direct transformation from RTs
+# Scale factor: SF = 1 / RT_mean^2
+SF <- 1 / priors_all$gaussian$pr_mu_alpha[1,1]^2
+priors_iRTs <- list(
+  pr_mu_alpha    = matrix(c(SF, SF * priors_all$gaussian$pr_mu_alpha[1,2]), 
+                          nrow = 6, ncol = 2, byrow = TRUE),
+  
+  pr_mu_beta     = matrix(SF * priors_all$gaussian$pr_mu_beta[1, 1:2], 
+                          nrow = 6, ncol = 2, byrow = TRUE),
+  
+  pr_shift_sigma = matrix(SF * priors_all$gaussian$pr_shift_sigma[1, 1:2], 
+                          nrow = 6, ncol = 2, byrow = TRUE),
+  
+  pr_sd_alpha    = matrix(c(3, SF * priors_all$gaussian$pr_sd_alpha[1, 2:3]), 
+                          nrow = 6, ncol = 3, byrow = TRUE),
+  
+  pr_sd_beta     = matrix(c(3, SF * priors_all$gaussian$pr_sd_beta[1, 2:3]), 
+                          nrow = 6, ncol = 3, byrow = TRUE),
+  
+  pr_scale_sigma = matrix(c(3, SF * priors_all$gaussian$pr_scale_sigma[1, 2:3]), 
+                          nrow = 6, ncol = 3, byrow = TRUE),
+  pr_L_R_alpha   = priors_all$gaussian$pr_L_R_alpha,
+  pr_h2          = priors_all$gaussian$pr_h2
+)
+
+# Prepare initial values
+set.seed(2026)
+iRTs_inits <- replicate(n = 4, expr = make_inits(
+  data           = sdata_to_longdf(sdata_iRTs), 
+  subject_var    = "subject", 
+  task_var       = "task", 
+  condition_var  = "condition",
+  rt_var         = "rt", 
+  congruent_id   = 1, 
+  incongruent_id = 2, 
+  M              = 2, 
+  model          = "gaussian"), 
+  simplify = FALSE)
+
+# Fit shifted-lognormal Hierarchical Factor model
+stan_arguments$init <- iRTs_inits
+stan_arguments$data <- c(sdata_iRTs, priors_iRTs)
+iRTs_GHFM_fit <- do.call(BGHFM_models$gaussian$sample, stan_arguments)
+
+# Save model results
+iRTs_GHFM_fit$save_object(file = "Results/Stan/Viviani/Fitted models/viviani_iRTs_GHFM.rds")
+
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SECTION 11: Mixture Importance Sampling in all models
 # ─────────────────────────────────────────────────────────────────────────────
 
 # Set LOO-Mixture-IS in all models
@@ -294,20 +395,32 @@ stan_arguments$data <- c(sdata, priors_all$exgaussian_rate)
 stan_arguments$init <- exgaussian_inits
 exgaussian_GHFM_mixture_IS <- do.call(BGHFM_models$exgaussian_rate$sample, stan_arguments)
 
+# Fit Mixture-IS lognormal Hierarchical Factor Model
+stan_arguments$data <- c(sdata, priors_all$shlognormal)
+stan_arguments$init <- lognormal_inits
+lognormal_GHFM_mixture_IS <- do.call(BGHFM_models$lognormal$sample, stan_arguments)
+
 # Fit Mixture-IS shifted-lognormal Hierarchical Factor Model
 stan_arguments$data <- c(sdata, priors_all$shlognormal)
 stan_arguments$init <- shlognormal_inits
 shlognormal_GHFM_mixture_IS <- do.call(BGHFM_models$shifted_lognormal$sample, stan_arguments)
 
+# Fit Mixture-IS inverse-RTs Hierarchical Factor Model
+stan_arguments$data <- c(sdata_iRTs, priors_iRTs)
+stan_arguments$init <- iRTs_inits
+iRTs_GHFM_mixture_IS <- do.call(BGHFM_models$gaussian$sample, stan_arguments)
+
 # Save Mixture-IS models
 gaussian_HFM_mixture_IS$save_object(file = "Results/Stan/Viviani/Mixture IS models/viviani_gaussian_HFM_mixtureIS.rds")
 exgaussian_GHFM_mixture_IS$save_object(file = "Results/Stan/Viviani/Mixture IS models/viviani_exgaussian_GHFM_mixtureIS.rds")
+lognormal_GHFM_mixture_IS$save_object(file = "Results/Stan/Viviani/Mixture IS models/viviani_lognormal_GHFM_mixtureIS.rds")
 shlognormal_GHFM_mixture_IS$save_object(file = "Results/Stan/Viviani/Mixture IS models/viviani_shlognormal_GHFM_mixtureIS.rds")
+iRTs_GHFM_mixture_IS$save_object(file = "Results/Stan/Viviani/Mixture IS models/viviani_iRTs_GHFM_mixtureIS.rds")
 
 # ─────────────────────────────────────────────────────────────────────────────
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SECTION 10: Estimate ELPDs using Mixture-IS 
+# SECTION 12: Estimate ELPDs using Mixture-IS 
 # ─────────────────────────────────────────────────────────────────────────────
 
 # Estimate Gaussian HFM Mixture-IS ELPDs
@@ -334,10 +447,34 @@ loo_mixis_exgaussian <- loo_mixis_BGHFM(
   condition_center = 1.5, 
   progress_bar = TRUE)
 
+# Estimate lognormal HFM Mixture-IS ELPDs
+loo_mixis_lognormal <- loo_mixis_BGHFM(
+  fit = lognormal_GHFM_mixture_IS, 
+  model = "lognormal", 
+  data = sdata_to_longdf(sdata), 
+  subject_var = "subject", 
+  task_var = "task", 
+  condition_var = "condition", 
+  rt_var = "rt", 
+  condition_center = 1.5, 
+  progress_bar = TRUE)
+
 # Estimate shifted-lognormal HFM Mixture-IS ELPDs
 loo_mixis_shlognormal <- loo_mixis_BGHFM(
   fit = shlognormal_GHFM_mixture_IS, 
   model = "shifted.lognormal", 
+  data = sdata_to_longdf(sdata), 
+  subject_var = "subject", 
+  task_var = "task", 
+  condition_var = "condition", 
+  rt_var = "rt", 
+  condition_center = 1.5, 
+  progress_bar = TRUE)
+
+# Estimate inverse-RTs HFM Mixture-IS ELPDs
+loo_mixis_iRTs <- loo_mixis_BGHFM(
+  fit = iRTs_GHFM_mixture_IS, 
+  model = "inverse.RTs", 
   data = sdata_to_longdf(sdata), 
   subject_var = "subject", 
   task_var = "task", 
@@ -359,7 +496,7 @@ saveRDS(viviani_ELPDs, file = "Results/Rdata/ELPDs/viviani_HFM_ELPDs.rds")
 # ─────────────────────────────────────────────────────────────────────────────
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SECTION 11: Approximated ELPD in LMM (Zewotir & Galpin, 2005, p.160)
+# SECTION 13: Approximated ELPD in LMM (Zewotir & Galpin, 2005, p.160)
 # ─────────────────────────────────────────────────────────────────────────────
 
 # Download raw data from OSF

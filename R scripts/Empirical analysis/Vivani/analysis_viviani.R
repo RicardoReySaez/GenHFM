@@ -21,6 +21,7 @@
 # Libraries necessary for the script to function
 library(cmdstanr)
 library(posterior)
+library(lme4)
 library(dplyr)
 library(tidyr)
 library(lavaan)
@@ -79,8 +80,9 @@ format_cell <- function(mean_val, lower, upper, latex = FALSE) {
   return(list(mean = m_str, ci = ci_str))
 }
 
-# Load fitted ex-gaussian HFM
+# Load fitted ex-gaussian HFM and 
 exg_HFM  <- readRDS("Results/Stan/Viviani/Fitted models/viviani_exgaussian_GHFM.rds")
+iRTs_HFM  <- readRDS("Results/Stan/Viviani/Fitted models/viviani_iRTs_GHFM.rds")
 
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -144,27 +146,37 @@ ELPD_LMMs <- readRDS("Results/Rdata/ELPDs/viviani_LMM_ELPDs.rds")
 
 # Data frame with ELPDs comparison
 data.frame(
-  model_1 = rep("exgaussian", 4),
-  model_2 = c("shifted-lognormal", "LMM_full", "LMM_basic", "normal"),
+  model_1 = rep("exgaussian", 6),
+  model_2 = c("Inverse-RTs", "shifted-lognormal", "LMM_full", "lognormal", "LMM_basic", "normal"),
   elpd_diff = c(
+    sum(viviani_ELPDs$ELPD_exgaussian$elpd_i - viviani_ELPDs$ELPD_iRTs$elpd_i),
     sum(viviani_ELPDs$ELPD_exgaussian$elpd_i - viviani_ELPDs$ELPD_shlognormal$elpd_i),
     sum(viviani_ELPDs$ELPD_exgaussian$elpd_i - ELPD_LMMs$ELPD_LMM_full$elpd_i),
+    sum(viviani_ELPDs$ELPD_exgaussian$elpd_i - viviani_ELPDs$ELPD_lognormal$elpd_i),
     sum(viviani_ELPDs$ELPD_exgaussian$elpd_i - ELPD_LMMs$ELPD_LMM_basic$elpd_i),
     sum(viviani_ELPDs$ELPD_exgaussian$elpd_i - viviani_ELPDs$ELPD_gaussian$elpd_i)
   ),
   elpd_diff_se = c(
+    sd(viviani_ELPDs$ELPD_exgaussian$elpd_i - viviani_ELPDs$ELPD_iRTs$elpd_i) * sqrt(length(viviani_ELPDs$ELPD_exgaussian$elpd_i)),
     sd(viviani_ELPDs$ELPD_exgaussian$elpd_i - viviani_ELPDs$ELPD_shlognormal$elpd_i) * sqrt(length(viviani_ELPDs$ELPD_exgaussian$elpd_i)),
     sd(viviani_ELPDs$ELPD_exgaussian$elpd_i - ELPD_LMMs$ELPD_LMM_full$elpd_i) * sqrt(length(viviani_ELPDs$ELPD_exgaussian$elpd_i)),
+    sd(viviani_ELPDs$ELPD_exgaussian$elpd_i - viviani_ELPDs$ELPD_lognormal$elpd_i) * sqrt(length(viviani_ELPDs$ELPD_exgaussian$elpd_i)),
     sd(viviani_ELPDs$ELPD_exgaussian$elpd_i - ELPD_LMMs$ELPD_LMM_basic$elpd_i) * sqrt(length(viviani_ELPDs$ELPD_exgaussian$elpd_i)),
     sd(viviani_ELPDs$ELPD_exgaussian$elpd_i - viviani_ELPDs$ELPD_gaussian$elpd_i) * sqrt(length(viviani_ELPDs$ELPD_exgaussian$elpd_i))
   ),
   #  Probability that the ex-gaussina model will outperform the other models when predicting new data
   P_better = round(c(1 - pnorm(0, 
+                               mean = sum(viviani_ELPDs$ELPD_exgaussian$elpd_i - viviani_ELPDs$ELPD_iRTs$elpd_i), 
+                               sd = sd(viviani_ELPDs$ELPD_exgaussian$elpd_i - viviani_ELPDs$ELPD_iRTs$elpd_i) * sqrt(length(viviani_ELPDs$ELPD_exgaussian$elpd_i))),
+                     1 - pnorm(0, 
                                mean = sum(viviani_ELPDs$ELPD_exgaussian$elpd_i - viviani_ELPDs$ELPD_shlognormal$elpd_i), 
                                sd = sd(viviani_ELPDs$ELPD_exgaussian$elpd_i - viviani_ELPDs$ELPD_shlognormal$elpd_i) * sqrt(length(viviani_ELPDs$ELPD_exgaussian$elpd_i))),
                      1 - pnorm(0, 
                                mean = sum(viviani_ELPDs$ELPD_exgaussian$elpd_i - ELPD_LMMs$ELPD_LMM_full$elpd_i), 
                                sd = sd(viviani_ELPDs$ELPD_exgaussian$elpd_i - ELPD_LMMs$ELPD_LMM_full$elpd_i) * sqrt(length(viviani_ELPDs$ELPD_exgaussian$elpd_i))),
+                     1 - pnorm(0, 
+                               mean = sum(viviani_ELPDs$ELPD_exgaussian$elpd_i - viviani_ELPDs$ELPD_lognormal$elpd_i), 
+                               sd = sd(viviani_ELPDs$ELPD_exgaussian$elpd_i - viviani_ELPDs$ELPD_lognormal$elpd_i) * sqrt(length(viviani_ELPDs$ELPD_exgaussian$elpd_i))),
                      1 - pnorm(0, 
                                mean = sum(viviani_ELPDs$ELPD_exgaussian$elpd_i - ELPD_LMMs$ELPD_LMM_basic$elpd_i), 
                                sd = sd(viviani_ELPDs$ELPD_exgaussian$elpd_i - ELPD_LMMs$ELPD_LMM_basic$elpd_i) * sqrt(length(viviani_ELPDs$ELPD_exgaussian$elpd_i))), 
@@ -175,7 +187,7 @@ data.frame(
 # ─────────────────────────────────────────────────────────────────────────────
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SECTION 6: model-implied factor loadings
+# SECTION 6: Model-Implied Factor Loadings
 # ─────────────────────────────────────────────────────────────────────────────
 
 # Frequentist factor loadings
@@ -189,12 +201,21 @@ exgaussian_loads <- MatchAlign(fit = exg_HFM, lambda_name = "Lambda_std",
                                only_summary = FALSE)
 aligned_exgauss_loads <- summarise_draws(exgaussian_loads$rotated_draws, mean, 
                                          quantile =~ quantile(.x, c(.025, .975)))
+iRTs_loads <- MatchAlign(fit = iRTs_HFM, lambda_name = "Lambda_std", 
+                               only_summary = FALSE)
+aligned_iRTs_loads <- summarise_draws(iRTs_loads$rotated_draws, mean, 
+                                         quantile =~ quantile(.x, c(.025, .975)))
+
+
+# Reorder iRTs loadings (factor 2 is factor 1)
+aligned_iRTs_loads <- rbind(aligned_iRTs_loads[7:12,], aligned_iRTs_loads[1:6,])
 
 # Factor loadings results table
 lambda_table <- cbind(
   aligned_exgauss_loads[,1], 
   standardizedsolution(LMM_basic_EFA)[1:12, c("est.std", "ci.lower", "ci.upper")],
   standardizedsolution(LMM_full_EFA)[1:12, c("est.std", "ci.lower", "ci.upper")], 
+  aligned_iRTs_loads[,-1],
   aligned_exgauss_loads[,-1])
 
 # Table labels
@@ -205,7 +226,8 @@ tasks <- rep(c("Peripheral", "Perifoveal", "Navon",
 # Detect significant correlations for each model
 LMM_basic_vals  <- mapply(format_cell, lambda_table[,2], lambda_table[,3], lambda_table[,4], latex = FALSE)
 LMM_full_vals <- mapply(format_cell, lambda_table[,5], lambda_table[,6], lambda_table[,7], latex = FALSE)
-eg_vals <- mapply(format_cell, lambda_table[,8], lambda_table[,9], lambda_table[,10], latex = FALSE)
+iRT_vals <- mapply(format_cell, lambda_table[,8], lambda_table[,9], lambda_table[,10], latex = FALSE)
+eg_vals <- mapply(format_cell, lambda_table[,11], lambda_table[,12], lambda_table[,13], latex = FALSE)
 
 # Final data frame for kable
 df_final <- data.frame(
@@ -215,6 +237,8 @@ df_final <- data.frame(
   LMM_B_CI = unlist(LMM_basic_vals["ci",]),
   LMM_F_Mean = unlist(LMM_full_vals["mean",]),
   LMM_F_CI = unlist(LMM_full_vals["ci",]),
+  iRT_Mean = unlist(iRT_vals["mean",]),
+  iRT_CI = unlist(iRT_vals["ci",]),
   EG_Mean = unlist(eg_vals["mean",]),
   EG_CI = unlist(eg_vals["ci",])
 )
@@ -223,14 +247,15 @@ df_final <- data.frame(
 kbl(df_final, 
     col.names = c("Factor", "Task", 
                   "$\\hat{\\lambda}$", "95% CI", 
+                  "$\\hat{\\lambda}$", "95% CI",
                   "$\\hat{\\lambda}$", "95% CI", 
                   "$\\hat{\\lambda}$", "95% CI"),
     escape = FALSE, 
     booktabs = TRUE,
-    align = c("l", "l", "c", "c", "c", "c", "c", "c"), 
+    align = c("l", "l", "c", "c", "c", "c", "c", "c", "c", "c"), 
     caption = "Model-implied factor loadings") |> 
   kable_styling(full_width = F) |> 
-  add_header_above(c(" " = 2, "HM (no predictors)" = 2, "HM (with predictors)" = 2, "Ex-Gaussian" = 2)) |>
+  add_header_above(c(" " = 2, "HM (no predictors)" = 2, "HM (with predictors)" = 2, "iRT HFM" = 2,  "Ex-Gaussian HFM" = 2)) |>
   collapse_rows(columns = 1, valign = "middle") |> 
   row_spec(0, bold = TRUE) |> 
   row_spec(6, hline_after = TRUE)
@@ -238,7 +263,8 @@ kbl(df_final,
 # Detect significant correlations for each model
 LMM_basic_vals  <- mapply(format_cell, lambda_table[,2], lambda_table[,3], lambda_table[,4], latex = TRUE)
 LMM_full_vals <- mapply(format_cell, lambda_table[,5], lambda_table[,6], lambda_table[,7], latex = TRUE)
-eg_vals <- mapply(format_cell, lambda_table[,8], lambda_table[,9], lambda_table[,10], latex = TRUE)
+iRT_vals <- mapply(format_cell, lambda_table[,8], lambda_table[,9], lambda_table[,10], latex = TRUE)
+eg_vals <- mapply(format_cell, lambda_table[,11], lambda_table[,12], lambda_table[,13], latex = TRUE)
 
 # Final LaTeX data frame
 viviani_loads <- data.frame(
@@ -248,6 +274,8 @@ viviani_loads <- data.frame(
   LMM_B_CI = unlist(LMM_basic_vals["ci",]),
   LMM_F_Mean = unlist(LMM_full_vals["mean",]),
   LMM_F_CI = unlist(LMM_full_vals["ci",]),
+  iRT_Mean = unlist(iRT_vals["mean",]),
+  iRT_CI = unlist(iRT_vals["ci",]),
   EG_Mean = unlist(eg_vals["mean",]),
   EG_CI = unlist(eg_vals["ci",])
 )
@@ -271,8 +299,14 @@ viviani_reliab <- data.frame(
   LMM_full_CI  = c("[0.715, 0.876]", "[0.699, 0.884]", 
                    "[0.558, 0.864]", "[0.864, 0.966]",
                    "[0.907, 0.980]", "[0.570, 0.867]"),
-  GenHFM_est = sprintf("%.3f", c(exg_HFM$summary("reliability", median)$median)),
-  GenHFM_CI = paste0(
+  iRT_est = sprintf("%.3f", c(iRTs_HFM$summary("reliability", median)$median)),
+  iRT_CI = paste0(
+    "[", sprintf("%.3f", unlist(iRTs_HFM$summary("reliability", quantile =~ quantile(.x, .025))[,2])), 
+    ", ",
+    sprintf("%.3f", unlist(iRTs_HFM$summary("reliability", quantile =~ quantile(.x, .975))[,2])), 
+    "]"),
+  exg_est = sprintf("%.3f", c(exg_HFM$summary("reliability", median)$median)),
+  exg_CI = paste0(
     "[", sprintf("%.3f", unlist(exg_HFM$summary("reliability", quantile =~ quantile(.x, .025))[,2])), 
     ", ",
     sprintf("%.3f", unlist(exg_HFM$summary("reliability", quantile =~ quantile(.x, .975))[,2])), 
@@ -284,15 +318,17 @@ kbl(viviani_reliab,
     col.names = c("Task", 
                   "$\\hat{\\rho}$", "95% CI", 
                   "$\\hat{\\rho}$", "95% CI", 
+                  "$\\hat{\\rho}$", "95% CI", 
                   "$\\hat{\\rho}$", "95% CI"),
     escape = FALSE, 
     booktabs = TRUE,
-    align = c("l", "c", "c", "c", "c", "c", "c"),
+    align = c("l", "c", "c", "c", "c", "c", "c", "c", "c"),
     caption = "Reliability estimates of experimental effects using hierarchical models (HM) with and without predictors, and the Ex-Gaussian HFM</i>") |> 
   kable_styling(full_width = F) |> 
   add_header_above(c(" " = 1, 
                      "HM (no predictors)" = 2, 
                      "HM (with predictors)" = 2, 
+                     "iRTs HFM" = 2,
                      "Ex-Gaussian HFM" = 2))
 
 # Final LaTeX data frame

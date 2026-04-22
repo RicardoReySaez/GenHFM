@@ -12,7 +12,7 @@
 # ─────────────────────────────────────────────────────────────────────────────
 # SECTION 1: Description
 # ─────────────────────────────────────────────────────────────────────────────
-# Main results and tables reported in the main text
+# Generate empirical analysis results for the main text
 # ─────────────────────────────────────────────────────────────────────────────
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -25,7 +25,7 @@ library(kableExtra)
 # ─────────────────────────────────────────────────────────────────────────────
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SECTION 3: user-defined functions
+# SECTION 3: User-Defined Functions
 # ─────────────────────────────────────────────────────────────────────────────
 
 # Function for detect significant values and put it in bold
@@ -83,17 +83,27 @@ get_comparison <- function(exp_suffix, target_model) {
 }
 
 # First column of the ELPDs data frame
-ELPDs_table <- data.frame(Model = c("Ex-Gaussian", "Sh-lognormal", "Gaussian"))
+ELPDs_table <- data.frame(Model = c("Ex-Gaussian", "Sh-lognormal", "Lognormal", "Gaussian"))
 
 # Iteramos sobre cada experimento para añadir sus dos columnas
 for (e in exps) {
   # ex-gaussian vs shifted-lognormal
   sh_res <- get_comparison(e, "shlognormal")
+  # ex-gaussian vs lognormal
+  lg_res <- get_comparison(e, "lognormal")
   # ex-gaussian vs gaussian
   ga_res <- get_comparison(e, "gaussian")
   # Add this columns to our final table
-  ELPDs_table[[paste0("ELPD_", e)]] <- c("0.00", as.character(sh_res[1]), as.character(ga_res[1]))
-  ELPDs_table[[paste0("SE_", e)]]   <- c("---", as.character(sh_res[2]), as.character(ga_res[2]))
+  ELPDs_table[[paste0("ELPD_", e)]] <- c(
+    "0.00", 
+    as.character(sh_res[1]), 
+    as.character(lg_res[1]), 
+    as.character(ga_res[1]))
+  ELPDs_table[[paste0("SE_", e)]]   <- c(
+    "---",
+    as.character(sh_res[2]), 
+    as.character(lg_res[2]), 
+    as.character(ga_res[2]))
 }
 
 # Save ELPDs table
@@ -102,7 +112,7 @@ save(ELPDs_table, file = "Results/Rdata/Tables/whitehead_ELPDs_table.rdata")
 # ─────────────────────────────────────────────────────────────────────────────
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SECTION 5: load fitted models
+# SECTION 5: Load Fitted Models
 # ─────────────────────────────────────────────────────────────────────────────
 
 # Load gaussian HFM fitted models
@@ -117,6 +127,12 @@ exgaussian_E2  <- readRDS("Results/Stan/Whitehead/Fitted models/whitehead_exgaus
 exgaussian_E3  <- readRDS("Results/Stan/Whitehead/Fitted models/whitehead_exgaussian_GHFM_E3.rds")
 exgaussian_all <- readRDS("Results/Stan/Whitehead/Fitted models/whitehead_exgaussian_GHFM_joint.rds")
 
+# Load lognormal HFM fitted models
+lognormal_E1  <- readRDS("Results/Stan/Whitehead/Fitted models/whitehead_lognormal_GHFM_E1.rds")
+lognormal_E2  <- readRDS("Results/Stan/Whitehead/Fitted models/whitehead_lognormal_GHFM_E2.rds")
+lognormal_E3  <- readRDS("Results/Stan/Whitehead/Fitted models/whitehead_lognormal_GHFM_E3.rds")
+lognormal_all <- readRDS("Results/Stan/Whitehead/Fitted models/whitehead_lognormal_GHFM_joint.rds")
+
 # Load ex-gaussian HFM fitted models
 shlognormal_E1  <- readRDS("Results/Stan/Whitehead/Fitted models/whitehead_shlognormal_GHFM_E1.rds")
 shlognormal_E2  <- readRDS("Results/Stan/Whitehead/Fitted models/whitehead_shlognormal_GHFM_E2.rds")
@@ -126,7 +142,7 @@ shlognormal_all <- readRDS("Results/Stan/Whitehead/Fitted models/whitehead_shlog
 # ─────────────────────────────────────────────────────────────────────────────
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SECTION 6: model-implied true correlations
+# SECTION 6: Model-Implied True Correlations
 # ─────────────────────────────────────────────────────────────────────────────
 
 # Correlations
@@ -147,6 +163,12 @@ rho_table <- cbind(
     exgaussian_all$summary(rho_ids, mean, quantile =~ quantile(.x, c(.025, .975)))[,-1]
   ),
   rbind(
+    lognormal_E1$summary(rho_ids, mean, quantile =~ quantile(.x, c(.025, .975)))[,-1],
+    lognormal_E2$summary(rho_ids, mean, quantile =~ quantile(.x, c(.025, .975)))[,-1],
+    lognormal_E3$summary(rho_ids, mean, quantile =~ quantile(.x, c(.025, .975)))[,-1],
+    lognormal_all$summary(rho_ids, mean, quantile =~ quantile(.x, c(.025, .975)))[,-1]
+  ),
+  rbind(
     shlognormal_E1$summary(rho_ids, mean, quantile =~ quantile(.x, c(.025, .975)))[,-1],
     shlognormal_E2$summary(rho_ids, mean, quantile =~ quantile(.x, c(.025, .975)))[,-1],
     shlognormal_E3$summary(rho_ids, mean, quantile =~ quantile(.x, c(.025, .975)))[,-1],
@@ -161,7 +183,8 @@ pairs <- rep(c("Simon–Flanker", "Simon–Stroop", "Flanker–Stroop"), 4)
 # Detect significant correlations for each model
 g_vals <- mapply(format_cell, rho_table[,2], rho_table[,3], rho_table[,4], latex = FALSE)
 eg_vals <- mapply(format_cell, rho_table[,5], rho_table[,6], rho_table[,7], latex = FALSE)
-sl_vals <- mapply(format_cell, rho_table[,8], rho_table[,9], rho_table[,10], latex = FALSE)
+lg_vals <- mapply(format_cell, rho_table[,8], rho_table[,9], rho_table[,10], latex = FALSE)
+sl_vals <- mapply(format_cell, rho_table[,11], rho_table[,12], rho_table[,13], latex = FALSE)
 
 # Final data frame for kable
 df_final <- data.frame(
@@ -171,6 +194,8 @@ df_final <- data.frame(
   G_CI = unlist(g_vals["ci",]),
   EG_Mean = unlist(eg_vals["mean",]),
   EG_CI = unlist(eg_vals["ci",]),
+  LG_Mean = unlist(lg_vals["mean",]),
+  LG_CI = unlist(lg_vals["ci",]),
   SL_Mean = unlist(sl_vals["mean",]),
   SL_CI = unlist(sl_vals["ci",])
 )
@@ -180,13 +205,14 @@ kbl(df_final,
     col.names = c("Experiment", "Pair", 
                   "$\\hat{\\rho}$", "95% CI", 
                   "$\\hat{\\rho}$", "95% CI", 
+                  "$\\hat{\\rho}$", "95% CI", 
                   "$\\hat{\\rho}$", "95% CI"),
     escape = FALSE, 
     booktabs = TRUE,
-    align = c("l", "l", "c", "c", "c", "c", "c", "c"), 
-    caption = "Model-implied correlation estimates for the three HFMs across Whitehead et al. experiments") |> 
+    align = c("l", "l", "c", "c", "c", "c", "c", "c", "c", "c"), 
+    caption = "Model-implied correlation estimates for the four HFMs across Whitehead et al. experiments") |> 
   kable_styling(full_width = F) |> 
-  add_header_above(c(" " = 2, "Gaussian" = 2, "Ex-Gaussian" = 2, "Sh-lognormal" = 2)) |>
+  add_header_above(c(" " = 2, "Gaussian" = 2, "Ex-Gaussian" = 2, "lognormal" = 2, "Sh-lognormal" = 2)) |>
   collapse_rows(columns = 1, valign = "middle") |> 
   row_spec(0, bold = TRUE) |> 
   row_spec(c(3, 6, 9), hline_after = TRUE)
@@ -194,7 +220,8 @@ kbl(df_final,
 # Save this table for LaTeX table in the main text
 g_vals <- mapply(format_cell, rho_table[,2], rho_table[,3], rho_table[,4], latex = TRUE)
 eg_vals <- mapply(format_cell, rho_table[,5], rho_table[,6], rho_table[,7], latex = TRUE)
-sl_vals <- mapply(format_cell, rho_table[,8], rho_table[,9], rho_table[,10], latex = TRUE)
+lg_vals <- mapply(format_cell, rho_table[,8], rho_table[,9], rho_table[,10], latex = TRUE)
+sl_vals <- mapply(format_cell, rho_table[,11], rho_table[,12], rho_table[,13], latex = TRUE)
 
 # Final LaTeX data frame
 whitehead_cors <- data.frame(
@@ -204,6 +231,8 @@ whitehead_cors <- data.frame(
   G_CI = unlist(g_vals["ci",]),
   EG_Mean = unlist(eg_vals["mean",]),
   EG_CI = unlist(eg_vals["ci",]),
+  LG_Mean = unlist(lg_vals["mean",]),
+  LG_CI = unlist(lg_vals["ci",]),
   SL_Mean = unlist(sl_vals["mean",]),
   SL_CI = unlist(sl_vals["ci",])
 )
@@ -213,7 +242,7 @@ save(whitehead_cors, file = "Results/Rdata/Tables/whitehead_cors.rdata")
 # ─────────────────────────────────────────────────────────────────────────────
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SECTION 7: model-implied factor loadings
+# SECTION 7: Model-Implied Factor Loadings
 # ─────────────────────────────────────────────────────────────────────────────
 
 # Correlation results table
@@ -231,6 +260,12 @@ lambda_table <- cbind(
     exgaussian_all$summary("Lambda_std", mean, quantile =~ quantile(.x, c(.025, .975)))[,-1]
   ),
   rbind(
+    lognormal_E1$summary("Lambda_std", mean, quantile =~ quantile(.x, c(.025, .975)))[,-1],
+    lognormal_E2$summary("Lambda_std", mean, quantile =~ quantile(.x, c(.025, .975)))[,-1],
+    lognormal_E3$summary("Lambda_std", mean, quantile =~ quantile(.x, c(.025, .975)))[,-1],
+    lognormal_all$summary("Lambda_std", mean, quantile =~ quantile(.x, c(.025, .975)))[,-1]
+  ),
+  rbind(
     shlognormal_E1$summary("Lambda_std", mean, quantile =~ quantile(.x, c(.025, .975)))[,-1],
     shlognormal_E2$summary("Lambda_std", mean, quantile =~ quantile(.x, c(.025, .975)))[,-1],
     shlognormal_E3$summary("Lambda_std", mean, quantile =~ quantile(.x, c(.025, .975)))[,-1],
@@ -245,7 +280,8 @@ pairs <- rep(c("Simon", "Flanker", "Stroop"), 4)
 # Detect significant correlations for each model
 g_vals <- mapply(format_cell, lambda_table[,2], lambda_table[,3], lambda_table[,4], latex = FALSE)
 eg_vals <- mapply(format_cell, lambda_table[,5], lambda_table[,6], lambda_table[,7], latex = FALSE)
-sl_vals <- mapply(format_cell, lambda_table[,8], lambda_table[,9], lambda_table[,10], latex = FALSE)
+lg_vals <- mapply(format_cell, lambda_table[,8], lambda_table[,9], lambda_table[,10], latex = FALSE)
+sl_vals <- mapply(format_cell, lambda_table[,11], lambda_table[,12], lambda_table[,13], latex = FALSE)
 
 # Final data frame for kable
 df_final <- data.frame(
@@ -255,6 +291,8 @@ df_final <- data.frame(
   G_CI = unlist(g_vals["ci",]),
   EG_Mean = unlist(eg_vals["mean",]),
   EG_CI = unlist(eg_vals["ci",]),
+  LG_Mean = unlist(lg_vals["mean",]),
+  LG_CI = unlist(lg_vals["ci",]),
   SL_Mean = unlist(sl_vals["mean",]),
   SL_CI = unlist(sl_vals["ci",])
 )
@@ -263,22 +301,24 @@ df_final <- data.frame(
 kbl(df_final, 
     col.names = c("Experiment", "Pair", 
                   "$\\hat{\\lambda}$", "95% CI", 
+                  "$\\hat{\\lambda}$", "95% CI",
                   "$\\hat{\\lambda}$", "95% CI", 
                   "$\\hat{\\lambda}$", "95% CI"),
     escape = FALSE, 
     booktabs = TRUE,
-    align = c("l", "l", "c", "c", "c", "c", "c", "c"), 
-    caption = "Model-implied correlation estimates for the three HFMs across Whitehead et al. experiments") |> 
+    align = c("l", "l", "c", "c", "c", "c", "c", "c", "c", "c"), 
+    caption = "Model-implied correlation estimates for the four HFMs across Whitehead et al. experiments") |> 
   kable_styling(full_width = F) |> 
-  add_header_above(c(" " = 2, "Gaussian" = 2, "Ex-Gaussian" = 2, "Sh-lognormal" = 2)) |>
+  add_header_above(c(" " = 2, "Gaussian" = 2, "Ex-Gaussian" = 2, "Lognormal" = 2, "Sh-lognormal" = 2)) |>
   collapse_rows(columns = 1, valign = "middle") |> 
   row_spec(0, bold = TRUE) |> 
   row_spec(c(3, 6, 9), hline_after = TRUE)
 
 # Save this table for LaTeX table in the main text
-g_vals <- mapply(format_cell, lambda_table[,2], lambda_table[,3], lambda_table[,4], latex = TRUE)
+g_vals  <- mapply(format_cell, lambda_table[,2], lambda_table[,3], lambda_table[,4], latex = TRUE)
 eg_vals <- mapply(format_cell, lambda_table[,5], lambda_table[,6], lambda_table[,7], latex = TRUE)
-sl_vals <- mapply(format_cell, lambda_table[,8], lambda_table[,9], lambda_table[,10], latex = TRUE)
+lg_vals <- mapply(format_cell, lambda_table[,8], lambda_table[,9], lambda_table[,10], latex = TRUE)
+sl_vals <- mapply(format_cell, lambda_table[,11], lambda_table[,12], lambda_table[,13], latex = TRUE)
 
 # Final LaTeX data frame
 whitehead_loads <- data.frame(
@@ -288,6 +328,8 @@ whitehead_loads <- data.frame(
   G_CI = unlist(g_vals["ci",]),
   EG_Mean = unlist(eg_vals["mean",]),
   EG_CI = unlist(eg_vals["ci",]),
+  LG_Mean = unlist(lg_vals["mean",]),
+  LG_CI = unlist(lg_vals["ci",]),
   SL_Mean = unlist(sl_vals["mean",]),
   SL_CI = unlist(sl_vals["ci",])
 )
