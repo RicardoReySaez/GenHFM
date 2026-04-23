@@ -1,7 +1,7 @@
 # ╔════════════════════════════════════════════════════════════════════════════╗
 # ║                             SCRIPT OVERVIEW                                ║
 # ╠════════════════════════════════════════════════════════════════════════════╣
-# ║ Script Name   : fit_models_whitehead.R                                     ║
+# ║ Script Name   : fit_models_whitehead_joint.R                               ║
 # ║ Author        : Ricardo Rey-Sáez                                           ║
 # ║ Role          : PhD Student in Psychology                                  ║
 # ║ Institution   : Autonomous University of Madrid, Spain                     ║
@@ -12,10 +12,7 @@
 # ─────────────────────────────────────────────────────────────────────────────
 # SECTION 1: Description
 # ─────────────────────────────────────────────────────────────────────────────
-# Script destinated to:
-#   1. Fit gaussian, ex-Gaussian and sh-lognormal GHFMs for all experiment
-#   2. Estimate Mixture-IS models
-#   3. Compute ELPDs per model
+# Fit GHFMs and Mixture-IS models for all experiments toguether
 # ─────────────────────────────────────────────────────────────────────────────
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -39,6 +36,7 @@ source("R scripts/R functions/empirical_functions.R")
 BGHFM_models <- list(
   gaussian          = cmdstan_model("Stan models/BGHFM/C_BGHFM_gaussian.stan"),
   exgaussian_tau    = cmdstan_model("Stan models/BGHFM/C_BGHFM_exgaussian_tau.stan"),
+  lognormal         = cmdstan_model("Stan models/BGHFM/C_BGHFM_lognormal.stan"),
   shifted_lognormal = cmdstan_model("Stan models/BGHFM/C_BGHFM_shlognormal.stan")
 )
 
@@ -77,7 +75,7 @@ priors_all <- list(
     pr_L_Phi = 1,
     # Factor loadings
     pr_L_raw = c(1,1)
-    ),
+  ),
   exgaussian_tau = list(
     # Population means
     pr_mu_alpha = matrix(c(0, 1), ncol = 2, nrow = 3, byrow = TRUE),
@@ -117,7 +115,7 @@ priors_all <- list(
 # ─────────────────────────────────────────────────────────────────────────────
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SECTION 5: prepare whitehead et al. datasets
+# SECTION 5: Prepare Whitehead et al. Datasets
 # ─────────────────────────────────────────────────────────────────────────────
 
 # Prepare whitehead data frame
@@ -137,52 +135,23 @@ sdata <- Stan.list.data(
   incongruent_val = 1, 
   rt_var = "RT")
 
-  # Add latent factors and Lambda index
-  sdata$M <-  1
-  sdata$Lambda_index <- matrix(1, nrow = 3)
-  
-  # We're not interested in in LOO-CV right now.
-  sdata$loo_mix_IS <- 0
-  sdata$save_log_lik <- 0
-  
-  # ─────────────────────────────────────────────────────────────────────────────
-  
-  # ─────────────────────────────────────────────────────────────────────────────
-  # SECTION 6: Gaussian Hierarchical Factor Model
-  # ─────────────────────────────────────────────────────────────────────────────
-  
-  # Prepare starting values
-  gaussian_inits <- replicate(
-    n = 4, expr = make_inits(
-      data           = sdata_to_longdf(sdata), 
-      subject_var    = "subject", 
-      task_var       = "task", 
-      condition_var  = "condition",
-      rt_var         = "rt", 
-      congruent_id   = 1, 
-      incongruent_id = 2, 
-      M              = 1, 
-      model          = "gaussian"
-    ), 
-    simplify = FALSE
-    )
-  
-  # Fit Gaussian Hierarchical Factor model: Experiment 1
-  stan_arguments$data <- c(sdata, priors_all$gaussian)
-  stan_arguments$init <- gaussian_inits
-  gaussian_HFM_fit <- do.call(BGHFM_models$gaussian$sample, stan_arguments)
-  
-  # Save model results
-  gaussian_HFM_fit$save_object(file = "Results/Stan/whitehead_gaussian_HFM_joint.rds")
-  
-  # ─────────────────────────────────────────────────────────────────────────────
-  
-  # ─────────────────────────────────────────────────────────────────────────────
-  # SECTION 7: ex-Gaussian Hierarchical Factor Model
-  # ─────────────────────────────────────────────────────────────────────────────
-  
-  # Prepare starting values: Experiment 1
-  exgaussian_inits <- replicate(n = 4, expr = make_inits(
+# Add latent factors and Lambda index
+sdata$M <-  1
+sdata$Lambda_index <- matrix(1, nrow = 3)
+
+# We're not interested in in LOO-CV right now.
+sdata$loo_mix_IS <- 0
+sdata$save_log_lik <- 0
+
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SECTION 6: Gaussian Hierarchical Factor Model
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Prepare starting values
+gaussian_inits <- replicate(
+  n = 4, expr = make_inits(
     data           = sdata_to_longdf(sdata), 
     subject_var    = "subject", 
     task_var       = "task", 
@@ -191,48 +160,105 @@ sdata <- Stan.list.data(
     congruent_id   = 1, 
     incongruent_id = 2, 
     M              = 1, 
-    model          = "exgaussian"), 
-    simplify = FALSE)
-  
-  # Fit ex-Gaussian Hierarchical Factor model: Experiment 1
-  stan_arguments$data <- c(sdata, priors_all$exgaussian_tau)
-  stan_arguments$init <- exgaussian_inits
-  exgaussian_GHFM_fit <- do.call(BGHFM_models$exgaussian_tau$sample, stan_arguments)
-  
-  # Save model results
-  exgaussian_GHFM_fit$save_object(file = "Results/Stan/whitehead_exgaussian_GHFM_joint.rds")
-  # ─────────────────────────────────────────────────────────────────────────────
-  
-  # ─────────────────────────────────────────────────────────────────────────────
-  # SECTION 8: Shifted-lognormal Hierarchical Factor Model
-  # ─────────────────────────────────────────────────────────────────────────────
-  
-  # Prepare starting values: Experiment 1
-  set.seed(2025)
-  shlognormal_inits <- replicate(n = 4, expr = make_inits(
-    data           = sdata_to_longdf(sdata), 
-    subject_var    = "subject", 
-    task_var       = "task", 
-    condition_var  = "condition",
-    rt_var         = "rt", 
-    congruent_id   = 1, 
-    incongruent_id = 2, 
-    M              = 1, 
-    model          = "shifted.lognormal"), 
-    simplify = FALSE)
-  
-  # Fit shifted-lognormal Hierarchical Factor model: Experiment 1
-  stan_arguments$data <- c(sdata, priors_all$shlognormal)
-  stan_arguments$init <- shlognormal_inits
-  shlognormal_GHFM_fit <- do.call(BGHFM_models$shifted_lognormal$sample, stan_arguments)
-  
-  # Save model results
-  shlognormal_GHFM_fit$save_object(file = "Results/Stan/whitehead_shlognormal_GHFM_joint.rds")
+    model          = "gaussian"
+  ), 
+  simplify = FALSE
+)
+
+# Fit Gaussian Hierarchical Factor model
+stan_arguments$data <- c(sdata, priors_all$gaussian)
+stan_arguments$init <- gaussian_inits
+gaussian_HFM_fit <- do.call(BGHFM_models$gaussian$sample, stan_arguments)
+
+# Save model results
+gaussian_HFM_fit$save_object(file = "Results/Stan/Whitehead/Fitted models/whitehead_gaussian_HFM_joint.rds")
 
 # ─────────────────────────────────────────────────────────────────────────────
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SECTION 9: Mixture Importance Sampling in all GenHFMs
+# SECTION 7: ex-Gaussian Hierarchical Factor Model
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Prepare starting values
+exgaussian_inits <- replicate(n = 4, expr = make_inits(
+  data           = sdata_to_longdf(sdata), 
+  subject_var    = "subject", 
+  task_var       = "task", 
+  condition_var  = "condition",
+  rt_var         = "rt", 
+  congruent_id   = 1, 
+  incongruent_id = 2, 
+  M              = 1, 
+  model          = "exgaussian"), 
+  simplify = FALSE)
+
+# Fit ex-Gaussian Hierarchical Factor model
+stan_arguments$data <- c(sdata, priors_all$exgaussian_tau)
+stan_arguments$init <- exgaussian_inits
+exgaussian_GHFM_fit <- do.call(BGHFM_models$exgaussian_tau$sample, stan_arguments)
+
+# Save model results
+exgaussian_GHFM_fit$save_object(file = "Results/Stan/Whitehead/Fitted models/whitehead_exgaussian_GHFM_joint.rds")
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SECTION 8: Lognormal Hierarchical Factor Model
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Prepare starting values
+set.seed(2025)
+lognormal_inits <- replicate(n = 4, expr = make_inits(
+  data           = sdata_to_longdf(sdata), 
+  subject_var    = "subject", 
+  task_var       = "task", 
+  condition_var  = "condition",
+  rt_var         = "rt", 
+  congruent_id   = 1, 
+  incongruent_id = 2, 
+  M              = 1, 
+  model          = "lognormal"), 
+  simplify = FALSE)
+
+# Fit lognormal Hierarchical Factor model
+stan_arguments$data <- c(sdata, priors_all$shlognormal)
+stan_arguments$init <- lognormal_inits
+lognormal_GHFM_fit <- do.call(BGHFM_models$lognormal$sample, stan_arguments)
+
+# Save model results
+lognormal_GHFM_fit$save_object(file = "Results/Stan/Whitehead/Fitted models/whitehead_lognormal_GHFM_joint.rds")
+
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SECTION 9: Shifted-lognormal Hierarchical Factor Model
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Prepare starting values
+set.seed(2025)
+shlognormal_inits <- replicate(n = 4, expr = make_inits(
+  data           = sdata_to_longdf(sdata), 
+  subject_var    = "subject", 
+  task_var       = "task", 
+  condition_var  = "condition",
+  rt_var         = "rt", 
+  congruent_id   = 1, 
+  incongruent_id = 2, 
+  M              = 1, 
+  model          = "shifted.lognormal"), 
+  simplify = FALSE)
+
+# Fit shifted-lognormal Hierarchical Factor model: Experiment 1
+stan_arguments$data <- c(sdata, priors_all$shlognormal)
+stan_arguments$init <- shlognormal_inits
+shlognormal_GHFM_fit <- do.call(BGHFM_models$shifted_lognormal$sample, stan_arguments)
+
+# Save model results
+shlognormal_GHFM_fit$save_object(file = "Results/Stan/Whitehead/Fitted models/whitehead_shlognormal_GHFM_joint.rds")
+
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SECTION 10: Mixture Importance Sampling in all GenHFMs
 # ─────────────────────────────────────────────────────────────────────────────
 
 # Set LOO-Mixture-IS in all models
@@ -242,19 +268,25 @@ sdata$loo_mix_IS <- 1
 stan_arguments$data <- c(sdata, priors_all$gaussian)
 stan_arguments$init <- gaussian_inits
 gaussian_HFM_mixture_IS <- do.call(BGHFM_models$gaussian$sample, stan_arguments)
-gaussian_HFM_mixture_IS$save_object(file = "Results/Stan/whitehead_gaussian_HFM_mixtureIS_joint.rds")
+gaussian_HFM_mixture_IS$save_object(file = "Results/Stan/Whitehead/Fitted models/whitehead_gaussian_HFM_mixtureIS_joint.rds")
 
 # Fit Mixture-IS ex-gaussian Hierarchical Factor Model
 stan_arguments$data <- c(sdata, priors_all$exgaussian_tau)
 stan_arguments$init <- exgaussian_inits
 exgaussian_GHFM_mixture_IS <- do.call(BGHFM_models$exgaussian_tau$sample, stan_arguments)
-exgaussian_GHFM_mixture_IS$save_object(file = "Results/Stan/whitehead_exgaussian_GHFM_mixtureIS_joint.rds")
+exgaussian_GHFM_mixture_IS$save_object(file = "Results/Stan/Whitehead/Fitted models/whitehead_exgaussian_GHFM_mixtureIS_joint.rds")
+
+# Fit Mixture-IS lognormal Hierarchical Factor Model
+stan_arguments$data <- c(sdata, priors_all$shlognormal)
+stan_arguments$init <- lognormal_inits
+lognormal_GHFM_mixture_IS <- do.call(BGHFM_models$lognormal$sample, stan_arguments)
+lognormal_GHFM_mixture_IS$save_object(file = "Results/Stan/Whitehead/Fitted models/whitehead_lognormal_GHFM_mixtureIS_joint.rds")
 
 # Fit Mixture-IS ex-gaussian Hierarchical Factor Model
 stan_arguments$data <- c(sdata, priors_all$shlognormal)
 stan_arguments$init <- shlognormal_inits
 shlognormal_GHFM_mixture_IS <- do.call(BGHFM_models$shifted_lognormal$sample, stan_arguments)
-shlognormal_GHFM_mixture_IS$save_object(file = "Results/Stan/whitehead_shlognormal_GHFM_mixtureIS_joint.rds")
+shlognormal_GHFM_mixture_IS$save_object(file = "Results/Stan/Whitehead/Fitted models/whitehead_shlognormal_GHFM_mixtureIS_joint.rds")
 
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -286,6 +318,18 @@ loo_mixis_exgaussian <- loo_mixis_BGHFM(
   condition_center = 1.5, 
   progress_bar = TRUE)
 
+# Estimate lognormal HFM Mixture-IS ELPDs
+loo_mixis_lognormal <- loo_mixis_BGHFM(
+  fit = lognormal_GHFM_mixture_IS, 
+  model = "lognormal", 
+  data = sdata_to_longdf(sdata), 
+  subject_var = "subject", 
+  task_var = "task", 
+  condition_var = "condition", 
+  rt_var = "rt", 
+  condition_center = 1.5, 
+  progress_bar = TRUE)
+
 # Estimate shifted-lognormal HFM Mixture-IS ELPDs: Experiment 3
 loo_mixis_shlognormal <- loo_mixis_BGHFM(
   fit = shlognormal_GHFM_mixture_IS, 
@@ -302,6 +346,7 @@ loo_mixis_shlognormal <- loo_mixis_BGHFM(
 whitehead_joint_ELPDs <- list(
   ELPD_gaussian_joint    = loo_mixis_gaussian,
   ELPD_exgaussian_joint  = loo_mixis_exgaussian,
+  ELPD_lognormal_joint   = loo_mixis_lognormal,
   ELPD_shlognormal_joint = loo_mixis_shlognormal
 )
 
