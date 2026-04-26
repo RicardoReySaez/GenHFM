@@ -1,5 +1,5 @@
 ---
-title: "A Unified Framework for Psychometrics in Experimental Psychology: The Standardized Generalized Hierarchical Factor Model"
+title: "`{\\LARGE \\textbf{\\textit{\\underline{Supplementary Material}}}} \\\\[3em] A Unified Framework for Psychometrics in Experimental Psychology: The Standardized Generalized Hierarchical Factor Model`{=latex}"
 shorttitle: "Supplementary Material"
 author:
   - name: Ricardo Rey-Sáez
@@ -56,7 +56,7 @@ author-note:
     deceased: ~
   disclosures:
     study-registration: ~
-    data-sharing: "All data, models, and scripts required to reproduce the results of this work are publicly available at <https://osf.io/5dutv/> and <https://github.com/RicardoReySaez/GenHFM>."
+    data-sharing: "All data, models, and scripts required to reproduce the results of this work are publicly available on both OSF [<https://osf.io/5dutv/>, @reysaez2026osf] and GitHub [<https://github.com/RicardoReySaez/GenHFM>, @reysaez2026genhfm]. The fitted Stan models from the empirical illustrations and supplementary material are hosted exclusively on OSF."
     related-report: ~
     conflict-of-interest: ~
     financial-support: ~
@@ -64,6 +64,7 @@ author-note:
     authorship-agreements: ~
 keywords: [keyword1, keyword2, keyword3]
 floatsintext: true
+note: "\\textbf{This paper has been peer reviewed and accepted for publication in \\textit{Psychological Methods}}. \\newline ©American Psychological Association, 2026. This paper is not the copy of record and may not exactly replicate the authoritative document published in the APA journal. The final article is available, upon publication, at: <https://doi.org/10.1037/met0000846>."
 bibliography: bibliography.bib
 format:
   apaquarto-docx: default
@@ -214,7 +215,7 @@ sim_res |>
   pivot_longer(cols = -trueCor, names_to = "Method", values_to = "Value") |>
   pivot_wider(names_from = trueCor, values_from = Value) |> 
   kbl(
-    caption = "Sampling standard deviation of the distribution of correlation estimates",
+    caption = "Sampling standard deviation of the distribution of correlation estimates with Spearman method and both frequentist and Bayesian HM (Hierarchical Models)",
     booktabs = TRUE, escape = FALSE, align = c("lccccccccc"), 
     label = "se-method", format = "latex"
     ) |> 
@@ -465,7 +466,7 @@ In Bayesian estimation, this indeterminacy implies that the likelihood surface i
 
 To address this, we avoided imposing hard constraints during estimation (e.g., fixing zeros), which can bias the factor structure [@anderson1956inference; @carvalho2008; @papastamoulis2022]. Instead, we employed a *post hoc* strategy using the *MatchAlign* algorithm [@poworoznek2024]. This method allows the sampler to explore the posterior freely and aligns the samples after estimation in three steps: (1) Each posterior draw is orthogonally rotated (using Varimax) to anchor the orientation; (2) a representative draw (pivot) is selected based on the median leading (largest) eigenvalue; finally, (3) all other draws are aligned to the pivot via signed permutations to resolve label switching and sign ambiguity.
 
-For unidimensional and confirmatory models, rotational indeterminacy is resolved by design (due to the single column or fixed zero constraints). However, sign indeterminacy remains. To resolve this, we followed the strategy implemented in `blavaan` [@blavaan]: after estimation, we constrained one anchor loading per factor to be strictly positive, flipping the signs of the corresponding factor column (and associated correlations) in any draw where the anchor was negative.
+For unidimensional and confirmatory models, rotational indeterminacy is resolved by design (due to the single column or fixed zero constraints). However, sign indeterminacy remains. To resolve this, we followed the strategy implemented in `{blavaan}` [@blavaan]: after estimation, we constrained one anchor loading per factor to be strictly positive, flipping the signs of the corresponding factor column (and associated correlations) in any draw where the anchor was negative.
 
 \newpage
 
@@ -614,7 +615,7 @@ kbl(table_gauss,
     ) |> 
   kable_styling(latex_options = c("HOLD_position"), full_width = FALSE) |> 
   add_header_above(c(" " = 1, "Flanker" = 2, "Simon" = 2, "Stroop" = 2)) |> 
-  footnote(general = "$\\\\textit{Note.}$ Est. represent meta-analitic pooled point estimates", 
+  footnote(general = "$\\\\textit{Note.}$ Est. represent meta-analitic pooled point estimates.", 
            general_title = "", escape = FALSE)
 ```
 
@@ -728,7 +729,7 @@ kbl(table_shlognormal,
     ) |> 
   kable_styling(latex_options = c("HOLD_position"), full_width = FALSE) |> 
   add_header_above(c(" " = 1, "Flanker" = 2, "Simon" = 2, "Stroop" = 2)) |> 
-  footnote(general = "$\\\\textit{Note.}$ Est. represent meta-analitic pooled point estimates", 
+  footnote(general = "$\\\\textit{Note.}$ Est. represent meta-analitic pooled point estimates.", 
            general_title = "", escape = FALSE)
 ```
 
@@ -1004,6 +1005,271 @@ Table \ref{tab-priors-viviani} shows the prior distributios used in the hierarch
 :::
 
 \newpage
+
+\newpage
+
+# SM11: Performance of GenHFMs under a Gaussian Data-Generating Process
+
+Although the main goal of the simulation study was to evaluate the sensitivity of the Gaussian model when data were generated from asymmetric distributions, in this section we addressed the reverse question: how sensitive GenHFMs are when the data-generating process is Gaussian. To do so, we used the meta-parameters of the Gaussian model reported in Table 1 of the main text to generate data from a one-factor model with 100 subjects, varying reliability (.30, .50, and .70) and true factor loadings (.30, .50, and .70). However, the Gaussian model produced some negative observed values, which are incompatible with the nature of RT data and also prevented fitting the shifted-lognormal model. This issue simply reflects a known limitation of the Gaussian model for RTs. To prevent negative values, all simulated RTs were increased by a constant 200 ms, without altering the between-condition differences central to this study.
+
+The results are summarized in Table \ref{tab:gaussian-dgp-emmeans}. Overall, the shifted-lognormal GenHFM showed a relatively robust behaviour under this form of model misspecification. Across most fit and recovery indices, its performance was only slightly worse than that of the Gaussian model, and in some cases the differences were negligible. This suggests that the shifted-lognormal model can still recover a broadly similar latent structure even when the data are in fact generated from a Gaussian process. This finding is particularly noteworthy given that, in the main simulation study, fitting a Gaussian model to data generated from a shifted-lognormal process led to much larger discrepancies in parameter estimates. At the same time, however, its convergence diagnostics were clearly less favourable. Although the $\hat{R}$ values remained only moderately elevated, the percentage of divergent transitions was systematically close to 10%, indicating that the sampler encountered persistent difficulties exploring the posterior. In practice, this means that, despite the seemingly acceptable recovery results, interpreting the shifted-lognormal model in this setting would still be risky.
+
+::: {=latex}
+\begin{table}[!ht]
+\centering
+\caption{\label{tab:gaussian-dgp-emmeans}Estimated marginal means for fit measures and convergence diagnostics across generating conditions and fitted models under the Gaussian data-generating process}
+\begin{threeparttable}
+
+\resizebox{\linewidth}{!}{%
+\begin{minipage}{\linewidth}
+\centering
+\fontsize{8.5}{10}\selectfont
+\setlength{\tabcolsep}{4.5pt}
+\renewcommand{\arraystretch}{1.05}
+
+\begin{tabular}[t]{l l ccc ccc ccc ccc}
+\toprule
+\multicolumn{14}{l}{\textbf{Fit measures: true correlations}} \\
+\addlinespace[0.3em]
+& & \multicolumn{3}{c}{ASRMR} & \multicolumn{3}{c}{AAB} & \multicolumn{3}{c}{APSD} & \multicolumn{3}{c}{AECR} \\
+\cmidrule(l{3pt}r{3pt}){3-5}
+\cmidrule(l{3pt}r{3pt}){6-8}
+\cmidrule(l{3pt}r{3pt}){9-11}
+\cmidrule(l{3pt}r{3pt}){12-14}
+Factor & Level & G & SL & EG & G & SL & EG & G & SL & EG & G & SL & EG \\
+\midrule
+Reliability & .3 & \textbf{.12} & .14 & .22 & \textbf{.06} & .09 & .25 & .17 & .16 & \textbf{.04} & \textbf{.97} & .91 & .07 \\
+Reliability & .5 & \textbf{.09} & .09 & .19 & \textbf{.04} & .06 & .21 & .12 & .12 & \textbf{.04} & \textbf{.96} & .94 & .07 \\
+Reliability & .7 & \textbf{.08} & .08 & .17 & \textbf{.04} & .05 & .20 & .09 & .09 & \textbf{.03} & \textbf{.93} & .92 & .07 \\
+True $\mathbf{\Lambda}$ & .3 & .09 & .09 & \textbf{.08} & \textbf{.04} & .04 & .08 & .13 & .12 & \textbf{.03} & .97 & \textbf{.96} & .16 \\
+True $\mathbf{\Lambda}$ & .5 & \textbf{.10} & .11 & .18 & \textbf{.06} & .07 & .20 & .13 & .13 & \textbf{.03} & \textbf{.93} & .90 & .04 \\
+True $\mathbf{\Lambda}$ & .7 & \textbf{.10} & .11 & .32 & \textbf{.05} & .08 & .38 & .13 & .12 & \textbf{.04} & \textbf{.96} & .91 & .00 \\
+\bottomrule
+\end{tabular}
+
+\begin{tabular}[t]{l l ccc ccc ccc ccc ccc}
+\toprule
+\multicolumn{17}{l}{\textbf{Fit measures: factor loadings}} \\
+\addlinespace[0.3em]
+& & \multicolumn{3}{c}{ARMSE} & \multicolumn{3}{c}{AAB} & \multicolumn{3}{c}{APSD} & \multicolumn{3}{c}{Tucker's $\phi$} & \multicolumn{3}{c}{AECR} \\
+\cmidrule(l{3pt}r{3pt}){3-5}
+\cmidrule(l{3pt}r{3pt}){6-8}
+\cmidrule(l{3pt}r{3pt}){9-11}
+\cmidrule(l{3pt}r{3pt}){12-14}
+\cmidrule(l{3pt}r{3pt}){15-17}
+Factor & Level & G & SL & EG & G & SL & EG & G & SL & EG & G & SL & EG & G & SL & EG \\
+\midrule
+Reliability & .3 & \textbf{.23} & .26 & .46 & \textbf{.13} & .16 & .39 & .30 & .30 & \textbf{.13} & \textbf{.76} & .74 & .35 & .99 & \textbf{.96} & .12 \\
+Reliability & .5 & \textbf{.19} & .20 & .37 & \textbf{.10} & .12 & .30 & .23 & .24 & \textbf{.10} & \textbf{.83} & .80 & .58 & .98 & \textbf{.98} & .14 \\
+Reliability & .7 & \textbf{.17} & .18 & .32 & \textbf{.09} & .09 & .26 & .18 & .18 & \textbf{.09} & \textbf{.85} & .85 & .68 & \textbf{.94} & .94 & .15 \\
+True $\mathbf{\Lambda}$ & .3 & \textbf{.26} & .26 & .31 & \textbf{.18} & .18 & .23 & .32 & .32 & \textbf{.12} & \textbf{.54} & .53 & .28 & .99 & \textbf{.99} & .25 \\
+True $\mathbf{\Lambda}$ & .5 & \textbf{.21} & .24 & .40 & \textbf{.10} & .13 & .34 & .25 & .25 & \textbf{.11} & \textbf{.92} & .87 & .53 & .97 & \textbf{.95} & .12 \\
+True $\mathbf{\Lambda}$ & .7 & \textbf{.12} & .14 & .44 & \textbf{.04} & .06 & .39 & .14 & .14 & \textbf{.09} & \textbf{.99} & .98 & .80 & .96 & \textbf{.94} & .04 \\
+\bottomrule
+\end{tabular}
+
+\begin{tabular}[t]{l l ccc ccc ccc ccc}
+\toprule
+\multicolumn{14}{l}{\textbf{Convergence diagnostics}} \\
+\addlinespace[0.3em]
+& & \multicolumn{3}{c}{$\hat{R}$} & \multicolumn{3}{c}{Divergences (\%)} & \multicolumn{3}{c}{Max. Treedepth (\%)} & \multicolumn{3}{c}{ESS (\%)} \\
+\cmidrule(l{3pt}r{3pt}){3-5}
+\cmidrule(l{3pt}r{3pt}){6-8}
+\cmidrule(l{3pt}r{3pt}){9-11}
+\cmidrule(l{3pt}r{3pt}){12-14}
+Factor & Level & G & SL & EG & G & SL & EG & G & SL & EG & G & SL & EG \\
+\midrule
+Reliability & .3 & \textbf{1.01} & 1.04 & 2.30 & \textbf{.00} & 10.49 & .00 & \textbf{.00} & 10.64 & 100.00 & \textbf{21.06} & 13.37 & 0.13 \\
+Reliability & .5 & \textbf{1.01} & 1.04 & 2.28 & \textbf{.00} & 10.32 & .00 & \textbf{.00} & 7.54 & 100.00 & \textbf{19.05} & 12.83 & 0.13 \\
+Reliability & .7 & \textbf{1.01} & 1.06 & 2.29 & \textbf{.00} & 11.48 & .00 & \textbf{.00} & 11.47 & 100.00 & \textbf{16.19} & 11.07 & 0.13 \\
+True $\mathbf{\Lambda}$ & .3 & \textbf{1.01} & 1.04 & 2.29 & \textbf{.00} & 9.29 & .00 & \textbf{.00} & 11.78 & 100.00 & \textbf{18.97} & 12.10 & 0.13 \\
+True $\mathbf{\Lambda}$ & .5 & \textbf{1.01} & 1.04 & 2.30 & \textbf{.00} & 10.79 & .00 & \textbf{.00} & 7.23 & 100.00 & \textbf{17.39} & 11.81 & 0.13 \\
+True $\mathbf{\Lambda}$ & .7 & \textbf{1.01} & 1.05 & 2.28 & \textbf{.00} & 12.22 & .00 & \textbf{.00} & 10.65 & 100.00 & \textbf{19.94} & 13.36 & 0.13 \\
+\bottomrule
+\end{tabular}
+
+\end{minipage}%
+}
+
+\vspace{0.35em}
+\begin{minipage}{\linewidth}
+\footnotesize
+\textit{Note.} G = Gaussian, SL = shifted-lognormal, and EG = ex-Gaussian. Values are estimated marginal means under the Gaussian data-generating process across the levels of Reliability and True $\mathbf{\Lambda}$. ASRMR = average standardized root mean square residual, ARMSE = average root mean square error, AAB = average absolute bias, APSD = average posterior standard deviation, AECR = average empirical coverage rate, and Tucker's $\phi$ = coefficient of factor congruence. $\hat{R}$ is the Gelman-Rubin diagnostic. Divergences, Max. Treedepth, and ESS denote the percentages of post-warmup draws with divergent transitions, reaching the maximum treedepth of 10, and contributing to the effective sample size, respectively. Boldface indicates the best-performing fitted model in each row. Lower values are better, except for ESS and Tucker's $\phi$; AECR and $\hat{R}$ are preferred when closer to .95 and 1, respectively.
+\end{minipage}
+\end{threeparttable}
+\end{table}
+:::
+
+The ex-Gaussian GenHFM behaved substantially worse. Although the Gaussian model is nested within the ex-Gaussian model, estimating a task- and participant-specific $\tau$ parameter when its true value is zero appears to create serious difficulties for Hamiltonian Monte Carlo. Fit and recovery measures were consistently poor, and the convergence diagnostics indicated that the chains failed to mix adequately. In particular, $\hat{R}$ values were far from acceptable, all post-warmup draws reached the maximum treedepth, and the proportion of effective samples was nearly zero. Taken together, these results indicate that the ex-Gaussian model did not function properly under a Gaussian data-generating process.
+
+However, both forms of misspecification also highlighted an important practical advantage: they were accompanied by diagnostic warnings that clearly indicated that the fitted model was not well suited to the data. This stands in contrast to the original simulations in the main text, where the Gaussian model often absorbed asymmetry without producing similarly severe warnings. Here, by contrast, the Stan diagnostics offer applied researchers a useful safeguard: if the data were actually generated by a Gaussian process, the diagnostics would indicate that the shifted-lognormal or ex-Gaussian specification may be inappropriate. It is also worth noting that none of these convergence problems emerged in the empirical illustrations, which further supports the practical adequacy of GenHFMs in applied RT settings, where the assumption of normality is rarely plausible.
+
+\newpage
+
+# SM12: A contamination-mixture extension of the shifted-lognormal GenHFM
+
+As noted in the main text, the shifted-lognormal GenHFM assumes that RTs are generated by a shifted-lognormal model with participant- and task-specific parameters. Although this specification is appropriate when all observed RTs are assumed to arise from the model, it can become problematic in the presence of contaminated responses, such as anticipations, accidental key presses, or lapse-related responses. In such cases, even a small number of implausibly fast observations may pull the shift parameter $\delta_{ij}$ toward unrealistically low values, thereby distorting the estimation of the remaining parameters.
+
+To address this issue, we incorporated into our GenHFM framework the contamination-mixture extension of the shifted-lognormal model proposed by @Haines2025. Specifically, we assume that each observed RT may arise from one of two components: a shifted-lognormal component, corresponding to the substantive model of interest, and a contamination component, represented by a uniform distribution^[Importantly, this extension modifies only the trial-level distributional assumption of the shifted-lognormal GenHFM, while leaving the hierarchical and latent factor structure unchanged. The interpretation of the remaining model parameters therefore remains the same as in the original shifted-lognormal GenHFM.]. Formally, for participant $i$, task $j$, condition $k$, and trial $\ell$, we assume
+$$
+p\!\left(Y_{ijk\ell}\right)=
+\begin{cases}
+\pi_{ij}\cdot 
+f_{\mathcal U}\!\left(Y_{ijk\ell}\mid 0,\,
+\max\!\left(Y_{ij\bullet\bullet}\right)\right),
+& \text{if } Y_{ijk\ell}<\delta_{ij}, \\
+\pi_{ij}\cdot 
+f_{\mathcal U}\!\left(Y_{ijk\ell}\mid 0,\,
+\max\!\left(Y_{ij\bullet\bullet}\right)\right)
++
+\left(1-\pi_{ij}\right)\cdot
+f_{\mathcal{SLN}}\!\left(Y_{ijk\ell}\mid m_{ijk},\sigma_{ij},\delta_{ij}\right),
+& \text{if } Y_{ijk\ell}\geq\delta_{ij}.
+\end{cases}
+$$
+
+Here, $f_{\mathcal U}\!\left(Y_{ijk\ell}\mid 0,\max\!\left(Y_{ij\bullet\bullet}\right)\right)$ denotes the density of a uniform distribution ranging from 0 to the maximum RT observed for participant $i$ in task $j$ across all conditions and trials, and $f_{\mathcal{SLN}}\!\left(Y_{ijk\ell}\mid m_{ijk},\sigma_{ij},\delta_{ij}\right)$ denotes the density of the shifted-lognormal distribution with location parameter $m_{ijk}=\alpha_{ij}+\beta_{ij}\cdot X_k$, scale parameter $\sigma_{ij}$, and shift parameter $\delta_{ij}$. The parameter $\pi_{ij}$ represents the probability that an RT from participant $i$ in task $j$ arises from the contamination component rather than from the shifted-lognormal component. Under this specification, any observed RT below $\delta_{ij}$ is necessarily attributed to the contamination component, because such values fall outside the support of the shifted-lognormal distribution. Thus, the model allows unusually fast observations to be absorbed by the contamination process without forcing the shifted-lognormal component to accommodate them through unrealistically small values of $\delta_{ij}$.
+
+By contrast, RTs greater than or equal to $\delta_{ij}$ may still arise either from the contamination component or from the shifted-lognormal component. Still, we expect contamination to remain rare, regardless of whether an RT falls below or above $\delta_{ij}$. Following Haines et al. [-@Haines2025], we formalized this assumption by assigning $\pi_{ij}$ a prior centered on a low contamination rate, approximately $5\%$. Specifically, we modeled the probit-transformed contamination probability as
+$$
+\Phi^{-1}(\pi_{ij}) \sim \mathcal{N}(\mu_{\pi_j}, \sigma_{\pi_j}),
+$$
+with task-specific hyperpriors
+$$
+\mu_{\pi_j} \sim \mathcal{N}(-1.65,\,0.1),
+\qquad
+\sigma_{\pi_j} \sim \text{Student-}t^+(4,\,0,\,0.5).
+$$
+
+These priors regularize the model toward low contamination rates unless the data provide clear evidence for a larger contamination component.
+
+We reanalyzed the data from both empirical illustrations using the contamination-mixture extension of the shifted-lognormal GenHFM. Parameter estimates for the shifted-lognormal model and its mixture extension are reported in Tables \ref{tab:params-shlognormal-mix} and \ref{tab:params-shlognormal-mix-2f}. In general, the differences between the two models were subtle, and both led to the same substantive inferences about the latent structure. This may be interpreted as evidence that the main conclusions of our reanalyses using the shifted-lognormal GenHFM are fairly robust to contamination processes.
+
+::: {=latex}
+\begin{table}[!h]
+\centering
+\caption{\label{tab:params-shlognormal-mix}Parameter estimates for the shifted-lognormal GHFM and its mixture extension across experiments}
+\centering
+\resizebox{\ifdim\width>\linewidth\linewidth\else\width\fi}{!}{
+\fontsize{10}{12}\selectfont
+\begin{threeparttable}
+\setlength{\tabcolsep}{6pt}
+\begin{tabular}[t]{l @{\hspace{6mm}} cccccccccccc}
+\toprule
+\multicolumn{1}{c}{ } &
+\multicolumn{6}{c}{Shifted-lognormal} &
+\multicolumn{6}{c}{Mixture Shifted-lognormal} \\
+\cmidrule(l{3pt}r{3pt}){2-7}
+\cmidrule(l{3pt}r{3pt}){8-13}
+Task &
+\multicolumn{2}{c}{$\mu_\delta$} &
+\multicolumn{2}{c}{$\sigma_\delta$} &
+\multicolumn{2}{c}{$\mathbf{\Lambda}$} &
+\multicolumn{2}{c}{$\mu_\delta$} &
+\multicolumn{2}{c}{$\sigma_\delta$} &
+\multicolumn{2}{c}{$\mathbf{\Lambda}$} \\
+\cmidrule(l{3pt}r{3pt}){2-3}
+\cmidrule(l{3pt}r{3pt}){4-5}
+\cmidrule(l{3pt}r{3pt}){6-7}
+\cmidrule(l{3pt}r{3pt}){8-9}
+\cmidrule(l{3pt}r{3pt}){10-11}
+\cmidrule(l{3pt}r{3pt}){12-13}
+& Mean & 95\% CI & Mean & 95\% CI & Mean & 95\% CI & Mean & 95\% CI & Mean & 95\% CI & Mean & 95\% CI \\
+\midrule
+
+\multicolumn{13}{l}{\textbf{Experiment 1}} \\
+\hspace{1em}Simon   & .24 & {}[.23, .24] & .05 & {}[.05, .06] & .19 & {}[.01, .75] & .20 & {}[.19, .21] & .07 & {}[.06, .08] & .21 & {}[.01, .79] \\
+\hspace{1em}Flanker & .26 & {}[.24, .27] & .09 & {}[.08, .10] & .02 & {}[-.87, .83] & .25 & {}[.23, .26] & .10 & {}[.09, .11] & .07 & {}[-.80, .83] \\
+\hspace{1em}Stroop  & .23 & {}[.22, .24] & .07 & {}[.06, .08] & .11 & {}[-.77, .91] & .23 & {}[.21, .24] & .09 & {}[.08, .10] & .14 & {}[-.75, .88] \\
+\addlinespace[1em]
+
+\multicolumn{13}{l}{\textbf{Experiment 2}} \\
+\hspace{1em}Simon   & .27 & {}[.26, .27] & .05 & {}[.04, .05] & .32 & {}[.01, .91] & .25 & {}[.24, .26] & .04 & {}[.04, .05] & .31 & {}[.01, .91] \\
+\hspace{1em}Flanker & .29 & {}[.28, .30] & .06 & {}[.05, .06] & .12 & {}[-.66, .82] & .29 & {}[.28, .30] & .05 & {}[.05, .06] & .10 & {}[-.63, .81] \\
+\hspace{1em}Stroop  & .26 & {}[.25, .27] & .04 & {}[.04, .05] & .20 & {}[-.52, .87] & .26 & {}[.26, .27] & .03 & {}[.03, .04] & .17 & {}[-.57, .87] \\
+\addlinespace[1em]
+
+\multicolumn{13}{l}{\textbf{Experiment 3}} \\
+\hspace{1em}Simon   & .26 & {}[.25, .27] & .04 & {}[.04, .05] & .50 & {}[.24, .85] & .24 & {}[.23, .24] & .03 & {}[.03, .04] & .58 & {}[.28, .94] \\
+\hspace{1em}Flanker & .27 & {}[.27, .28] & .06 & {}[.05, .06] & .38 & {}[.06, .69] & .27 & {}[.26, .28] & .05 & {}[.04, .05] & .36 & {}[.05, .69] \\
+\hspace{1em}Stroop  & .25 & {}[.24, .26] & .04 & {}[.04, .05] & .72 & {}[.36, .98] & .24 & {}[.24, .25] & .04 & {}[.04, .05] & .66 & {}[.33, .97] \\
+\addlinespace[1em]
+
+\multicolumn{13}{l}{\textbf{All experiments}} \\
+\hspace{1em}Simon   & .25 & {}[.25, .26] & .05 & {}[.05, .05] & .60 & {}[.46, .75] & .23 & {}[.22, .24] & .05 & {}[.05, .05] & .64 & {}[.51, .80] \\
+\hspace{1em}Flanker & .27 & {}[.27, .28] & .07 & {}[.07, .07] & .52 & {}[.37, .66] & .27 & {}[.26, .27] & .07 & {}[.07, .08] & .55 & {}[.40, .68] \\
+\hspace{1em}Stroop  & .25 & {}[.24, .25] & .05 & {}[.05, .06] & .68 & {}[.52, .85] & .24 & {}[.24, .25] & .06 & {}[.05, .06] & .63 & {}[.49, .78] \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}[flushleft]
+\item \textit{Note.} Mean denotes the posterior mean estimate and CI denotes the 95\% credible interval. Rows correspond to tasks, shown separately for each experiment and for the model fitted across all data without distinguishing between experiments. The factor loading for the Simon task was constrained to be positive to identify factor reflection.
+\end{tablenotes}
+\end{threeparttable}}
+\end{table}
+
+\begin{table}[!h]
+\centering
+\caption{\label{tab:params-shlognormal-mix-2f}Parameter estimates for the shifted-lognormal GHFM and its mixture extension}
+\centering
+\fontsize{10}{12}\selectfont
+\begin{threeparttable}
+\setlength{\tabcolsep}{10pt}
+\begin{tabular}[t]{l l c c c c}
+\toprule
+& & \multicolumn{2}{c}{Shifted-lognormal} & \multicolumn{2}{c}{Mixture Shifted-lognormal} \\
+\cmidrule(l{3pt}r{3pt}){3-4}
+\cmidrule(l{3pt}r{3pt}){5-6}
+Task & Parameter & Mean & 95\% CI & Mean & 95\% CI \\
+\midrule
+
+\multirow[t]{4}{*}{Peripheral}
+& $\mu_\delta$    & .27 & {}[.25, .28] & .23 & {}[.20, .25] \\
+& $\sigma_\delta$ & .03 & {}[.01, .05] & .01 & {}[.00, .03] \\
+& $\lambda_1$     & .92 & {}[.73, .99] & .91 & {}[.72, .99] \\
+& $\lambda_2$     & .06 & {}[-.14, .27] & .06 & {}[-.14, .26] \\
+\addlinespace[1.5em]
+
+\multirow[t]{4}{*}{Perifoveal}
+& $\mu_\delta$    & .23 & {}[.22, .25] & .21 & {}[.19, .23] \\
+& $\sigma_\delta$ & .03 & {}[.02, .05] & .02 & {}[.01, .04] \\
+& $\lambda_1$     & .89 & {}[.68, .99] & .90 & {}[.69, .99] \\
+& $\lambda_2$     & .01 & {}[-.20, .21] & -.01 & {}[-.22, .19] \\
+\addlinespace[1.5em]
+
+\multirow[t]{4}{*}{Navon}
+& $\mu_\delta$    & .32 & {}[.31, .34] & .30 & {}[.28, .31] \\
+& $\sigma_\delta$ & .05 & {}[.03, .06] & .03 & {}[.02, .05] \\
+& $\lambda_1$     & .34 & {}[.00, .68] & .32 & {}[-.02, .67] \\
+& $\lambda_2$     & .44 & {}[.10, .75] & .42 & {}[.06, .75] \\
+\addlinespace[1.5em]
+
+\multirow[t]{4}{*}{Figure-Ground}
+& $\mu_\delta$    & .24 & {}[.23, .26] & .17 & {}[.13, .20] \\
+& $\sigma_\delta$ & .03 & {}[.02, .04] & .02 & {}[.00, .03] \\
+& $\lambda_1$     & -.03 & {}[-.25, .18] & -.05 & {}[-.27, .17] \\
+& $\lambda_2$     & .94 & {}[.82, 1.00] & .90 & {}[.71, .99] \\
+\addlinespace[1.5em]
+
+\multirow[t]{4}{*}{Flanker}
+& $\mu_\delta$    & .26 & {}[.25, .28] & .21 & {}[.19, .24] \\
+& $\sigma_\delta$ & .03 & {}[.02, .04] & .02 & {}[.00, .03] \\
+& $\lambda_1$     & .08 & {}[-.12, .29] & .06 & {}[-.15, .28] \\
+& $\lambda_2$     & .94 & {}[.82, 1.00] & .90 & {}[.73, .99] \\
+\addlinespace[1.5em]
+
+\multirow[t]{4}{*}{Saliency}
+& $\mu_\delta$    & .24 & {}[.22, .25] & .21 & {}[.18, .23] \\
+& $\sigma_\delta$ & .03 & {}[.02, .04] & .02 & {}[.01, .03] \\
+& $\lambda_1$     & .08 & {}[-.23, .39] & .09 & {}[-.22, .43] \\
+& $\lambda_2$     & .74 & {}[.44, .96] & .71 & {}[.38, .96] \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}[flushleft]
+\item \textit{Note.} Mean denotes the posterior mean estimate and CI denotes the 95\% credible interval. $\lambda_1$ and $\lambda_2$ denote the standardized factor loadings on Factors 1 and 2, respectively.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+:::
 
 # References
 

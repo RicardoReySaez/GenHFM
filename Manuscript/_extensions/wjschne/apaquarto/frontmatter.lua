@@ -252,6 +252,16 @@ return {
         body:extend({ draftdatediv })
       end
 
+      -- Render the publication/acceptance note (e.g., "This article has been accepted for publication in...")
+      if meta["note"] and not mask then
+        local notediv = pandoc.Div({
+          newline,
+          pandoc.Para(meta["note"])
+        })
+        notediv.classes:insert("Author")
+        body:extend({ notediv })
+      end
+
       local authornoteheadertext = "Author Note"
       if meta.language and meta.language["title-block-author-note"] then
         authornoteheadertext = meta.language["title-block-author-note"]
