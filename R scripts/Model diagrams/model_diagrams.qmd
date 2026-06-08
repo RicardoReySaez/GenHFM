@@ -23,6 +23,7 @@ format:
   pdf:
     documentclass: article
     classoption: fontsize=12pt
+    pdf-engine: xelatex
     mathspec: true
 editor: source
 ---
@@ -392,9 +393,9 @@ editor: source
    \path (eta1) edge [connect] node[near end, left=4pt] {$\lambda_{11}$} (B1.north)
          (eta1) edge [connect] node[near end, left=4pt] {$\lambda_{21}$} (B2.north)
          (eta1) edge [connect] node[near end, left=4pt] {$\lambda_{31}$} (B3.north)
-         (eta1) edge [connect] node[near end, left=4pt] {$\lambda_{42}$} (B4.north)
-         (eta1) edge [connect] node[near end, left=4pt] {$\lambda_{52}$} (B5.north)
-         (eta1) edge [connect] node[near end, left=4pt] {$\lambda_{62}$} (B6.north);
+         (eta1) edge [connect] node[near end, left=4pt] {$\lambda_{41}$} (B4.north)
+         (eta1) edge [connect] node[near end, left=4pt] {$\lambda_{51}$} (B5.north)
+         (eta1) edge [connect] node[near end, left=4pt] {$\lambda_{61}$} (B6.north);
 
   \end{tikzpicture}
 ```
@@ -683,15 +684,15 @@ editor: source
  
   % table break
   &
-  
+
    % Statistical definition
    \renewcommand{\arraystretch}{1.7}
    $\begin{array}{rcl}
    \bm{h}^2 &\sim& \mathrm{Beta}\left(\alpha_{\bm{h}^2},\, \beta_{\bm{h}^2}\right)\\
    \mathbf{Z} &\sim&  \mathrm{RPG}  \bigl(\xi\bigr)\\
-   \mathbf{Z}_\text{UV} &=&  \mbox{diag}\left(\mathbf{Z}\cdot \mathbf{Z}^\prime\right)^{-\frac{1}{2}} \cdot \mathbf{Z} \\
+   \mathbf{Z}_\text{UV} &=&  \mbox{diag}\left[\left(\mathbf{Z}\cdot\mathbf{Z}^\prime\right)_{jj}\right]^{-\frac{1}{2}}\cdot\mathbf{Z} \\
    \mathbf{\Lambda} &=& \mbox{diag}\left(\bm{h}^2\right)^{\frac{1}{2}}\cdot \mathbf{Z}_\text{UV}\\
-   \mathbf{\Psi} &=&  \mathbf{I} - \mathbf{\Lambda} \cdot \mathbf{\Lambda}^\prime\\
+   \mathbf{\Psi} &=&  \mathbf{I} - \mbox{diag}\left(\bm{h}^2\right)\\
    \mathbf{R}_\beta &=&  \mathbf{\Lambda} \cdot \mathbf{\Lambda}^\prime + \mathbf{\Psi}\\
    \end{array}$
   
@@ -749,7 +750,7 @@ editor: source
    \mathbf{\Lambda} &\sim&  \mbox{Beta}_{[-1,1]}\left(\alpha_\Lambda,\,  \beta_\Lambda\right)\\
    \bm{L}_\Phi &\sim&  \mathrm{LKJ}\left(\eta_{\bm{L}_\Phi} \right)\\
    \mathbf{\Phi} &=&  \bm{L}_\Phi \cdot \bm{L}^\prime_\Phi\\
-   \mathbf{\Psi} &=&  \mathbf{I} - \mathbf{\Lambda} \cdot \mathbf{\Phi} \cdot \mathbf{\Lambda}^\prime\\
+   \mathbf{\Psi} &=&  \mathbf{I} - \mbox{diag}\left[\left(\mathbf{\Lambda} \cdot \mathbf{\Phi} \cdot \mathbf{\Lambda}^\prime\right)_{jj}\right]\\
    \mathbf{R}_\beta &=&  \mathbf{\Lambda} \cdot \mathbf{\Phi} \cdot \mathbf{\Lambda}^\prime + \mathbf{\Psi}\\
    \end{array}$
   
