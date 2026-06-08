@@ -85,7 +85,7 @@ author-note:
     deceased: null
   disclosures:
     study-registration: "This study was not preregistered."
-    data-sharing: "All data, models, and scripts required to reproduce the results of this work are publicly available on both OSF [<https://osf.io/5dutv/>, @reysaez2026osf] and GitHub [<https://github.com/RicardoReySaez/GenHFM>, @reysaez2026genhfm]. The fitted Stan models from the empirical illustrations and supplementary material are hosted exclusively on OSF."
+    data-sharing: "All data, models, and scripts required to reproduce the results of this work are publicly available on both OSF [<https://osf.io/5dutv/>, @reysaez2026osf] and GitHub [<https://github.com/RicardoReySaez/GenHFM>, @reysaez2026genhfm]. The fitted Stan models from the empirical illustrations and supplemental material are hosted exclusively on OSF."
     related-report: "Portions of the results reported in this article were previously presented at the XI European Congress of Methodology (July 2025; Canary Islands, Spain) and at the XIV Conference of the Asociación Iberoamericana de Investigación de las Diferencias Individuales (September 2025; Madrid, Spain)."
     conflict-of-interest: "The authors declare that they have no conflict of interest."
     financial-support: "This work was supported by the Spanish Ministry of Science and Innovation grants PID2023-150830NB-I00 (to RRS, AFM, MAV) and PID2021-124885NB-I00 (to JR) and by the Asociación Española de Metodología de las Ciencias del Comportamiento (AEMCCO) grant AEMCCO-Julio Olea 2024 for young researchers (to RRS)."
@@ -135,7 +135,7 @@ Almost seven decades ago, Cronbach [-@Cronbach1975; -@cronbach1957two]
 highlighted the need to unify psychology’s "two disciplines",
 *experimental* and *correlational*. Both branches of psychological
 research study variability, but at different levels of analysis:
-experimental psychology examines variability between *conditions*, while
+Experimental psychology examines variability between *conditions*, whereas
 correlational research (also referred to as *psychometrics*) focuses on
 variability between *individuals*. As a result, their conceptualizations
 of reliability have naturally diverged [@hedge2018]. Experimental
@@ -164,22 +164,22 @@ differ in topic, they rely on the same strategy for studying individual
 differences and, consequently, are subject to similar limitations. We
 illustrate this reasoning by focusing on executive control tasks, while
 noting that the same logic applies to all the experimental domains
-mentioned above.
+mentioned earlier.
 
 Within the domain of executive control, a paradigmatic example is the
 Stroop effect [@stroop1935], one of the most replicated phenomena in
 psychology [@MacLeod1991]; so replicated indeed that it has been claimed
-"everyone Stroops" [@Haaf2017]. The size of the Stroop effect is often
+that "everyone Stroops" [@Haaf2017]. The size of the Stroop effect is often
 defined as a mean difference in response times (RTs) between the
 congruent condition, that is, trials in which the stimulus meaning and
 its visual feature align (e.g., the word "red" written in red), and the
 incongruent condition, in which they conflict (e.g., the word "red"
 written in green). Although this effect is usually tested at the
-group-level, numerous studies have examined whether the Stroop effect is
+group level, numerous studies have examined whether the Stroop effect is
 related to participant-level variables such as personality or
 intelligence [@Benedek2014; @Friedman2006; @Block2005; @Johann2022]. To
 do so, researchers typically compute the RT difference for each
-participant, obtaining a measure of Stroop effects which can now be
+participant, obtaining a measure of the Stroop effects which can now be
 correlated. At this point, the primary concern is no longer whether the
 experimental effect replicates at the group level, but whether it yields
 consistent and reliable estimates of individual differences.
@@ -203,8 +203,8 @@ engaging task formats [@franco2026replicating; @kucina2023calibration;
 error by replacing difference scores with alternative indices
 [@Draheim2019; @vandierendonck2016comparison]. Yet, regardless of how
 tasks are modified or measures are redefined, any attempt to capture
-individual differences ultimately relies on statistical modeling. And
-this is a critical point, because the statistical models typically used
+individual differences ultimately relies on statistical modeling. This 
+is a critical point, because the statistical models typically used
 in experimental psychology were not developed to deal with unreliable
 measures.
 
@@ -226,7 +226,7 @@ more precise estimation of true correlations.
 
 This claim, although highly promising, rests entirely on simulation
 studies in which trial-level responses are assumed to follow a normal
-distribution -- the same assumption underlying the HFM itself. However,
+distribution---the same assumption underlying the HFM itself. However,
 it remains unknown how this model would perform when applied to data
 that strongly deviate from normality, such as the characteristically
 skewed distributions of RTs. For this reason, the present work
@@ -242,7 +242,7 @@ extension into the HFM as currently established in the literature. We
 then generalize this framework to accommodate asymmetric RT
 distributions through two parameterizations: the ex-Gaussian
 [@hohle1965inferred] and the shifted-lognormal [@heathcote2004qmpe].
-Next, we highlight another major advantage of the generalized HFM: its
+Next, we highlight another major advantage of the generalized HFM (GenHFM): Its
 ability to assess how effectively each task captures the common factor
 shared across them, offering a systematic way to compare and validate
 experimental tasks on empirical grounds. Finally, to make the model more
@@ -253,7 +253,7 @@ lines of research.
 
 ## From Hierarchical to Hierarchical Factor Models
 
-### Hierarchical models: unbiased but inefficient correlations
+### Hierarchical Models: Unbiased but Inefficient Correlations
 
 As noted earlier, estimating correlations between experimental effects
 by aggregating scores across trials (e.g., aggregated effects, Figure
@@ -275,7 +275,7 @@ $$ {#eq-rouder-01}
 
 \noindent $X_k\in\left\{-1/2,1/2\right\}$ indicates the experimental
 condition, $\alpha_{ij}$ is participant $i$'s average RT in task $j$,
-and $\beta_{ij}$ is the key experimental effect of interest: the
+and $\beta_{ij}$ is the key experimental effect of interest: The
 difference in average RTs between the two experimental conditions for
 participant $i$ in task $j$. The trial-level variability is accounted
 for by the residual standard deviation, $\sigma_j$, which can vary
@@ -295,8 +295,8 @@ distribution given by: $$
 \boldsymbol{\mu_\beta}
 \end{bmatrix},\,\mathbf{\Sigma}=
 \begin{bmatrix}
-\mathbf{\Sigma}_{\boldsymbol{\alpha}} & \mathbf{\Sigma}_{\boldsymbol{\beta\alpha}}\\
-\mathbf{\Sigma}_{\boldsymbol{\alpha\beta}} & \mathbf{\Sigma}_{\boldsymbol{\beta}}
+\mathbf{\Sigma}_{\boldsymbol{\alpha}} & \mathbf{\Sigma}_{\boldsymbol{\alpha\beta}}\\
+\mathbf{\Sigma}_{\boldsymbol{\beta\alpha}} & \mathbf{\Sigma}_{\boldsymbol{\beta}}
 \end{bmatrix}
 \right),
 $$ {#eq-rouder-02}
@@ -306,7 +306,7 @@ are vectors of means (often called *fixed effects*), and
 $\mathbf{\Sigma}$ captures the covariances of intercepts
 ($\mathbf{\Sigma_\alpha}$), slopes ($\mathbf{\Sigma_\beta}$), and their
 cross-covariance
-($\mathbf{\Sigma}_{\boldsymbol{\alpha\beta}}=\mathbf{\Sigma}_{\boldsymbol{\beta\alpha}}^\prime$)
+($\mathbf{\Sigma}_{\boldsymbol{\beta\alpha}}=\mathbf{\Sigma}_{\boldsymbol{\alpha\beta}}^\prime$)
 across participants and tasks. Importantly,
 $\mathbf{\Sigma}_{\boldsymbol{\beta}}$ is the *true* covariance matrix
 between experimental effects after accounting for measurement error in
@@ -324,7 +324,7 @@ correlations [@rouder2023][^1].
     employed by @rouder2023 and @Mehrvarz2025. In that case, the
     difference in uncertainty between the Bayesian and frequentist
     approaches arises exclusively from the selected prior distributions.
-    A demonstration of this is provided in the Supplementary Material.
+    A demonstration of this is provided in the supplemental material.
 
 When correlations between experimental effects are estimated using
 hierarchical models (Figure \ref{fig-attempts}B), researchers implicitly
@@ -336,12 +336,12 @@ correlations between tasks that should reflect a common underlying
 process (e.g., inhibition), this theoretical information is not yet
 incorporated into the model. Clearly, an alternative model is needed.
 
-![Attempts to model correlations in experimental
-psychology](..\Figures\Attempts_figure.png){#fig-attempts
+![Attempts to Model Correlations in Experimental
+Psychology](..\Figures\Attempts_figure.png){#fig-attempts
 fig-align="center"
-apa-note="NoNote \\fontsize{10}{12}\\selectfont \\textit{Note.} Squares represent observed variables and circles represent latent variables. Panel A shows correlations between aggregated experimental effects, computed here as the difference between mean response times in the incongruent and congruent conditions for each task. These correlations are estimated directly from observed mean differences and therefore implicitly treat the experimental effects as perfectly reliable. Panel B shows hierarchical models in which each task-specific experimental effect is represented by a latent random slope, $\\beta_j$, separated from other task-level components ($\\alpha_j$) and trial-level measurement error ($\\varepsilon_j$). The correlations among $\\beta_j$ therefore represent associations between disattenuated task-specific effects. Panel C shows a hierarchical factor model in which the covariation among the latent task-specific effects is explained by a common latent factor, $\\boldsymbol{\\eta}$, with factor loadings $\\lambda_1$, $\\lambda_2$, and $\\lambda_3$."}
+apa-note='NoNote \\fontsize{10}{12}\\selectfont \\textit{Note.} Squares represent observed variables and circles represent latent variables. Panel A: Correlations between aggregated experimental effects, computed here as the difference between mean response times (RTs) in the incongruent (red "I"s) and congruent (blue "C"s) conditions for each task. These correlations are estimated directly from observed mean differences and therefore implicitly treat the experimental effects as perfectly reliable. Panel B: Hierarchical models in which each task-specific experimental effect is represented by a latent random slope, $\\beta_j$, separated from other task-level components ($\\alpha_j$) and trial-level measurement error ($\\varepsilon_j$). The correlations among $\\beta_j$ therefore represent associations between disattenuated task-specific effects. Panel C: A hierarchical factor model in which the covariation among the latent task-specific effects is explained by a common latent factor, $\\boldsymbol{\\eta}$, with factor loadings $\\lambda_1$, $\\lambda_2$, and $\\lambda_3$.'}
 
-### Hierarchical factor models: unbiased and more efficient correlations
+### Hierarchical Factor Models: Unbiased and More Efficient Correlations
 
 Fortunately, psychometricians have spent nearly a century developing
 factor models designed to explain correlations through latent common
@@ -353,7 +353,7 @@ similarly used factor models to address these questions in domains
 including executive functions [@Miyake2000; @Friedman2004], statistical
 learning [@Siegelman2017; @Kaufman2010], and working memory
 [@Foster2015; @Burgoyne2025]. Yet, as commonly applied, factor models
-are not well suited for experimental settings because they rely on
+are not well-suited for experimental settings because they rely on
 correlations between aggregated scores. When attenuation pulls those
 correlations toward zero, latent dimensions cannot be recovered
 reliably, which may help explain the lack of stable factor solutions in
@@ -370,7 +370,7 @@ To illustrate this efficiency gain under correct model specification, we
 conducted a simple simulation that varied sample size, number of
 observed variables, and the true correlation $\rho$, equal for all
 pairs. This pattern is consistent with a one-factor tau-equivalent
-structure. We generated $R=10,000$ datasets per condition and estimated
+structure. We generated $R=10,000$ data sets per condition and estimated
 $R$ correlation matrices using (1) the Pearson product–moment formula
 and (2) a single-factor model. Finally, we computed the standard error
 (SE) of each estimator as the standard deviation across the $R$
@@ -383,8 +383,8 @@ As shown, increasing the number of observed variables markedly improves
 precision under the factor model, especially at small $\rho$, where
 distinguishing small correlations from zero is more difficult.
 
-![Relative sampling variability of pairwise correlations under Pearson
-vs. a common-factor model](../Figures/supplemental_SEratio.png){#fig-SEs
+![Relative Sampling Variability of Pairwise Correlations Under Pearson
+vs. a Common-Factor Model](../Figures/supplemental_SEratio.png){#fig-SEs
 width="100%" fig-align="center"
 apa-note="NoNote \\fontsize{10}{12}\\selectfont \\textit{Note.} The y-axis shows the ratio $\\overline{SE}_{\\text{Pearson}} / \\overline{SE}_{\\text{Common-factor}}$, where values above 1 indicate greater precision for the common-factor model. The x-axis shows the true correlation, $\\rho$. Panels represent sample size ($N = 50$, $100$, and $500$), lines represent the number of observed variables (5, 10, and 20), and the dashed line indicates equal precision."}
 
@@ -412,7 +412,7 @@ When we decompose $\mathbf\Sigma_\beta$ as in Equation
 @Rouder2025HFM and @Mehrvarz2025 have named "*hierarchical factor
 models*", which combine hierarchical modeling to capture individual
 variability with factor modeling to capture shared cognitive processes.
-This framework is particularly well suited to experimental psychology:
+This framework is particularly well-suited to experimental psychology:
 it naturally accounts for hierarchical data structures, improves the
 identification of latent dimensions, and allows researchers to enhance
 precision through both larger samples and a greater number of tasks.
@@ -426,8 +426,8 @@ may be unrealistic, as empirical RTs are known to follow skewed
 distributions [@baayen2010analyzing; @heathcote1991analysis], better
 approximated by the ex-Gaussian [@hohle1965inferred] or the lognormal
 [@heathcote2004qmpe][^2] distributions. @Rouder2025HFM have already 
-acknowledged this potential adaptation to the model. Since the 
-consequences of using Gaussian HFM for skewed RTs are yet unknown, 
+acknowledged this potential adaptation to the model. Because the 
+consequences of using a Gaussian HFM for skewed RTs are yet unknown, 
 incorporating more realistic distributions into the model was the 
 first main purpose of this work.
 
@@ -437,11 +437,11 @@ first main purpose of this work.
     to estimate individual differences in DDM parameters
     [@Stevenson2024; @Stevenson2025group].
 
-## A generalized and standardized formulation of the Hierarchical Factor Model
+## A Generalized and Standardized Formulation of the Hierarchical Factor Model
 
-The present work has two main goals. First, as mentioned above, we
+The present work has two main goals. First, as mentioned earlier, we
 intend to study the impact of using Gaussian assumptions when modeling
-skewed data, and -- if the impact proves detrimental -- whether the
+skewed data, and---if the impact proves detrimental---whether the
 Generalized HFM (GenHFM) can improve parameter estimation. Second, and
 perhaps more important, to devise a technical architecture for the HFM
 that enables researchers to easily interpret, not only the correlations
@@ -474,7 +474,7 @@ presented at the end of this work.
 
 # Generalized Hierarchical Factor Model
 
-## Modeling with alternative distributions for response times
+## Modeling With Alternative Distributions for Response Times
 
 The GenHFM modifies only the distributional assumption of RTs in
 Equation \ref{eq-rouder-01}, while leaving Equations \ref{eq-rouder-02}
@@ -484,7 +484,7 @@ ex-Gaussian and the shifted lognormal. Other distributional families,
 such as the gamma, inverse Gaussian, or Weibull, can also be implemented
 in these models in a straightforward manner.
 
-### Ex-Gaussian hierarchical factor model
+### Ex-Gaussian Hierarchical Factor Model
 
 Under the ex-Gaussian HFM, RT for participant $i$, task $j$, condition
 $k$, and trial $\ell$, $Y_{ijk\ell}$, arises from the convolution of
@@ -499,7 +499,7 @@ conditions, and $\beta_{ij}$ captures the experimental effect. The model
 also includes two additional parameters: $\sigma_{ij}$, the standard
 deviation of the Gaussian component, and $\tau_{ij}$, the inverse of the
 exponential rate parameter. Both parameters are allowed to vary across
-individuals and tasks and, since neither can be negative, we modeled
+individuals and tasks and, because neither can be negative, we modeled
 them using normal distributions truncated at zero[^3]: $$
 \sigma_{ij}\sim\mbox{Normal}^+\left(\mu_{\sigma_j},\,\sigma_{\sigma_j}\right)\quad\mbox{and}\quad\tau_{ij}\sim\mbox{Normal}^+\left(\mu_{\tau_j},\,\sigma_{\tau_j}\right)
 $$ {#eq-GenHFM-02}
@@ -524,7 +524,7 @@ by $$
 \mathbb{E}[Y_{ijk\ell}] = m_{ijk} + \tau_{ij}\quad\mbox{and}\quad\mathbb{V}[Y_{ijk\ell}]=\sigma^2_{ij} + \tau^2_{ij}.
 $$ {#eq-GenHFM-03}
 
-### Shifted-lognormal hierarchical factor model
+### Shifted-Lognormal Hierarchical Factor Model
 
 Under the shifted-lognormal HFM, RT for participant $i$, task $j$,
 condition $k$, and trial $\ell$ follows a lognormal distribution shifted
@@ -548,7 +548,7 @@ non-decision processes such as perceptual encoding or motor execution
 
 Both $\sigma_{ij}$ and $\delta_{ij}$ vary across individuals and tasks.
 As in the ex-Gaussian model, we use normal distributions truncated at
-zero for these parameters. Since $\delta_{ij}$ must not exceed the
+zero for these parameters. Because $\delta_{ij}$ must not exceed the
 observed RTs, it is further constrained to lie between zero and the
 minimum RT for each participant-task combination[^5]: $$
 \sigma_{ij}\sim\mbox{Normal}^+\left(\mu_{\sigma_j},\,\sigma_{\sigma_j}\right)\quad\mbox{and}\quad\delta_{ij}\sim\mbox{Normal}^+\left(\mu_{\tau_j},\,\sigma_{\tau_j}\right),\quad\text{with}\quad\delta_{ij}\in\left(0,\,\mbox{min}(Y_{ij\bullet\bullet})\right).
@@ -559,7 +559,7 @@ $$ {#eq-GenHFM-05}
     RT in each participant-task combination is meaningful and not an
     unusually fast lapse or contaminated response. A more robust version
     of the model that relaxes this restriction is described in the
-    Supplementary Material.
+    supplemental material.
 
 \noindent where $\mu_{\sigma_j}$ and $\sigma_{\sigma_j}$ denote the
 task-specific mean and standard deviation of $\sigma_{ij}$, whereas
@@ -573,7 +573,7 @@ variance) in the original RT metric are $$
 \mathbb{V}[Y_{ijk\ell}]=\left(\exp(\sigma^2_{ij}) - 1\right) \cdot\exp\left(2\cdot m_{ijk}+\sigma^2_{ij}\right).
 $$ {#eq-GenHFM-06}
 
-### Data-generation process under each model
+### Data-Generation Process Under Each Model
 
 Although both distributions capture the skewed shape of RT data, they
 reflect different assumptions about how responses are generated. The
@@ -592,7 +592,7 @@ is not defined in the same way under both models. In the ex-Gaussian
 model, it is expressed on the raw RT scale, whereas in the
 shifted-lognormal model, it is expressed on the log-RT scale.
 
-### Reliability in generalized hierarchical factor models
+### Reliability in Generalized Hierarchical Factor Models
 
 The reliability of experimental effects depends jointly on three
 elements [@rouder2019psychometrics]: the magnitude of true effect
@@ -616,13 +616,13 @@ $\gamma^2 = \sigma^2_\beta / \left(\mu^+_{\sigma^2} + \mu^+_{\tau^2}\right)$[^7]
 
 [^6]: Throughout the paper, $\mu^+_\bullet$ and $\sigma^+_\bullet$
     denote the mean and standard deviation of the zero-truncated normal.
-    The Supplementary Material details their mapping to the untruncated
+    The supplemental material details their mapping to the untruncated
     parameterization.
 
 [^7]: Note that $\mu^+_{\sigma^2}$ and $\mu^+_{\tau^2}$ denote the
     expected values of $\sigma^2$ and $\tau^2$, which differ from
     $(\mu^+_{\sigma})^2$ and $(\mu^+_{\tau})^2$ by Jensen’s inequality
-    (see Supplementary Material).
+    (see supplemental material).
 
 Given a specific $\gamma^2$ and a certain number of experimental trials,
 reliability can be approximated in each model using the following
@@ -634,7 +634,7 @@ $$ {#eq-GenHFM-07}
 test–retest reliability coefficient under repeated sampling
 [@rouder2024hierarchical].
 
-## Bayesian framework for these models
+## Bayesian Framework for These Models
 
 While the gaussian HFM has been developed within the Bayesian framework,
 it can also be estimated using frequentist methods in specialized
@@ -646,7 +646,7 @@ Fortunately, Bayesian models can provide valid inferences even with
 small samples [@miocEvic2020introduction; @Wagenmakers2008], because
 Bayesian estimation does not rely on asymptotic assumptions like
 frequentist statistics [@Gelman2013, Chapter 4; @mcelreath2020, p.31].
-Yet, this advantage is not free: it depends on the specification of the
+Yet, this advantage is not free: It depends on the specification of the
 prior distributions, which helps stabilize estimation under limited data
 conditions [@vandeschoot2017systematic; @Smid2020]. As the number of
 observations increases, the influence of the priors diminishes, and the
@@ -654,14 +654,14 @@ posterior distribution converges to a multivariate normal distribution
 centered on the parameter values that best approximate the
 data-generating process [@Gelman2013, Section 4.2]. This convergence
 implies that Bayesian inference and maximum likelihood estimation tend
-to yield similar results in large samples. Therefore, while both
+to yield similar results in large samples. Therefore, although both
 approaches may perform similarly when sample sizes are large, the
 Bayesian approach may be the only viable option when data are limited.
 
 Second, the Bayesian approach does not rely on a single point estimate
 but instead yields a full posterior distribution for each model
 parameter, allowing researchers to quantify uncertainty in a more
-intuitive and informative way [@wagenmakers2018bayesian]. And third,
+intuitive and informative way [@wagenmakers2018bayesian]. Third,
 Bayesian models can be estimated even when the likelihood function does
 not admit a closed-form expression, or when it does but the frequentist
 model fails due to non-convergence[^8] or improper solutions like
@@ -675,11 +675,11 @@ straightforward.
 [^8]: This is because MCMC algorithms can sample directly from the
     posterior distribution without requiring analytic integration of the
     likelihood. Consequently, many researchers adopt Bayesian methods
-    not out of philosophical preference, but simply to overcome
+    not out of philosophical preference but simply to overcome
     computational barriers in complex modeling scenarios
     [@LevyMcNeish2023].
 
-## Standardized latent structure parameterization
+## Standardized Latent-Structure Parameterization
 
 In the original HFM, parameters are expressed in raw measurement units,
 so the interpretation of each loading depends on the measurement scale.
@@ -687,17 +687,17 @@ For example, if RTs are recorded in milliseconds, a loading of
 $\lambda_{jm}=50$ means that a one–standard deviation increase in the
 latent factor corresponds to a 50-millisecond change in the observed
 effect. Yet the plausibility of such a value differs across tasks, as
-some manipulations may yield effects of only a few milliseconds while
+some manipulations may yield effects of only a few milliseconds, whereas
 others produce much larger differences. This joint dependence on scale
 and task-specific variability makes it particularly difficult to specify
-a prior for a factor loading: it becomes harder to determine how
+a prior for a factor loading: It becomes harder to determine how
 informative the prior is, how to adjust its informativeness, and how to
 compare this level of informativeness across studies. These challenges
 can, in practice, discourage experimental psychologists from
 implementing such models in empirical research.
 
 In psychometrics, by contrast, it is customary to work with standardized
-parameters. The reason for this convention is simple: with the
+parameters. The reason for this convention is simple: With the
 standardized metric, each loading $\lambda_{jm}$ represents the
 correlation between the experimental effect $j$ and the common factor
 $m$. The substantive interpretation of these parameters becomes
@@ -722,12 +722,12 @@ represents the model-implied correlation matrix generated by the common
 factors. The diagonal elements,
 $h_j^{2}=(\mathbf{\Lambda}\cdot\mathbf{\Phi}\cdot\mathbf{\Lambda}^\prime)_{jj}$,
 quantify the proportion of explained variance for each experimental
-effect (communality), while $\mathbf{\Psi}$ accounts for the proportion
+effect (communality), whereas $\mathbf{\Psi}$ accounts for the proportion
 of unexplained variance (uniqueness).
 
 As explained and unexplained variances are proportions on a standardized
 scale, they must add up to 1 for all tasks ($h^2_j + \psi_{jj} = 1$).
-This provides a practical advantage over the unstandardized model: once
+This provides a practical advantage over the unstandardized model: Once
 we estimate the communality, the uniqueness is automatically determined
 as $\psi_{jj} = 1 - h^2_j$, so the standardized model does not require a
 prior for $\mathbf\Psi$. In this framework, the true standard deviation
@@ -753,7 +753,7 @@ assigning more informative priors to the hierarchical parameters (for
 which prior knowledge can be obtained from already published
 experiments).
 
-### Unidimensional and multidimensional factor models
+### Unidimensional and Multidimensional Factor Models
 
 As in any other factor model, researchers should decide how many factors
 and which loading structure best describes the relationships between
@@ -761,10 +761,10 @@ tasks. A unidimensional HFM (Figure \ref{fig-dimensions}A) is the most
 simple one, in which all experimental effects are attributed to a single
 latent variable.
 
-![Unidimensional, confirmatory, and exploratory factor model
-diagrams](..\Figures\dimensions.png){#fig-dimensions width="100%"
+![Unidimensional, Confirmatory, and Exploratory Factor Model
+Diagrams](..\Figures\dimensions.png){#fig-dimensions width="100%"
 fig-align="center"
-apa-note="NoNote \\fontsize{10}{12}\\selectfont \\textit{Note.} Panel A shows a unidimensional model in which all experimental effects load onto a single common factor. Panel B shows a confirmatory factor model in which the experimental effects are assigned to two correlated factors. Panel C shows an exploratory factor model in which all experimental effects can load on both factors. For simplicity, only the links between the common factors, $\\eta_{\\bullet}$, and the experimental effects, $\\beta_{\\bullet}$, from the hierarchical component are shown."}
+apa-note="NoNote \\fontsize{10}{12}\\selectfont \\textit{Note.} Panel A: A unidimensional model in which all experimental effects load onto a single common factor. Panel B: A confirmatory factor model in which the experimental effects are assigned to two correlated factors. Panel C: An exploratory factor model in which all experimental effects can load on both factors. For simplicity, only the links between the common factors, $\\eta_{\\bullet}$, and the experimental effects, $\\beta_{\\bullet}$, from the hierarchical component are shown."}
 
 For identification, the unidimensional model requires at least three
 tasks per factor, and the factor variance is fixed to 1 to define the
@@ -777,9 +777,9 @@ Given that uniqueness is completely determined by factor loadings
 latent factor parameters that must be sampled in this model.
 
 Although some psychological constructs are well captured by a single
-common factor -- such as global self-esteem [@Tomas1999] or satisfaction
-with life [@Diener1985] -- many phenomena are inherently
-multidimensional, such as personality [@Costa1992; @Ashton2007] or
+common factor---such as global self-esteem [@Tomas1999] or satisfaction
+with life [@Diener1985]---many phenomena are inherently
+multidimensional---such as personality [@Costa1992; @Ashton2007] or
 intelligence [@Schneider2012]. Likewise, experimental psychology also
 includes multidimensional constructs. For example, @Miyake2000 evaluated
 whether executive functions could be described by multiple correlated
@@ -804,17 +804,17 @@ relationships among the latent factors.
 
 On the opposite end, exploratory models (Figure \ref{fig-dimensions}C)
 estimate the full $J\times M$ factor loading matrix $\mathbf{\Lambda}$
-without any pre-specified constraints, allowing every task to load on
+without any prespecified constraints, allowing every task to load on
 every latent factor. For identification, uniquenesses are assumed
 uncorrelated and the latent covariance matrix is fixed to the identity
 ($\mathbf{\Phi}=\mathbf{I}$). This flexibility enables the model to
-capture complex data structures without prior assumptions, but also
-introduces rotational indeterminacy: infinitely many combinations of
+capture complex data structures without prior assumptions but also
+introduces rotational indeterminacy: Infinitely many combinations of
 $\mathbf{\Lambda}$ and $\mathbf{\Phi}$ can fit the data equally well
 [@LawleyMaxwell1962]. Consequently, orthogonal [e.g., Varimax,
 @kaiser1958varimax] and oblique rotations [e.g., Oblimin,
 @JennrichSampson1966] are applied to transform the factor loading matrix
-in order to facilitate interpretation without modifying model fit.
+to facilitate interpretation without modifying model fit.
 
 Under the Bayesian framework, this same indeterminacy becomes more
 challenging to address. In frequentist settings, rotation is applied
@@ -826,7 +826,7 @@ reversals (the latter also affecting confirmatory models). Unless these
 rotations and sign ambiguities are corrected, the posterior distribution
 of the factor loadings remains unidentified and cannot be coherently
 summarized [@anderson1956inference; @papastamoulis2022]. To resolve
-this, our GenHFMs framework applies a post-processing second step to
+this, our GenHFM framework applies a postprocessing second step to
 align the posterior draws, ensuring interpretable summaries while
 keeping the latent factor model unchanged. Full details of our alignment
 and sign-correction procedures are provided in the Supplementary
@@ -851,28 +851,28 @@ exploratory. Figure \ref{fig-BGenHFM} therefore represents the GenHFM
 through two linked components: a conventional hierarchical model---*the
 hierarchical component*---and a psychometric factor model---*the latent
 factor component*. This distinction is useful in practice because, as we
-show below, *the latent factor component* is comparatively
-straightforward to specify once *the hierarchical component* has been
+show in the following text, the *latent factor component* is comparatively
+straightforward to specify once the *hierarchical component* has been
 defined. Most of the modeling work therefore remains in *the
 hierarchical component*, so that fitting a GenHFM is, in practice, very
 similar to fitting a conventional hierarchical model.
 
-In *the hierarchical component*, the parameters $\boldsymbol{\mu}$ are
-modeled with normal or half-normal prior distributions, while the
+In the *hierarchical component*, the parameters $\boldsymbol{\mu}$ are
+modeled with normal or half-normal prior distributions, whereas the
 parameters $\boldsymbol{\sigma}$ use half-Student-t, following the
 recommendation of @gelman2006prior to robustly accommodate variances
 close to zero. Within this hierarchical structure, the correlation
-between experimental measures is captured through *the latent factor
+between experimental measures is captured through the *latent factor
 component* of the model, where the differences between models become
 particularly relevant.
 
-![Bayesian Generalized Hierarchical Factor Model diagram, separating the
-hierarchical and latent factor components, and including the prior
-distributions for all
-parameters](..\Figures\BGenHFM_model.png){#fig-BGenHFM
+![Bayesian Generalized Hierarchical Factor Model Diagram, Separating the
+Hierarchical and Latent Factor Components, and Including the Prior
+Distributions for All
+Parameters](..\Figures\BGenHFM_model.png){#fig-BGenHFM
 apa-note="NoNote \\fontsize{10}{12}\\selectfont \\textit{Note.} The graph structure indicates dependencies between the nodes. Circles are continuous variables, squares are discrete variables and diamonds represent an entire set of model parameters (exploratory or confirmatory model). Shaded and unshaded nodes represent observed and latent variables, respectively. Nodes with just one line represent sampled parameters, while those with two lines represent transformed parameters. LKJ = Lewandowski-Kurowicka-Joe distribution; RPG = Radial–Penalized Gaussian distribution (see Appendix A)."}
 
-When the factor component is a unidimensional or a confirmatory factor
+When the *latent factor component* is a unidimensional or a confirmatory factor
 model, factor loadings follow a flexible four-parameter Beta
 distribution[^9] that extends the standard Beta from the $[0,1]$
 interval to an arbitrary range $[a,b]$ [@johnson1995continuous, p. 210].
@@ -883,7 +883,7 @@ $\mathbf{\Phi}$ is assigned a Lewandowski-Kurowicka-Joe (LKJ) prior
 distribution [@lewandowski2009generating] with shape parameter
 $\eta_{\mathbf{\Phi}}$, which ensures positive-definiteness and provides
 intuitive control over the degree of shrinkage toward the identity
-matrix. Since uniqueness is fully determined by communality through
+matrix. Because uniqueness is fully determined by communality through
 Equation \ref{eq-std-02}, its prior distribution is implicitly defined
 by the priors placed on $\mathbf{\Lambda}$ and $\mathbf{\Phi}$.
 
@@ -891,15 +891,15 @@ by the priors placed on $\mathbf{\Lambda}$ and $\mathbf{\Phi}$.
     known as Pearson's Type I distribution [@pearson1895]; we adopt the
     Beta naming convention for ease of interpretation.
 
-Unfortunately, the priors described above cannot be directly used when
-the factor component is a standardized exploratory model. In this case,
+Unfortunately, the priors described earlier cannot be directly used when
+the *latent factor component* is a standardized exploratory model. In this case,
 each task loads on several latent factors, just like a dependent
 variable predicted by multiple independent variables in a regression
 model. The factor loadings can thus be understood as conditional
 regression slopes, which are inherently dependent on one another. For
 instance, if the first predictor (i.e., latent factor) already accounts
 for 70% of the variance, the second cannot explain another 60%, as
-together they would exceed the total variance available. Since the
+together they would exceed the total variance available. Because the
 residual variance represents the proportion of variance left unexplained
 by the factors, exceeding the total variance necessarily implies a
 negative uniqueness term. Such impossible solutions are known in
@@ -923,8 +923,8 @@ conversely, when higher communalities are expected (e.g.,
 $h^2 \sim \mathrm{Beta}(5,5)$), larger loadings are favored and
 combinations where both are near zero become implausible.
 
-![Prior distributions for communalities and standardized factor
-loadings](../Figures/UV_prior.png){#fig-UVP fig-align="center"
+![Prior Distributions for Communalities and Standardized Factor
+Loadings](../Figures/UV_prior.png){#fig-UVP fig-align="center"
 apa-note="NoNote \\fontsize{10}{12}\\selectfont \\textit{Note.} The first row shows three Beta prior distributions for the communality, $h^2$. The second row shows the implied joint prior distribution of two standardized factor loadings, $\\lambda_{11}$ and $\\lambda_{12}$, for the same experimental effect on two different common factors."}
 
 Finally, because $h^2$ and uniqueness are complementary, the prior on
@@ -934,7 +934,7 @@ for the entire exploratory factor model, and when it is uniform over
 $h^2$, this prior naturally propagates its uniformity to all model
 parameters.
 
-# Model evaluation and empirical illustrations
+# Model Evaluation and Empirical Illustrations
 
 To evaluate GenHFMs, we conducted a simulation study with three main
 goals. The first was to evaluate the performance of the data-generating
@@ -943,7 +943,7 @@ efficiency. The second was to quantify the consequences of assuming
 Gaussian RT distributions when the true data-generating process is
 skewed, by comparing the bias and uncertainty of the recovered
 correlations and factor loadings between the Gaussian and the true
-generating models. Finally, since potential differences between models
+generating models. Third, because potential differences between models
 require a principled way to select the most appropriate trial-level
 distribution, our third goal was to evaluate the performance of
 cross-validation methods in identifying the true data-generating model.
@@ -953,9 +953,18 @@ representative predictive-validity approach for model comparison.
 Finally, we conducted two empirical illustrations to demonstrate the
 practical capabilities of these models in applied research settings.
 
-# Simulation study
+# Simulation Study
 
 ## Method
+
+### Transparency and Openess
+
+This study was not preregistered. All materials required to reproduce
+this work are publicly available on the Open Science Framework 
+[<https://osf.io/5dutv/>, @reysaez2026osf] and GitHub [<https://github.com/RicardoReySaez/GenHFM>, @reysaez2026genhfm]. The fitted Stan models from the empirical illustrations and supplemental material are hosted exclusively on Open Science Framework. During the preparation of this work the authors used GPT-5 to occasionally
+resolve English language doubts. After using this tool, the authors
+critically reviewed and edited the content as needed and take full responsibility
+for the content of the publication.
 
 ### Design
 
@@ -972,7 +981,7 @@ correlation between the two factors was fixed at .50; in both
 multidimensional settings, these features introduce additional task
 correlations that are weaker, typically about half the magnitude of
 those induced by the main loadings (all population correlation matrices
-are provided in the Supplementary Material). Crossing all levels of the
+are provided in the supplemental material). Crossing all levels of the
 design factors resulted in a fully balanced
 $2\times2\times3\times3\times3=108$ condition design, with 100
 replications per condition.
@@ -1037,7 +1046,7 @@ kable(meta_parameters_table,
                     "$\\mu_\\lambda^{+\\,\\dagger}$", "$\\sigma_\\lambda^{+\\,\\dagger}$", 
                     "$\\mu_\\delta$", "$\\sigma_\\delta$"),
       escape = FALSE,
-      caption = "Pooled estimates of hierarchical model parameters by task and response-time model", 
+      caption = "Pooled Estimates of Hierarchical Model Parameters by Task and Response-Time Model", 
       label = "hierarchical-meta") |>
   kable_styling(latex_options = c("hold_position"), font_size = 10) |> # Quarto se encargará del \resizebox condicional
   pack_rows("Gaussian model", 1, 3, 
@@ -1052,19 +1061,19 @@ kable(meta_parameters_table,
 ```
 
 To ensure that the simulations were based on empirically valid
-parameters, we conducted a meta-analysis of 59 published datasets
+parameters, we conducted a meta-analysis of 59 published data sets
 [@haaf2025attentional] involving three well-known inhibition tasks:
-Stroop, Flanker, and Simon. For each dataset, we fitted Gaussian
+Stroop, Flanker, and Simon. For each data set, we fitted Gaussian
 (Equation \ref{eq-rouder-01}), ex-Gaussian (Equation
 \ref{eq-GenHFM-01}), and shifted-lognormal (Equation \ref{eq-GenHFM-04})
 Bayesian hierarchical models, all specified with deliberately diffuse
 priors (full Bayesian model specifications are reported in the
-Supplementary Material). From each fitted model, we extracted posterior
+supplemental material). From each fitted model, we extracted posterior
 means as point estimates and posterior variances as measures of
 uncertainty, and then performed a random-effects meta-analysis
 [@raudenbush2009analyzing] across all experiments, including task type
 as a moderator. The resulting pooled estimates are summarized in Table
-\ref{tab:hierarchical-meta}. See the Supplementary Material for further
+\ref{tab:hierarchical-meta}. See the supplemental material for further
 details of the meta-analysis.
 
 In the simulation study, all population parameters were set to their
@@ -1076,14 +1085,14 @@ adjusting the magnitude of the true effect variance. Finally, we
 specified uniform priors for the latent factor component and diffuse
 priors for the hierarchical component (Table \ref{tab-priors-sim}).
 
-### Model implementation
+### Model Implementation
 
 All models were implemented in Stan [@stan2024], which provides
 diagnostic metrics (e.g., divergences, treedepth, energy) that help
 detect sampling issues often missed by other inference algorithms
 [@mcelreath2020], and its efficient Hamiltonian Monte Carlo sampler
 allows reliable inference with relatively few iterations. To reduce
-estimation time for large datasets, we adopted the same programming
+estimation time for large data sets, we adopted the same programming
 strategy as @Haines2025 in their hierarchical models[^10]. The
 efficiency granted by this method was essential for the simulation study
 and makes these models viable in empirical research.
@@ -1091,19 +1100,46 @@ and makes these models viable in empirical research.
 [^10]: For example, fitting the Gaussian HFM to a dataset with 240,000
     rows (200 subjects, 6 tasks, 100 trials per task) takes between 5
     and 10 minutes, whereas estimating the same model with `{brms}`
-    [@brms] requires about 40 hours.
+    [@brms] requires 40 hours.
 
 Because our model comparison relies on leave-one-out estimates of
 predictive performance, we need pointwise log-likelihood values for each
 observation and posterior draw. However, in applied settings, and also
-in our simulation study, datasets are often large enough that exporting
+in our simulation study, data setss are often large enough that exporting
 and storing the full matrix of pointwise log-likelihoods from Stan
 becomes infeasible. To address this, we implemented model-specific
 log-likelihood functions in R and used the `{loo}` package [@loo_pkg] to
-estimate each model’s expected log predictive density (ELPD) -- a
-measure of a model’s out-of-sample predictive accuracy -- directly from
+estimate each model’s expected log predictive density (ELPD)---a
+measure of a model’s out-of-sample predictive accuracy---directly from
 the posterior draws. In the simulation study, we relied on standard
-PSIS-LOO to estimate the ELPD and compare model
+PSIS-LOO to estimate the ELPD and compare model performance, 
+but we also implemented two robust extensions in
+R for future empirical applications: moment matching [@Paananen2021],
+which improves PSIS-LOO accuracy when individual Pareto-$k$ diagnostics
+are high, and mixture importance sampling [@Silva2023], designed for
+greater stability in high-dimensional parameter spaces or in the
+presence of outliers.
+
+### Procedure
+
+For each replication, we first simulated data from an asymmetric model
+(ex-Gaussian or shifted-lognormal). We then computed Pearson
+correlations between aggregated experimental effects and corrected them
+for attenuation using Spearman's disattenuation formula
+[@spearman1904proof]. Next, we fitted both the Gaussian HFM and the
+corresponding GenHFM used to generate the data (2 chains, 1000 warmup
+iterations, 1000 sampling iterations), and we stored the estimated
+$\mathbf{\Lambda}$, the correlation matrix $\mathbf{R}_\beta$, and all
+hierarchical parameters of the generating GenHFM for later recovery
+analyses. To assess predictive performance, we estimated the ELPD of
+each model using PSIS-LOO and conducted ELPD-based model comparisons
+within each replication to determine how often the true data-generating
+distribution was correctly identified.
+
+The simulation study was programmed in R [@Rcite], version 4.4.3, using
+Stan version 2.36.0. For each replication, we extracted convergence and
+sampling diagnostics for both models, gausian HFM and GenHFM. These
+included the potential scale reduction factor ($\widehat{R}$) 
 
 \begin{table}[H]
 \renewcommand{\arraystretch}{0.7}
@@ -1194,41 +1230,12 @@ PSIS-LOO to estimate the ELPD and compare model
 \end{tabular}
 \begin{tablenotes}[para,flushleft]
 \footnotesize
-\textit{Note}. \(\mathrm{RPG}\) denotes the Radial–Penalized Gaussian (see Appendix~A). \textbf{Units:} the parameter metric is seconds; in the shifted–lognormal model, all parameters except \(\delta\), \(\mu_{\delta}\), and \(\sigma_{\delta}\) are on the log-seconds scale. \textbf{Non-centered:} all tilde parameters are non-centered and re-scaled to the natural metric; for \(\sigma,\tau\): \(\sigma=\mathrm{shift}_{\sigma}+\mathrm{scale}_{\sigma}\tilde{\sigma}\), \(\tau=\mathrm{shift}_{\tau}+\mathrm{scale}_{\tau}\tilde{\tau}\); \(\mathrm{shift},\mathrm{scale}\) are location terms (see Supplementary Materials). \textbf{Constraints:} \(\delta_{ij}\) has upper bound equal to the smallest observed RT for participant \(i\) in task \(j\); \(\mu_{\delta_j}\) has upper bound equal to the largest, within task \(j\), of those participant-specific smallest observed RT.
+\textit{Note}. \(\mathrm{RPG}\) denotes the Radial–Penalized Gaussian (see Appendix~A). \textbf{Units:} the parameter metric is seconds; in the shifted–lognormal model, all parameters except \(\delta\), \(\mu_{\delta}\), and \(\sigma_{\delta}\) are on the log-seconds scale. \textbf{Non-centered:} all tilde parameters are non-centered and re-scaled to the natural metric; for \(\sigma,\tau\): \(\sigma=\mathrm{shift}_{\sigma}+\mathrm{scale}_{\sigma}\tilde{\sigma}\), \(\tau=\mathrm{shift}_{\tau}+\mathrm{scale}_{\tau}\tilde{\tau}\); \(\mathrm{shift},\mathrm{scale}\) are location terms (see supplemental materials). \textbf{Constraints:} \(\delta_{ij}\) has upper bound equal to the smallest observed RT for participant \(i\) in task \(j\); \(\mu_{\delta_j}\) has upper bound equal to the largest, within task \(j\), of those participant-specific smallest observed RT.
 \end{tablenotes}
 \end{threeparttable}
 \end{table}
 
-\newpage
-
-\noindent performance, but we also implemented two robust extensions in
-R for future empirical applications: moment matching [@Paananen2021],
-which improves PSIS-LOO accuracy when individual Pareto-$k$ diagnostics
-are high, and mixture importance sampling [@Silva2023], designed for
-greater stability in high-dimensional parameter spaces or in the
-presence of outliers.
-
-### Procedure
-
-For each replication, we first simulated data from an asymmetric model
-(ex-Gaussian or shifted-lognormal). We then computed Pearson
-correlations between aggregated experimental effects and corrected them
-for attenuation using Spearman's disattenuation formula
-[@spearman1904proof]. Next, we fitted both the Gaussian HFM and the
-corresponding GenHFM used to generate the data (2 chains, 1000 warmup
-iterations, 1000 sampling iterations), and we stored the estimated
-$\mathbf{\Lambda}$, the correlation matrix $\mathbf{R}_\beta$, and all
-hierarchical parameters of the generating GenHFM for later recovery
-analyses. To assess predictive performance, we estimated the ELPD of
-each model using PSIS-LOO and conducted ELPD-based model comparisons
-within each replication to determine how often the true data-generating
-distribution was correctly identified.
-
-The simulation study was programmed in R [@Rcite], version 4.4.3, using
-Stan version 2.36.0. For each replication, we extracted convergence and
-sampling diagnostics for both models, gausian HFM and GenHFM. These
-included the potential scale reduction factor ($\widehat{R}$) and
-effective sample sizes for all parameters, as well as model-level
+\noindent and effective sample sizes for all parameters, as well as model-level
 diagnostics such as the number of divergent transitions and the maximum
 treedepth reached. These metrics were used to evaluate model performance
 across conditions.
@@ -1238,8 +1245,8 @@ across conditions.
 To evaluate parameter recovery, we computed a set of indices across all
 freely estimated group-level parameters. Specifically, we estimated the
 Average Root Mean Square Error (ARMSE), Average Absolute Bias (AAB),
-Average Posterior Standard Deviation (APSD) -- or Average Standard Error
-(ASE) for frequentist estimates --, Average Empirical Coverage Rate
+Average Posterior Standard Deviation (APSD)---or Average Standard Error
+(ASE) for frequentist estimates---, Average Empirical Coverage Rate
 (AECR), Average Standardized Root Mean Square Residual (ASRMR) for
 correlation matrices, and Tucker’s congruence coefficients $\phi$
 [@tucker1951method] for factor loadings. These indices were computed
@@ -1250,16 +1257,16 @@ To evaluate how the simulation factors influenced parameter recovery, we
 fitted a series of ANOVA metamodels [@skrondal2000montecarlo]. For each
 parameter type and recovery index, we treated the index as the dependent
 variable and modeled it as a function of the five simulation factors and
-the estimation method -- four for correlations (aggregated effects,
+the estimation method---four for correlations (aggregated effects,
 Spearman correction, Gaussian HFM, GenHFM) and two for factor loadings
-(Gaussian HFM, GenHFM) ---, with all main and interaction effects. Given
+(Gaussian HFM, GenHFM)---, with all main and interaction effects. Given
 the fixed number of replications per condition and the large total
 sample size, we focused on partial omega-squared ($\omega^2_p$) rather
 than p-values, interpreting values of approximately .01, .06, and .14 as
 small, medium, and large effects, respectively [@cohen1992power]. In the
 main text, we report the largest effect sizes observed across all
 indices for the highest-order interactions involving the estimation
-method; full ANOVA results are provided in the Supplementary Material.
+method; full ANOVA results are provided in the supplemental material.
 
 ## Results
 
@@ -1272,7 +1279,7 @@ of divergent transitions was negligible for both model types (0.0001% in
 each case). Finally, PSIS-LOO model comparison always selected the true
 data-generating model in every condition and replication.
 
-### Correlation matrix
+### Correlation Matrix
 
 Table \ref{tab:sim-results-cors} summarizes the estimated marginal means
 of AAB, APSD/ASE, ASRMR, and AECR across all methods and simulation
@@ -1280,7 +1287,33 @@ conditions. As expected, correlations computed from aggregated effects
 substantially underestimated the true correlation (high AAB) while
 becoming increasingly overconfident in this incorrect value (low ASE),
 leading to a clearly suboptimal estimator overall (high ASRMR).
-Consequently, AECR fell far below the nominal .95 level for
+Consequently, AECR fell far below the nominal .95 level for 
+every condition except when $\Lambda = .30$, where adequate
+coverage became trivial because the true correlation was near zero.
+
+Spearman-corrected correlations greatly reduced this bias (lower AAB),
+but at the cost of substantially increased uncertainty (higher ASE),
+producing high ASRMR values driven by inefficiency. As a result,
+individual estimates frequently deviated from the true value.
+Unexpectedly, confidence intervals remained too narrow, resulting in
+coverage below the .95 level and indicating only partial recovery. As
+shown in the following text, this pattern is driven by Spearman’s 
+poor performance on shifted-lognormal data, which lowers the average AECR.
+
+The Gaussian HFM achieved bias levels comparable to the Spearman
+correction (similar AAB) with much better precision (lower APSD),
+resulting in substantially improved overall estimation performance
+(lower ASRMR). This makes the Gaussian model a clear advancement over
+previous methods, as it retains low bias while controlling uncertainty
+more effectively. However, this benefit was not universal: when the data
+were generated from shifted-lognormal model, its behavior deteriorated
+sharply: AAB and AECR became worse than with Spearman correction,
+despite the latter being far simpler. Thus, the superiority of the
+Gaussian model depended critically on the data-generating mechanism.
+In contrast, when the data-generating process matched the fitted GenHFM,
+the true model produced the lowest bias and AECR values closest to the
+nominal .95 level, as expected under correct specification. In terms of
+uncertainty, it 
 
 ::: landscape
 \renewcommand{\arraystretch}{0.8}
@@ -1291,7 +1324,7 @@ Consequently, AECR fell far below the nominal .95 level for
 
 library(kableExtra)
 load(file = "../Results/Rdata/Tables/emmeans_rho.rdata")
-colnames_final_rho <- c("", rep(c("A", "S", "G", "T"), times = 4))
+colnames_final_rho <- c("Condition", rep(c("A", "S", "G", "T"), times = 4))
 row_info_rho <- table(marginal_means_rho_latex$Factor_Name)[unique(marginal_means_rho_latex$Factor_Name)]
 
 # Final latex table
@@ -1301,7 +1334,7 @@ marginal_means_rho_latex[, 2:18] |>
     booktabs = TRUE,
     escape = FALSE,          
     align = "lcccccccccccccccc",
-    caption = "Estimated marginal means of bias and uncertainty measures for true correlation recovery",
+    caption = "Estimated Marginal Means of Bias and Uncertainty Measures for True Correlation Recovery",
     label = "sim-results-cors",
     col.names = colnames_final_rho,
   ) |> 
@@ -1316,39 +1349,13 @@ marginal_means_rho_latex[, 2:18] |>
       start_row <- start_row + row_info_rho[i]
     }
     x
-  }}() |> footnote(general = "$\\\\textit{Note.}$ Entries are estimated marginal means from the simulation study, averaged over the remaining design factors. A = aggregated scores; S = Spearman correction for attenuation; G = Gaussian HFM; T = True GenHFM. ASRMR = average square root mean squared residual; AAB = average absolute bias; APSD/ASE = average posterior standard deviation or average standard error, depending on the method; AECR = average empirical coverage rate. For ASRMR, AAB, and APSD/ASE, smaller values indicate better performance. For AECR, values closer to .95 indicate better calibrated uncertainty intervals. Within each row, the best value for each performance measure is shown in bold.",
+  }}() |> footnote(general = "$\\\\textit{Note.}$ Entries are estimated marginal means from the simulation study, averaged over the remaining  design factors. For ASRMR, AAB, and APSD/ASE,smaller values indicate better performance. For AECR, values closer to .95 indicate better calibrated uncertainty intervals. Within each row, the best value for each performance measure is shown in bold. A = aggregated scores; S = Spearman correction for attenuation; G = Gaussian HFM; T = true generalized HFM; ASRMR = average square root-mean-square residual; AAB = average absolute bias; APSD/ASE = average posterior standard deviation or average standard error, depending on the method; AECR = average empirical coverage rate; CFA = confirmatory factor analysis; EFA = exploratory factor analysis.",
                    general_title = "", escape = FALSE,
                    threeparttable = TRUE)
 ```
 :::
 
-\noindent every condition except when $\Lambda = .30$, where adequate
-coverage became trivial because the true correlation was near zero.
-
-Spearman-corrected correlations greatly reduced this bias (lower AAB),
-but at the cost of substantially increased uncertainty (higher ASE),
-producing high ASRMR values driven by inefficiency. As a result,
-individual estimates frequently deviate from the true value.
-Unexpectedly, confidence intervals remained too narrow, resulting in
-coverage below the .95 level and indicating only partial recovery. As
-shown below, this pattern is driven by Spearman’s poor performance on
-shifted-lognormal data, which lowers the average AECR.
-
-The Gaussian HFM achieved bias levels comparable to the Spearman
-correction (similar AAB) with much better precision (lower APSD),
-resulting in substantially improved overall estimation performance
-(lower ASRMR). This makes the Gaussian model a clear advancement over
-previous methods, as it retains low bias while controlling uncertainty
-more effectively. However, this benefit was not universal: when the data
-were generated from shifted-lognormal model, its behavior deteriorated
-sharply: AAB and AECR became worse than with Spearman correction,
-despite the latter being far simpler. Thus, the superiority of the
-Gaussian model depended critically on the data-generating mechanism.
-
-In contrast, when the data-generating process matched the fitted GenHFM,
-the true model produced the lowest bias and AECR values closest to the
-nominal .95 level, as expected under correct specification. In terms of
-uncertainty, it was generally the second-most precise approach:
+\noindent was generally the second-most precise approach:
 aggregated correlations yielded a smaller APSD overall, and under the
 shifted-lognormal data-generating process the Gaussian HFM occasionally
 showed a slightly smaller APSD. However, these apparent gains in
@@ -1361,7 +1368,7 @@ bias and uncertainty.
 The ANOVA metamodels revealed the same four-way interaction for ASRMR,
 AAB, and AECR, involving estimation method, true factor loadings,
 data-generating distribution, and reliability (ASRMR:
-$\omega^2_p = .70$; AAB: $\omega^2_p = .70$; APSD: $\omega^2_p = .43$
+$\omega^2_p = .70$; AAB: $\omega^2_p = .70$; APSD: $\omega^2_p = .43$;
 AECR: $\omega^2_p = .89$). Although this interaction was further
 moderated by sample size, we focused our analysis on the four-way
 interaction because the effect of increasing sample size is well
@@ -1375,11 +1382,11 @@ differences in precision: estimates fall close to the diagonal, whereas
 alternative approaches simply spread out more. The shifted-lognormal
 model paints a far more
 
-![Estimated vs. true correlations across reliability conditions,
-estimation methods and data generation
-models](../Figures/correlations_both_models.png){#fig-SRCORS
+![Estimated vs. True Correlations Across Reliability Conditions,
+Estimation Methods and Data Generation
+Models](../Figures/correlations_both_models.png){#fig-SRCORS
 fig-align="center"
-apa-note="NoNote \\fontsize{10}{12}\\selectfont \\textit{Note.} The x-axis shows the estimated correlation and the y-axis the true simulated correlation. Columns represent reliability conditions, rows represent estimation methods, and points indicate the data-generating model (circles = ex-Gaussian; triangles = shifted-lognormal). In the \\textit{True GenHFM} row, estimation is performed with the same GenHFM used for data generation. Each point represents the median estimated correlation across simulation replications for a given condition, and the horizontal intervals represent the central 95% of the corresponding estimates. The dashed diagonal line indicates perfect recovery."}
+apa-note="NoNote \\fontsize{10}{12}\\selectfont \\textit{Note.} The x-axis shows the estimated correlation, and the y-axis the true simulated correlation. Columns represent reliability conditions, rows represent estimation methods, and points indicate the data-generating model (circles = ex-Gaussian; triangles = shifted-lognormal). In the \\textit{true generalized hierarchical factor model (GenHFM)} row, estimation is performed with the same GenHFM used for data generation. Each point represents the median estimated correlation across simulation replications for a given condition, and the horizontal intervals represent the central 95% of the corresponding estimates. The dashed diagonal line indicates perfect recovery."}
 
 \noindent troubling picture. When reliability is low, several methods
 collapse dramatically: aggregated effects, Spearman-corrected
@@ -1394,23 +1401,23 @@ the shifted-lognormal HFM manages to maintain a reasonable
 correspondence between estimated and true values across all reliability
 levels.
 
-To complement these results, the Supplementary Material also reports a
+To complement these results, the supplemental material also reports a
 robustness check in which Gaussian-generated data were fitted with the
 shifted-lognormal and ex-Gaussian GenHFMs under the conditions
-implicated in the four-way interaction reported above. The
+implicated in the four-way interaction reported earlier. The
 shifted-lognormal model showed broadly similar recovery to the Gaussian
 model, whereas the ex-Gaussian model performed much worse overall.
 Importantly, both asymmetric models showed unfavorable Stan
 diagnostics (e.g., divergences, maximum treedepth exceedances, elevated
 $\hat{R}$ values, and low effective sample sizes), which is good news
-for empirical researchers: if their data were truly Gaussian, the
+for empirical researchers: If their data were truly Gaussian, the
 sampler itself would indicate that the shifted-lognormal or ex-Gaussian
 specification is inappropriate. Interestingly, this did not occur in the 
 reverse case, where the Gaussian model could often accommodate asymmetric 
-data without diagnostics warnings. See the Supplementary Material for full 
+data without diagnostics warnings. See the supplemental material for full 
 details of the simulation design and results.
 
-### Factor loadings
+### Factor Loadings
 
 Across all design factors, the Gaussian HFM showed weaker recovery of
 factor loadings than the true GenHFM, yielding higher ARMSE, AAB, and
@@ -1423,11 +1430,11 @@ Gaussian HFM consistently provided less accurate and precise parameter
 estimates.
 
 Method differences were most evident in the more demanding settings
-(such as low reliability, small loadings, and especially
+(such as low reliability, small loadings, and especially the 
 shifted-lognormal data-generation model), where the Gaussian model
 showed inflated bias and uncertainty, lower factor congruence, and
 higher ARMSE due to distributional misspecification. Even in the more
-favourable conditions of the design, the Gaussian model performance was
+favorable conditions of the design, the Gaussian model performance was
 always lower compared with the true GenHFM.
 
 Factor loadings showed the same four-way interaction as correlations
@@ -1439,22 +1446,6 @@ as reliability decreases and culminating in a systematic 50%
 underestimation of the true loadings when shifted-lognormal data are
 fitted with the Gaussian model.
 
-### Hierarchical parameters
-
-Across both ex-Gaussian and shifted-lognormal GenHFM specifications,
-recovery of the group-level hierarchical parameters was consistently
-accurate. AAB, ARMSE and APSD were systematically low for all
-parameters, and AECR remained very close to the nominal .95 value across
-conditions (see Supplementary Material). Figure \ref{fig-HPR} displays
-the distributions of the posterior mean estimates obtained for each
-parameter across all simulation replications and design conditions,
-along with their corresponding true values. Although the estimates for
-all parameters lie very close to their generating values, the plots
-reveal a slight overestimation for $\sigma_\alpha$ in both models. This
-overestimation is small in magnitude, with an average relative bias of
-approximately 5% across conditions, and does not compromise the overall
-accuracy of parameter recovery.
-
 \renewcommand{\arraystretch}{0.8}
 
 ```{r}
@@ -1462,7 +1453,7 @@ accuracy of parameter recovery.
 #| warning: false
 
 load(file = "../Results/Rdata/Tables/emmeans_lambda.rdata")
-colnames_final_lam <- c("", rep(c("Gaussian", "True"), times = 5))
+colnames_final_lam <- c("Condition", rep(c("Gaussian", "True"), times = 5))
 row_info_lam <- table(marginal_means_lam_latex$Factor_Name)[unique(marginal_means_lam_latex$Factor_Name)]
 
 # Final latex table
@@ -1473,7 +1464,7 @@ marginal_means_lam_latex[, -1] |>
     escape = FALSE,          
     align = "lcccccccc",
     col.names = colnames_final_lam,
-    caption = "Estimated marginal means of bias, uncertainty, and congruence measures for factor loading recovery", 
+    caption = "Estimated Marginal Means of Bias, Uncertainty, and Congruence Measures for Factor Loading Recovery", 
     label = "sim-results-loads"
   ) |> 
   kable_styling(font_size = 10, latex_options = c("HOLD_position", "scale_down")) |> 
@@ -1496,23 +1487,39 @@ marginal_means_lam_latex[, -1] |>
     x
   }}() |> 
   column_spec(2:11, width = "0.9cm") |> 
-  footnote(general = "$\\\\textit{Note.}$ Entries are estimated marginal means from the simulation study, averaged over the remaining design factors. Columns compare factor loading recovery under the Gaussian HFM and the True GenHFM. ARMSE = average root mean squared error; AAB = average absolute bias; APSD = average posterior standard deviation; Tucker's $\\\\phi$ = factor congruence coefficient; AECR = average empirical coverage rate. Smaller ARMSE, AAB, and APSD values indicate better performance, whereas larger Tucker's $\\\\phi$ values and AECR values closer to .95 indicate better recovery and better calibrated uncertainty intervals, respectively. Within each row, the best value for each performance measure is shown in bold.", general_title = "", threeparttable = TRUE, escape = FALSE)
+  footnote(general = "$\\\\textit{Note.}$ Entries are estimated marginal means from the simulation study, averaged over the remaining design factors. Columns compare factor loading recovery under the Gaussian HFM and the true generalized HFM. Smaller ARMSE, AAB, and APSD values indicate better performance, whereas larger Tucker's $\\\\phi$ values and AECR values closer to .95 indicate better recovery and better calibrated uncertainty intervals, respectively. Within each row, the best value for each performance measure is shown in bold. ARMSE = average root mean squared error; AAB = average absolute bias; APSD = average posterior standard deviation; Tucker's $\\\\phi$ = factor congruence coefficient; AECR = average empirical coverage rate; CFA = confirmatory factor analysis; EFA = exploratory factor analysis.", general_title = "", threeparttable = TRUE, escape = FALSE)
 ```
 
-![Estimated vs. true factor loadings across reliability conditions,
-estimation methods, and data-generating
-models](../Figures/factor_loadings_simresults.png){#fig-SRLOADS
+![Estimated vs. True Factor Loadings Across Reliability Conditions,
+Estimation Methods, and Data-Generating
+Models](../Figures/factor_loadings_simresults.png){#fig-SRLOADS
 fig-align="center"
-apa-note="NoNote \\fontsize{10}{12}\\selectfont \\textit{Note.} The x-axis shows the estimated factor loading and the y-axis the true simulated factor loading. Columns represent reliability conditions, rows represent estimation methods, and points indicate the data-generating model (circles = ex-Gaussian; triangles = shifted-lognormal). In the \\textit{True GenHFM} row, estimation is performed with the same GenHFM used for data generation. Each point represents the median estimated factor loading across simulation replications for a given condition, and the horizontal intervals represent the central 95% of the corresponding estimates. The dashed diagonal line indicates perfect recovery."}
+apa-note="NoNote \\fontsize{10}{12}\\selectfont \\textit{Note.} The x-axis shows the estimated factor loading, and the y-axis the true simulated factor loading. Columns represent reliability conditions, rows represent estimation methods, and points indicate the data-generating model (circles = ex-Gaussian; triangles = shifted-lognormal). In the \\textit{true generalized hierarchical factor model (GenHFM)} row, estimation is performed with the same GenHFM used for data generation. Each point represents the median estimated factor loading across simulation replications for a given condition, and the horizontal intervals represent the central 95% of the corresponding estimates. The dashed diagonal line indicates perfect recovery."}
 
-![Recovery of hierarchical group-level parameters across simulation
-conditions](../Figures/hierarchical_pars_simresults.png){#fig-HPR
+### Hierarchical Parameters
+
+Across both ex-Gaussian and shifted-lognormal GenHFM specifications,
+recovery of the group-level hierarchical parameters was consistently
+accurate. AAB, ARMSE and APSD were systematically low for all
+parameters, and AECR remained very close to the nominal .95 value across
+conditions (see supplemental material). Figure \ref{fig-HPR} displays
+the distributions of the posterior mean estimates obtained for each
+parameter across all simulation replications and design conditions,
+along with their corresponding true values. Although the estimates for
+all parameters lie very close to their generating values, the plots
+reveal a slight overestimation for $\sigma_\alpha$ in both models. This
+overestimation is small in magnitude, with an average relative bias of
+approximately 5% across conditions, and does not compromise the overall
+accuracy of parameter recovery.
+
+![Recovery of Hierarchical Group-Level Parameters Across Simulation
+Conditions](../Figures/hierarchical_pars_simresults.png){#fig-HPR
 fig-align="center"
-apa-note="NoNote \\fontsize{10}{12}\\selectfont \\textit{Note.} Panel A shows results for the ex-Gaussian GenHFM and Panel B for the shifted-lognormal GenHFM. Each histogram displays the distribution of posterior mean estimates for each group-level hierarchical parameter across simulation replications and design conditions. Red vertical lines indicate the true generating values. The three panels for $\\sigma_\\beta$ correspond to the three reliability conditions ($\\rho_{xx}=.30$, $.50$, and $.70$)."}
+apa-note="NoNote \\fontsize{10}{12}\\selectfont \\textit{Note.} Panel A: Results for the ex-Gaussian generalized hierarchical factor model (GenHFM). Panel B:  Results for the shifted-lognormal GenHFM.Each histogram displays the distribution of posterior mean estimates for each group-level hierarchical parameter across simulation replications and design conditions. Red vertical lines indicate the true generating values. The three panels for $\\sigma_\\beta$ correspond to the three reliability conditions ($\\rho_{xx}=.30$, $.50$, and $.70$)."}
 
-# Empirical illustration
+# Empirical Illustration
 
-## Whitehead et al.'s inhibition tasks loading onto a latent common factor
+## Whitehead et al.'s Inhibition Tasks Loading Onto a Latent Common Factor
 
 @Whitehead2019Reliable were interested in assessing whether different
 measures of inhibition relied on the same unitary attentional control
@@ -1525,7 +1532,7 @@ Stroop, Flanker, and Simon tasks whose structure was progressively
 refined from Experiment 1 to Experiment 3 to improve the reliability of
 the sequential effects, but their findings offered little evidence for a
 shared control mechanism. Building on this, @Whitehead2020 reanalysed
-the combined dataset using standard condition-based conflict effects,
+the combined data set using standard condition-based conflict effects,
 arguing that the three tasks were deliberately designed to have maximal
 overlap in their conflict sources and could therefore be pooled to
 increase statistical power. Aware of reliability concerns, the authors
@@ -1537,7 +1544,7 @@ remained low, leading the authors to conclude that attentional control
 is more likely to be task- or domain-specific than genuinely unitary.
 
 Several factors may help explain the weak correlations reported in the
-Whitehead analyses. First, @Whitehead2020 modelled RTs using Gaussian
+Whitehead analyses. First, @Whitehead2020 modeled RTs using Gaussian
 hierarchical linear models, which ignore skewness and may yield less
 precise trial-level estimates. Second, they relied on a two-step
 procedure: estimating participant-specific random slopes for each task
@@ -1584,16 +1591,16 @@ kbl(ELPDs_table,
     escape = FALSE, 
     booktabs = TRUE,
     align = c("l", "c", "c", "c", "c", "c", "c", "c", "c"), 
-    caption = "Comparison of predictive performance based on ELPD differences across the four HFMs", 
+    caption = "Comparison of Predictive Performance Based on ELPD Differences Across the Four HFMs", 
     label = "elpd-whitehead") |> 
   kable_styling(font_size = 10, latex_options = c("hold_position", "scale_down")) |> 
   add_header_above(c(" " = 1, "Experiment 1" = 2, "Experiment 2" = 2, 
                      "Experiment 3" = 2, "All experiments" = 2)) |>
-  footnote(general = "$\\\\textit{Note.}$ ELPD = expected log pointwise predictive density. Models are ordered from best to worst predictive performance. $\\\\Delta\\\\text{ELPD}$ represents the loss in predictive accuracy relative to the best-fitting model within each column. In all cases, the ex-Gaussian HFM was the reference model. Larger $\\\\Delta\\\\text{ELPD}$ values indicate poorer predictive performance. $\\\\text{SE}_{\\\\Delta\\\\text{ELPD}}$ denotes the standard error of the difference.", general_title = "", threeparttable = TRUE, escape = FALSE)
+  footnote(general = "$\\\\textit{Note.}$ Models are ordered from best to worst predictive performance. $\\\\Delta\\\\text{ELPD}$ represents the loss in predictive accuracy relative to the best-fitting model within each column. In all cases, the ex-Gaussian HFM was the reference model. Larger $\\\\Delta\\\\text{ELPD}$ values indicate poorer predictive performance. $\\\\text{SE}_{\\\\Delta\\\\text{ELPD}}$ denotes the standard error of the difference. ELPD = expected log pointwise predictive density.", general_title = "", threeparttable = TRUE, escape = FALSE)
 ```
 
 To assess whether distributional assumptions affect the conclusions
-drawn from these data, we reanalysed the dataset from @Whitehead2020,
+drawn from these data, we reanalysed the data set from @Whitehead2020,
 applying the same data-inclusion criteria as in their study. For each
 conflict task, we fitted four HFMs with a single latent common factor:
 Gaussian, ex-Gaussian, shifted-lognormal, and lognormal. The lognormal
@@ -1645,14 +1652,14 @@ whitehead_cors_format <- whitehead_cors[, -1]
 kbl(whitehead_cors_format, 
     format = "latex",
     col.names = c("Pair", 
-                  "$\\hat{\\rho}$", "95\\% CI", 
-                  "$\\hat{\\rho}$", "95\\% CI", 
-                  "$\\hat{\\rho}$", "95\\% CI", 
-                  "$\\hat{\\rho}$", "95\\% CI"),
+                  "$\\hat{\\rho}$", "95\\% CrI", 
+                  "$\\hat{\\rho}$", "95\\% CrI", 
+                  "$\\hat{\\rho}$", "95\\% CrI", 
+                  "$\\hat{\\rho}$", "95\\% CrI"),
     escape = FALSE, 
     booktabs = TRUE,
     align = c("l", "c", "c", "c", "c", "c", "c", "c", "c"), 
-    caption = "Model-implied correlation estimates for the four HFMs across experiments", 
+    caption = "Model-Implied Correlation Estimates for the Four HFMs Across Experiments", 
     label = "cors-whitehead") |> 
   kable_styling(font_size = 10, latex_options = c("hold_position")) |> 
   add_header_above(c(" " = 1, "Gaussian" = 2, "Ex-Gaussian" = 2, 
@@ -1665,7 +1672,7 @@ kbl(whitehead_cors_format,
             hline_before = FALSE, hline_after = FALSE, latex_gap_space = "1em") |>
   pack_rows("All experiments", 10, 12, 
             hline_before = FALSE, hline_after = FALSE, latex_gap_space = "1em") |>
-  footnote(general = "$\\\\textit{Note.}$ $\\\\hat{\\\\rho}$ denotes the posterior mean correlation estimate, and 95\\\\% CIs denote 95\\\\% credible intervals. Rows correspond to task pairs, shown separately for each experiment and for the model fitted to the full dataset without differentiating experiments. Bold posterior means indicate correlations whose 95\\\\% credible intervals exclude zero.", 
+  footnote(general = "$\\\\textit{Note.}$ $\\\\hat{\\\\rho}$ denotes the posterior mean correlation estimate, and 95\\\\% CrIs denote 95\\\\% credible intervals. Rows correspond to task pairs, shown separately for each experiment and for the model fitted to the full dataset without differentiating experiments. Bold posterior means indicate correlations whose 95\\\\% credible intervals exclude zero.", 
            general_title = "", 
            threeparttable = TRUE, 
            escape = FALSE)
@@ -1697,14 +1704,14 @@ whitehead_loads_format <- whitehead_loads[, -1]
 kbl(whitehead_loads_format, 
     format = "latex",
     col.names = c("Task", 
-                  "$\\hat{\\lambda}$", "95\\% CI", 
-                  "$\\hat{\\lambda}$", "95\\% CI", 
-                  "$\\hat{\\lambda}$", "95\\% CI", 
-                  "$\\hat{\\lambda}$", "95\\% CI"),
+                  "$\\hat{\\lambda}$", "95\\% CrI", 
+                  "$\\hat{\\lambda}$", "95\\% CrI", 
+                  "$\\hat{\\lambda}$", "95\\% CrI", 
+                  "$\\hat{\\lambda}$", "95\\% CrI"),
     escape = FALSE, 
     booktabs = TRUE,
     align = "lcccccccc", 
-    caption = "Model-implied factor loadings estimates for the four HFMs across experiments", 
+    caption = "Model-Implied Factor Loadings Estimates for the Four HFMs Across Experiments", 
     label = "loads-whitehead") |> 
   kable_styling(font_size = 10, latex_options = c("hold_position")) |> 
   add_header_above(c(" " = 1, "Gaussian" = 2, "Ex-Gaussian" = 2, 
@@ -1717,7 +1724,7 @@ kbl(whitehead_loads_format,
             hline_before = FALSE, hline_after = FALSE, latex_gap_space = "1em") |>
   pack_rows("All experiments", 10, 12, 
             hline_before = FALSE, hline_after = FALSE, latex_gap_space = "1em") |>
-  footnote(general = "$\\\\textit{Note.}$ $\\\\hat{\\\\lambda}$ denotes the posterior mean factor loading estimate, and 95\\\\% CIs denote 95\\\\% credible intervals. Rows correspond to tasks, shown separately for each experiment and for the model fitted across all data without distinguishing between experiments. The factor loading for the Simon task was constrained to be positive to identify factor reflection. Bold posterior means indicate factor loadings whose 95\\\\% credible intervals exclude zero.", 
+  footnote(general = "$\\\\textit{Note.}$ $\\\\hat{\\\\lambda}$ denotes the posterior mean factor loading estimate, and 95\\\\% CrIs denote 95\\\\% credible intervals. Rows correspond to tasks, shown separately for each experiment and for the model fitted across all data without distinguishing between experiments. The factor loading for the Simon task was constrained to be positive to identify factor reflection. Bold posterior means indicate factor loadings whose 95\\\\% credible intervals exclude zero.", 
            general_title = "", 
            threeparttable = TRUE, 
            escape = FALSE)
@@ -1747,13 +1754,13 @@ Experiments 1 and 2. To better understand this pattern, Figure
 factor loadings for each task, experiment, and model. In Experiment 1,
 the posteriors for Flanker
 
-![Posterior distributions of the standardized factor loadings for each
-task, experiment, and
-model](../Figures/whitehead_posterior_lambdas.png){#fig-WPD
+![Posterior Distributions of the Standardized Factor Loadings for Each
+Task, Experiment, and
+Model](../Figures/whitehead_posterior_lambdas.png){#fig-WPD
 fig-align="center"
 apa-note="NoNote \\fontsize{10}{12}\\selectfont \\textit{Note.} Columns correspond to tasks, rows to experiments, and colors to model families. Curves show the posterior distributions of the standardized factor loadings. The dashed vertical line marks zero, so posterior mass farther to the right indicates stronger positive loadings. The loading for the Simon task was constrained to be positive to identify factor reflection."}
 
-\noindent and Stroop are extremely flat and diffuse, while the Simon
+\noindent and Stroop are extremely flat and diffuse, whereas the Simon
 loading collapses against the identification boundary at zero, together
 indicating that the data provide essentially no evidence for a common
 latent factor. In Experiment 2, the distributions remain broad and
@@ -1766,14 +1773,14 @@ approximately normal shape and are clearly concentrated above zero,
 exactly the pattern one would expect if the data supported a common
 latent factor.
 
-Taken together, these patterns point to a simple conclusion: the tasks
+Taken together, these patterns point to a simple conclusion: The tasks
 in Experiment 3 are better designed to capture individual differences in
 conflict effects than the corresponding tasks in Experiments 1 and 2. At
 the same time, the results qualify the idea of a single factor
-underlying all conflict tasks: there is empirical support for a common
+underlying all conflict tasks: There is empirical support for a common
 factor, but not all task variants contribute to it to the same extent.
 
-## Viviani et al.'s bidimensional structure of Spatial Stroop Tasks
+## Viviani et al.'s Bidimensional Structure of Spatial Stroop Tasks
 
 @Viviani2024 developed six spatial Stroop tasks (Peripheral, Perifoveal,
 Navon, Figure-Ground, Flanker, and Saliency, see Figure \ref{fig-TS}) to
@@ -1783,19 +1790,19 @@ completed all six four-choice tasks, each delivered in a counterbalanced
 block of 72 trials with equal proportions of congruent and incongruent
 stimuli.
 
-![Example stimuli for the six spatial Stroop
-variants](../Figures/viviani_tasks_figure.png){#fig-TS
+![Example Stimuli for the Six Spatial Stroop
+Variants](../Figures/viviani_tasks_figure.png){#fig-TS
 apa-note="NoNote \\fontsize{10}{12}\\selectfont \\textit{Note.} Adapted from \"A comparison between different variants of the spatial Stroop task: The influence of analytic flexibility on Stroop effect estimates and reliability,\" by G. Viviani, A. Visalli, L. Finos, A. Vallesi, and E. Ambrosini, 2024, \\textit{Behavior Research Methods, 56}(2), p.937 (https://doi.org/10.3758/s13428-023-02091-8). CC BY 4.0."}
 
 To address the right-skewed RTs, the authors compared raw,
-log-transformed, and inverse RTs (iRTs), ultimately favouring iRTs
+log-transformed, and inverse RTs (iRTs), ultimately favoring iRTs
 because they approximated normality most closely. For each RT metric,
 they fitted a Gaussian hierarchical model with and without trial-level
 covariates and then conducted an EFA on the resulting random slopes. The
 analyses supported two factors: one grouping Peripheral and Perifoveal
 and another comprising Figure–Ground, Flanker, and Saliency, with Navon
 loading inconsistently. The authors interpreted this pattern
-methodologically: the irrelevant feature (the arrow's position) in
+methodologically: The irrelevant feature (the arrow's position) in
 Peripheral and Perifoveal tasks is *intrinsically* included in the
 relevant stimuli (the arrow itself), whereas the irrelevant feature in
 Figure-Ground, Flanker, and Saliency is *extrinsic*. Under this logic,
@@ -1830,7 +1837,7 @@ specification is especially important, so we fitted our three HFMs using
 moderately informative priors derived from our previous Stroop
 meta-analysis for the hierarchical component and diffuse priors for the
 latent factor component (full prior specifications are reported in the
-Supplementary Materials). Predictive accuracy for the Gaussian
+supplemental materials). Predictive accuracy for the Gaussian
 hierarchical models was efficiently computed using analytical LOO
 approximations [@zewotir2005influence; @rasmussen2006gaussian], avoiding
 the need for refitting[^12]. Across all models, the ex-Gaussian HFM
@@ -1845,7 +1852,7 @@ even further ($\Delta$ELPD=1843.5, 95% CI \[1350.6, 2336.5\]), and the
 Gaussian HFM showed the poorest predictive performance overall
 ($\Delta$ELPD=3741.7, 95% CI \[3466.8, 4016.6\]). Furthermore, the
 probability that the ex-Gaussian model outperformed all alternative
-models in predictive accuracy exceeded .999 in every comparison
+models in predictive accuracy exceeded .999 in every comparison.
 
 [^12]: Note that frequentist hierarchical models yield log-predictive
     densities on the iRT scale, which is not directly comparable to the
@@ -1896,7 +1903,7 @@ results$conf_high <- results$elpd_diff + qnorm(.975) * results$elpd_diff_se
 results$P_better <- round(1 - pnorm(0, mean = results$elpd_diff, sd = results$elpd_diff_se), 2)
 ```
 
-Since the ex-Gaussian HFM achieved the best predictive performance, we
+Because the ex-Gaussian HFM achieved the best predictive performance, we
 next compared its pattern of factor loadings with those obtained from
 the two Gaussian hierarchical models, with and without predictors, and
 from the Gaussian HFM fitted to iRTs, which was the strongest
@@ -1906,7 +1913,7 @@ models (with or without predictors) result in a bidimensional structure
 considerably clearer than the more modest structure recovered by the
 Gaussian HFM fitted to iRTs and the ex-Gaussian HFM. Moreover, the 95%
 CIs are much narrower with the hierarchical models, spuriously
-suggesting that these estimations are more reliable or precise. However,
+suggesting that these estimates are more reliable or precise. However,
 remember that EFA ignores trial-level uncertainty when using
 $\beta_{ij}$ in
 
@@ -1928,12 +1935,12 @@ kbl(viviani_loads_format,
     col.names = c("Task$\\hspace{8mm}$", 
                   "$\\hat{\\lambda}$", "95\\% CI", 
                   "$\\hat{\\lambda}$", "95\\% CI", 
-                  "$\\hat{\\lambda}$", "95\\% CI", 
-                  "$\\hat{\\lambda}$", "95\\% CI"),
+                  "$\\hat{\\lambda}$", "95\\% CrI", 
+                  "$\\hat{\\lambda}$", "95\\% CrI"),
     escape = FALSE, 
     booktabs = TRUE,
     align = c("l", "c", "c", "c", "c", "c", "c", "c", "c"), 
-    caption = "Factor loading estimates for the two-factor model across hierarchical models and GenHFMs", 
+    caption = "Factor Loading Estimates for the Two-Factor Model Across Hierarchical Models and GenHFMs", 
     label = "loads-viviani") |> 
   kable_styling(font_size = 10, latex_options = c("hold_position")) |> 
   add_header_above(c(" " = 1, "HM (no predictors)" = 2, "HM (with predictors)" = 2, 
@@ -1942,14 +1949,14 @@ kbl(viviani_loads_format,
             hline_before = FALSE, hline_after = FALSE, latex_gap_space = "0pt") |>
   pack_rows("Factor 2", 7, 12, 
             hline_before = FALSE, hline_after = FALSE, latex_gap_space = "1em") |>
-  footnote(general = "\\\\textit{Note.} Rows are grouped by factor. HM = frequentist hierarchical models with iRTs. All estimates correspond to Varimax-rotated factor loadings. For the HMs, $\\\\hat{\\\\lambda}$ values are point estimates and 95\\\\% CIs are confidence intervals. For the two GenHFMs (Gaussian fitted to iRTs, and ex-Gaussian), $\\\\hat{\\\\lambda}$ values are posterior means and 95\\\\% CIs are credible intervals. Bold values indicate factor loadings whose 95\\\\% intervals exclude zero.", 
+  footnote(general = "\\\\textit{Note.} Rows are grouped by factor. All estimates correspond to Varimax-rotated factor loadings. For the HMs, $\\\\hat{\\\\lambda}$ values are point estimates and 95\\\\% CIs are confidence intervals. For the two GenHFMs (Gaussian fitted to iRTs, and ex-Gaussian), $\\\\hat{\\\\lambda}$ values are posterior means and 95\\\\% CrIs are credible intervals. Bold values indicate factor loadings whose 95\\\\% intervals exclude zero. HM = frequentist hierarchical models with inverse response times (iRTs); GenHFM = generalized hierarchical factor model.", 
            general_title = "", 
            threeparttable = TRUE, 
            escape = FALSE)
 ```
 
-\noindent their estimations, whereas the GenHFMs properly incorporates
-it, yielding the more realistic CIs one would expect when working with
+\noindent its estimation, whereas the GenHFMs properly incorporates
+it, yielding the more realistic CrIs one would expect when working with
 such a small sample (small in the demanding context of these models).
 When considering the factor loadings, some differences are substantial:
 for example, Saliency loads on both factors in the hierarchical models
@@ -1959,7 +1966,7 @@ credible intervals include zero for both factors. Likewise, Navon loads
 on both factors in the hierarchical models and in the Gaussian HFM
 fitted to iRTs, but under the ex-Gaussian HFM it is credibly associated
 only with Factor 1. Viewed in this way, the results partially confirm
-but also refine the structure proposed by @Viviani2024: tasks with
+but also refine the structure proposed by @Viviani2024: Tasks with
 intrinsic irrelevant features (Peripheral, Perifoveal) still cluster
 together, and those with extrinsic features (Figure--Ground, Flanker)
 load on the second factor. However, Navon no longer stands out as a
@@ -1976,18 +1983,18 @@ kbl(viviani_reliab,
     col.names = c("Task", 
                   "$\\hat{\\rho}$", "95\\% CI",
                   "$\\hat{\\rho}$", "95\\% CI", 
-                  "$\\hat{\\rho}$", "95\\% CI", 
-                  "$\\hat{\\rho}$", "95\\% CI"),
+                  "$\\hat{\\rho}$", "95\\% CrI", 
+                  "$\\hat{\\rho}$", "95\\% CrI"),
     escape = FALSE, 
     booktabs = TRUE,
     align = c("l", "c", "c", "c", "c", "c", "c", "c", "c"), 
-    caption = "Reliability estimates of experimental effects across hierarchical models and GenHFMs", 
+    caption = "Reliability Estimates of Experimental Effects Across Hierarchical Models and GenHFMs", 
     label = "reliab-viviani", 
     linesep = "") |> 
   kable_styling(font_size = 10, latex_options = c("hold_position", "scale_down")) |> 
   add_header_above(c(" " = 1, "HM (no predictors)" = 2, 
                      "HM (with predictors)" = 2, "iRTs HFM" = 2, "Ex-Gaussian" = 2)) |>
-  footnote(general = "$\\\\textit{Note.}$ HM = frequentist hierarchical models with iRTs. $\\\\hat{\\\\rho}$ denotes the median split-half reliability estimate for the HMs (reported in Viviani et al., 2024) and the posterior median reliability estimate for the two GenHFMs (Gaussian fitted to iRTs, and ex-Gaussian). 95\\\\% CIs denote 95\\\\% confidence intervals for the HMs and 95\\\\% credible intervals for the GenHFMs.", general_title = "", threeparttable = TRUE, escape = FALSE)
+  footnote(general = "$\\\\textit{Note.}$ $\\\\hat{\\\\rho}$ denotes the median split-half reliability estimate for the HMs (reported in Viviani et al., 2024) and the posterior median reliability estimate for the two GenHFMs (Gaussian fitted to iRTs, and ex-Gaussian). 95\\\\% CIs and 95\\\\% CrIs are 95\\\\% confidence and credible intervals for the HMs GenHFMs, respectively. HM = frequentist hierarchical models with inverse response times (iRTs); GenHFM = generalized hierarchical factor model.", general_title = "", threeparttable = TRUE, escape = FALSE)
 ```
 
 Reliability estimates follow a clear pattern (Table
@@ -2004,7 +2011,7 @@ Figure-Ground and Flanker appear highly reliable under the LMMs, remain
 moderately reliable under the Gaussian HFM fitted to iRTs, yet become
 far less stable under the ex-Gaussian model, and Saliency shows an even
 sharper drop. The advantage of the GenHFM framework is that model
-comparison provides a principled way to choose among them: because the
+comparison provides a principled way to choose among them: Because the
 ex-Gaussian model best fits the data, its reliability estimates have the
 strongest empirical support.
 
@@ -2015,22 +2022,22 @@ psychology has led to an unprecedented integration of psychometrics and
 experimental methods. HFMs represent a powerful step in this direction,
 but it is their extension beyond the normality assumption that actually
 achieves a robust connection between both fields. In this integration,
-experimental psychologists contribute their expertise in modelling data
+experimental psychologists contribute their expertise in modeling data
 from experimental tasks, whereas psychometricians bring their experience
-in modelling individual differences using latent factors. It is evident
+in modeling individual differences using latent factors. It is evident
 that any hierarchical model used in experimental psychology can be
 straightforwardly extended into a hierarchical factor version. Examples
 include factorial adaptations of the DDMs [@Stevenson2024;
 @Stevenson2025group] and of threshold models in psychophysical tasks
 [@rouder2025randomeffects]. It would not be surprising to see, in the
 future, factorial versions of other widely used frameworks in
-experimental psychology, such as Signal Detection Theory [SDT,
-@GreenSwets1966].
+experimental psychology, such as signal detection theory 
+[@GreenSwets1966].
 
 By bringing both worlds together, the factor component offers two clear
-advantages for experimental psychologists: it returns more precise
+advantages for experimental psychologists: It returns more precise
 estimates of the correlations among experimental measures, and it
-enables direct comparisons between factor loadings, i.e., how well tasks
+enables direct comparisons between factor loadings, that is, how well tasks
 discriminate the common latent processes. This opens the door to
 studying construct validity in experimental tasks while fully exploiting
 trial-level information, something that was simply not possible before.
@@ -2039,7 +2046,7 @@ using a standardized metric from the ground up. Standardization
 simplifies the model because it constrains loadings to the \[-1,1\]
 range and makes prior specification more transparent and easier to
 control across studies. This issue is especially challenging in
-exploratory factor models, and -- as far as we know -- this is the first
+exploratory factor models, and---as far as we know---this is the first
 work to introduce a fully standardized parameterization in the context
 of Bayesian exploratory factor analysis.
 
@@ -2047,45 +2054,45 @@ Alongside the latent-structure parameterization, the choice of the
 trial-level distribution plays an equally critical role in the recovery
 of individual differences. Our simulations show how severe the
 consequences can be when a Gaussian model is fitted to asymmetric RTs:
-under shifted-lognormal data, Gaussian HFMs systematically distort the
+Under shifted-lognormal data, Gaussian HFMs systematically distort the
 recovery of group-level parameters, correlations, and especially factor
 loadings. Even under ex-Gaussian data, where estimates remain
 essentially unbiased, Gaussian HFMs produce substantially larger
-uncertainty. Our empirical illustrations reinforce this point: depending
+uncertainty. Our empirical illustrations reinforce this point: Depending
 on which model is used, a researcher could make substantively different
 (even opposite) inferences about individual differences. Because these
 inferences are always model-dependent, selecting an inappropriate
 distribution can create the illusion that no correlations exist between
 tasks or that no common latent factor is present, when in fact it is the
-model -- rather than the measurement error -- that is hiding that
+model---rather than the measurement error---that is hiding that
 structure. Consequently, justifying why one model has been chosen over
 another becomes an essential requirement for ensuring valid conclusions.
 This issue, among others, points toward several directions for future
 research.
 
-## Limitations and future directions
+## Limitations and Future Directions
 
-### Model comparison: trial-level distribution
+### Model Comparison: Trial-Level Distribution
 
 A variety of tools are available for comparing competing models with
 different trial-level distributions in Bayesian settings, such as Bayes
-Factors [@kass1995bayes] and posterior predictive methods
+factors [@kass1995bayes] and posterior predictive methods
 [@vehtari2017]. Here, we focused on approaches that evaluate predictive
-performance because it is widely know that are more robust to prior
+performance because they are widely known to be more robust to prior
 specifications [@schad2023workflow] and do not rely on the assumption
 that the true data-generating model is between the set of models
 included for comparison [the M-open world, @bernardo1994bayesian]. We
-have implemented efficient versions of PSIS-LOO, moment matching and
+have implemented efficient versions of PSIS-LOO, moment matching, and
 Mixture-IS in R for these models. Although LOO can fail when the true
 model is included among the candidates [@gronau2019limitations;
 @shao1993linear], our simulation showed that it consistently recovered
 the correct model. A natural next step is to examine whether Bayes
-Factors show similarly reliable model recovery in these settings.
+factors show similarly reliable model recovery in these settings.
 
-Although the models discussed here focus on alternative distributional
-assumptions for RTs, other modelling approaches commonly used in this
-field aim to account for both RTs and accuracy, like Drift Diffusion
-Models [@Loffler2024ExecutiveFunctions; @ReyMermet2025;
+The models discussed here focus on alternative distributional
+assumptions for RTs, but other modeling approaches commonly
+used in this field aim to account for both RTs and accuracy, like
+DDMs [@Loffler2024ExecutiveFunctions; @ReyMermet2025;
 @Weigard2021CognitiveEfficiency; @Yanguez2024BetterPracticeEF] or Race
 models [@heathcote2022race; @donzallaz2026modeling]. In both cases, the
 models are intended to capture latent decision processes, with
@@ -2094,9 +2101,15 @@ meaningful components of performance. Whether these process models or
 the simpler models considered in this work are more useful in empirical
 settings remains a question for future research.
 
-### Model comparison: latent dimensionality assessment
+### Model Comparison: Latent Dimensionality Assessment
 
-Despite their usefulness for comparing trial-level distributions,
+We have largely set aside the question of how to determine the
+number of latent factors, which is clearly another key component
+of model specification. At first sight, it may seem reasonable
+to compare GenHFMs with different numbers of latent factors
+using the same predictive-performance framework applied here to
+trial-level distributions. However, despite their usefulness 
+for comparing trial-level distributions,
 predictive-performance methods cannot be used to evaluate the number of
 latent dimensions in GenHFM. As discussed by @Merkle2019, the
 applicability of cross-validation in hierarchical latent-variable models
@@ -2105,8 +2118,8 @@ depends on how likelihood is defined. In our formulation, the likelihood
 \ref{eq-GenHFM-04}) is written directly in terms of subject-specific
 latent scores such as $\alpha_{ij}$ and $\beta_{ij}$, which are treated
 as free parameters. This formulation corresponds to the *conditional
-likelihood* -- that is, the likelihood conditioned on the
-subject-specific latent scores -- and is well suited for
+likelihood*---that is, the likelihood conditioned on the
+subject-specific latent scores---and is well suited for
 leave-one-trial-out procedures, as it supports predictions for new
 trials from the same subjects. It also has the practical advantage of
 naturally accommodating the unbalanced designs characteristic of
@@ -2120,7 +2133,7 @@ would require a high-dimensional numerical integration, which is
 practically infeasible given the number of latent variables per subject.
 Developing computationally viable strategies to approximate this
 marginal likelihood remains one of the most important directions for
-future work, and constitutes a key aim of our current research.
+future work and constitutes a key aim of our current research.
 
 [^13]: Note that this *marginal likelihood* is distinct from the
     "*marginal likelihood*" used in the denominator of Bayes' theorem,
@@ -2146,11 +2159,11 @@ of latent variables that underlie variables that are themselves latent
 @Jimenez2025Dimensionality, who examined how factor-retention methods
 recover group and general factors in bifactor structures. Extending this
 logic to GenHFMs and developing Bayesian fit indices suitable for
-hierarchical models -- given that current Bayesian SEM indices remain
-limited to non-hierarchical settings [@garniervillarreal2020adapting] --
-represent our next goal that we are currently developing.
+hierarchical models---given that current Bayesian SEM indices remain
+limited to nonhierarchical settings [@garniervillarreal2020adapting]---represent 
+our next goal that we are currently developing.
 
-### Oblique factorial rotations
+### Oblique Factorial Rotations
 
 Throughout this work, we have assumed an orthogonal rotation for the
 Bayesian exploratory factor model. However, the psychometric literature
@@ -2188,18 +2201,18 @@ developing this solution to upgrade these models soon.
 
 ### Adding Predictors to the Model
 
-Although adding predictors to GenHFMs is technically feasible, their
-inclusion requires careful consideration, particularly with respect to
-the level of the model at which they are introduced. When predictors
+Adding predictors to GenHFMs is technically feasible, but their 
+inclusion requires careful consideration, particularly with respect 
+to the level of the model at which they are introduced. When predictors
 enter at the trial level, the experimental effect is no longer defined
-solely by the contrast between experimental conditions, but becomes
+solely by the contrast between experimental conditions but becomes
 conditional on the other predictors in the model. @Viviani2024 followed
 this strategy to capture systematic sources of trial-by-trial
 variability, and their rationale is theoretically well justified.
 However, our reanalysis showed that an ex-Gaussian GenHFM without
 predictors achieved better out-of-sample predictive accuracy than their
 Gaussian hierarchical model with predictors. In this sense, the former
-is preferable not only empirically, but also conceptually, because it
+is preferable not only empirically but also conceptually, because it
 preserves an interpretation of the experimental effect that depends
 exclusively on the experimental condition. We therefore consider that
 the first step should be to identify the trial-level distribution that
@@ -2208,8 +2221,8 @@ predictors are warranted on theoretical and predictive grounds.
 
 If predictors are introduced to explain either the experimental effects
 or the common latent factors, the model begins to move toward the
-broader family of multiple-indicators multiple-causes models [MIMIC,
-@HauserGoldberger1971]. The implications, however, depend on what
+broader family of multiple-indicators multiple-causes models 
+[@HauserGoldberger1971]. The implications, however, depend on what
 exactly the predictors are allowed to explain. Covariates may also have
 direct effects on the experimental effects beyond what is captured by
 the common factors, bringing the model close to questions of measurement
@@ -2234,15 +2247,15 @@ Bayesian literature [@Rosseel2024; @Levy2023; @LevyMcNeish2025], where the struc
 model is estimated only after the measurement model has been
 established [see @vermunt2025stepwise for a review].
 
-Given the range of possibilities outlined above, the present work has
+Given the range of possibilities outlined earlier, the present work has
 deliberately focused on establishing the measurement model, without
 incorporating covariates at any level. Extending the framework in these
 directions remains an important task for future research.
 
-### Other experimental effects
+### Other Experimental Effects
 
 Although the models presented here are formulated for effects defined as
-differences between conditions, this represents only one modelling
+differences between conditions, this represents only one modeling
 choice. Latent factors could instead be placed on the subject-level
 parameters $\alpha_{ij}$, capturing common factors underlying average
 performance across tasks. Many tasks define their primary measures in
@@ -2251,15 +2264,15 @@ task [@posner1967chronometric] or the Sternberg task [@Sternberg1969],
 and could equally benefit from a GenHFM formulation. Likewise, one could
 define common factors across tasks that rely on different performance
 indicators, such as mean differences in RTs and $d^\prime$ estimates
-from SDT, a research question that has received considerable attention
+from signal detection theory, a research question that has received considerable attention
 in fields such as unconscious processing and implicit memory
 [@shanks2021challenge; @vadillo2021raising;
-@francomartinez2025measurement; @berry2012models]. Finally, GenHFMs may
+@francomartinez2025measurement; @berry2012models]. Finally, these models may
 be extended to accommodate experimental effects whose very definition
 relies on time, such as those involved in probabilistic learning
 paradigms [@saffran2018infant; @frost2019statistical]. This last point
 is perhaps the most consequential, as it highlights one of the strongest
-assumptions underlying HFMs and the GenHFM variants discussed here: the
+assumptions underlying HFMs and the GenHFM variants discussed here: The
 assumption that experimental effects are constant across trials. This is
 already an active area in cognitive modeling, particularly in
 reinforcement-learning models [@Fontanesi2019; @Miletic2021] and, more
@@ -2291,7 +2304,7 @@ experimental data.
 \newpage
 
 ::: {#appendix-count}
-# Unit vector radial-penalized prior distribution {#apx-a}
+# Unit Vector Radial-Penalized Prior Distribution {#apx-a}
 
 In standardized exploratory factor models, the parameter space of each
 row of $\mathbf{\Lambda}$ is an $M$-dimensional sphere, where $M$ is the
@@ -2311,7 +2324,7 @@ preserves the required dependence among loadings and restricts all
 samples to the valid region. Figure \ref{fig-STC} illustrates this
 parameter space and its spherical parametrization for the case $M = 2$.
 
-![Parameter space and spherical parametrization for
+![Parameter Space and Spherical Parametrization for
 $M=2$](../Figures/Appendix_plot.png){#fig-STC
 apa-note="NoNote \\fontsize{10}{12}\\selectfont \\textit{Note.} (A) Admissible region (blue circle) where valid loading combinations satisfy $h^2 \\le 1$; the circumference marks the boundary $r_j=1$ ($h^2_j=1$). (B) Increasing $r_j$ while keeping $\\mathbf{u}_j$ fixed changes the communality magnitude along a constant direction. (C) Varying $\\mathbf{u}_j$ with constant $r_j$ yields distinct but equally valid loading configurations sharing the same $h^2_j$."}
 
@@ -2328,7 +2341,7 @@ sphere: $$
 $$
 
 This procedure introduces a subtle computational issue related to the
-values of $\|\mathbf{z}_j\|$. Since $\mathbf{z}_j$ follows a
+values of $\|\mathbf{z}_j\|$. Because $\mathbf{z}_j$ follows a
 multivariate standard normal distribution, $\|\mathbf{z}_j\|^2$ is the
 sum of squared i.i.d. standard normal variables and therefore
 $\|\mathbf{z}_j\|^2 \sim \chi^2_M$ [@koch2007chi]. Consequently,
@@ -2427,7 +2440,7 @@ lies within its posterior credibility interval), and 0 otherwise. Thus,
 the overall coverage reflects the proportion of parameters for which the
 interval estimation was successful.
 
-In addition to the general-purpose indices described above, we computed
+In addition to the general-purpose indices described earlier, we computed
 three additional metrics specific to the type of parameter. For the
 correlation matrix $\mathbf{R}_\beta$, we used the Average Standardized
 Root Mean Residual (ASRMR), which summarizes overall deviation between
