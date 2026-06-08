@@ -52,7 +52,7 @@ transformed parameters {
     // Compute standardized factor loadings using h2 and unit vector
     matrix[J, M] Lambda_std = diag_pre_multiply(sqrt(h2), Z_UV);
     // Model-Implied (proportion of) uniqueness variance
-    vector<lower=0, upper=1>[J] Psi_std = 1 - diagonal(tcrossprod(Lambda_std));
+    vector<lower=0, upper=1>[J] Psi_std = 1 - h2;
     // Model-implied correlation matrix
     corr_matrix[J] Rho_beta = add_diag(tcrossprod(Lambda_std), Psi_std);
     // Cholesky decomposition of model implied correlation matrix
